@@ -1,10 +1,14 @@
 """
 NotificationView — Quản lý thông báo (trang Admin).
-Hiển thị thông báo hệ thống + yêu cầu đăng ký phòng (pending contracts).
+Hiển thị thông báo hệ thống + yêu cầu đăng ký phòng (pending contracts)
++ yêu cầu sửa chữa (pending repairs).
+Thông báo được lưu vào file JSON để giữ lại khi tắt app.
 """
+import json
+import os
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QScrollArea, QSizePolicy, QMessageBox
+    QFrame, QScrollArea, QSizePolicy, QMessageBox, QDialog
 )
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
@@ -99,7 +103,6 @@ class PendingContractRow(QFrame):
         lo.setContentsMargins(30, 10, 30, 10)
         lo.setSpacing(15)
 
-        # Icon
         icon = QLabel("📋")
         icon.setFixedSize(40, 40)
         icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -107,10 +110,8 @@ class PendingContractRow(QFrame):
             "background-color: #fef3c7; border-radius: 20px; font-size: 18px; border: none;")
         lo.addWidget(icon)
 
-        # Info column
         info = QVBoxLayout()
         info.setSpacing(2)
-
         title = QLabel(f"Yêu cầu đăng ký phòng {room_number}")
         title.setStyleSheet("font-size: 14px; font-weight: bold; color: #92400e; border: none;")
         info.addWidget(title)
@@ -125,10 +126,8 @@ class PendingContractRow(QFrame):
         time_lbl = QLabel(time_text)
         time_lbl.setStyleSheet("font-size: 11px; color: #a8a29e; border: none;")
         info.addWidget(time_lbl)
-
         lo.addLayout(info, 1)
 
-        # Action buttons
         btn_approve = QPushButton("✅ Duyệt")
         btn_approve.setMinimumHeight(36)
         btn_approve.setStyleSheet(
@@ -150,10 +149,91 @@ class PendingContractRow(QFrame):
         lo.addWidget(btn_reject)
 
 
+# ── Pending Repair Row (yêu cầu sửa chữa) ────────────────
+class PendingRepairRow(QFrame):
+    """Hiển thị 1 yêu cầu sửa chữa chờ xử lý."""
+    accepted = pyqtSignal(object)   # repair_request
+    rejected = pyqtSignal(object)   # repair_request
+
+    PRIORITY_MAP = {
+        'low': ('Thấp', '#48bb78'),
+        'medium': ('Trung bình', '#ed8936'),
+        'high': ('Cao', '#e53e3e'),
+        'urgent': ('Khẩn cấp', '#c53030'),
+    }
+
+    def __init__(self, repair, room_number: str, guest_name: str, parent=None):
+        super().__init__(parent)
+        self.repair = repair
+        self.setMinimumHeight(90)
+        self.setStyleSheet(
+            "QFrame { border-bottom: 1px solid #edf2f7; background-color: #f0fff4; }"
+            "QFrame:hover { background-color: #e6ffed; }")
+
+        lo = QHBoxLayout(self)
+        lo.setContentsMargins(30, 10, 30, 10)
+        lo.setSpacing(15)
+
+        icon = QLabel("🔧")
+        icon.setFixedSize(40, 40)
+        icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        icon.setStyleSheet(
+            "background-color: #c6f6d5; border-radius: 20px; font-size: 18px; border: none;")
+        lo.addWidget(icon)
+
+        info = QVBoxLayout()
+        info.setSpacing(2)
+
+        pri_label, pri_color = self.PRIORITY_MAP.get(repair.priority, ('Trung bình', '#ed8936'))
+        title = QLabel(f"Yêu cầu sửa chữa: {repair.title}")
+        title.setStyleSheet("font-size: 14px; font-weight: bold; color: #22543d; border: none;")
+        info.addWidget(title)
+
+        detail = QLabel(f"Phòng: {room_number}  •  Khách: {guest_name}  •  "
+                        f"Ưu tiên: <b style='color:{pri_color}'>{pri_label}</b>")
+        detail.setStyleSheet("font-size: 12px; color: #4a5568; border: none;")
+        detail.setWordWrap(True)
+        info.addWidget(detail)
+
+        desc = QLabel(f"Chi tiết: {repair.description[:80]}{'...' if len(repair.description) > 80 else ''}")
+        desc.setStyleSheet("font-size: 11px; color: #718096; border: none;")
+        info.addWidget(desc)
+
+        time_text = _time_ago(repair.created_at) if repair.created_at else ""
+        time_lbl = QLabel(time_text)
+        time_lbl.setStyleSheet("font-size: 11px; color: #a8a29e; border: none;")
+        info.addWidget(time_lbl)
+        lo.addLayout(info, 1)
+
+        btn_accept = QPushButton("✅ Tiếp nhận")
+        btn_accept.setMinimumHeight(36)
+        btn_accept.setStyleSheet(
+            "QPushButton { background-color: #2b6cb0; color: white; border: none; "
+            "border-radius: 6px; padding: 6px 16px; font-weight: bold; font-size: 12px; }"
+            "QPushButton:hover { background-color: #2c5282; }")
+        btn_accept.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_accept.clicked.connect(lambda: self.accepted.emit(self.repair))
+        lo.addWidget(btn_accept)
+
+        btn_reject = QPushButton("❌ Từ chối")
+        btn_reject.setMinimumHeight(36)
+        btn_reject.setStyleSheet(
+            "QPushButton { background-color: #f7fafc; color: #e53e3e; border: 1px solid #fecaca; "
+            "border-radius: 6px; padding: 6px 16px; font-weight: bold; font-size: 12px; }"
+            "QPushButton:hover { background-color: #fef2f2; }")
+        btn_reject.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_reject.clicked.connect(lambda: self.rejected.emit(self.repair))
+        lo.addWidget(btn_reject)
+
+
 # ── Main View ────────────────────────────────────────────
 class NotificationView(QWidget):
     """Widget thông báo — nhúng AdminWindow."""
     navigate_requested = pyqtSignal(str)
+
+    # File lưu thông báo để persist qua các lần mở app
+    NOTIF_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              '..', '..', '..', 'data', 'notifications.json')
 
     TAB_STYLE = (
         "QPushButton { background-color: transparent; border: none; font-size: 14px; "
@@ -164,15 +244,54 @@ class NotificationView(QWidget):
         "color: #0b8480; font-weight: bold; padding-bottom: 8px; "
         "border-bottom: 2px solid #0b8480; }")
 
-    def __init__(self, contract_service=None, room_service=None, guest_service=None, parent=None):
+    def __init__(self, contract_service=None, room_service=None,
+                 guest_service=None, repair_service=None, parent=None):
         super().__init__(parent)
         self.contract_service = contract_service
         self.room_service = room_service
         self.guest_service = guest_service
-        self._notifications = self._generate_system_notifications()
+        self.repair_service = repair_service
+        self._notifications = self._load_notifications()
         self._active_tab = 'all'
         self._build_ui()
         self._refresh()
+
+    # ── Persistence ──────────────────────────────────────────
+    def _load_notifications(self):
+        """Load thông báo từ file JSON + merge với thông báo hệ thống mới."""
+        saved = []
+        nf = os.path.normpath(self.NOTIF_FILE)
+        if os.path.exists(nf):
+            try:
+                with open(nf, 'r', encoding='utf-8') as f:
+                    saved = json.load(f)
+            except Exception:
+                saved = []
+
+        # Merge system notifications (expiring contracts, etc.)
+        system = self._generate_system_notifications()
+        existing_ids = {n['id'] for n in saved}
+        for s in system:
+            if s['id'] not in existing_ids:
+                saved.insert(0, s)
+
+        return saved
+
+    def _save_notifications(self):
+        """Lưu thông báo ra file JSON."""
+        nf = os.path.normpath(self.NOTIF_FILE)
+        os.makedirs(os.path.dirname(nf), exist_ok=True)
+        serializable = []
+        for n in self._notifications:
+            item = dict(n)
+            if isinstance(item.get('time'), datetime):
+                item['time'] = item['time'].isoformat()
+            serializable.append(item)
+        try:
+            with open(nf, 'w', encoding='utf-8') as f:
+                json.dump(serializable, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
 
     def _generate_system_notifications(self):
         """Tạo thông báo hệ thống từ dữ liệu thật."""
@@ -181,20 +300,39 @@ class NotificationView(QWidget):
 
         # Hợp đồng sắp hết hạn
         if self.contract_service:
-            expiring = self.contract_service.get_expiring_soon(30)
-            for c in expiring:
-                room_num = self._get_room_number(c.room_id)
-                notifs.append({
-                    'id': f'exp_{c.id}', 'icon': '📄', 'icon_bg': '#ebf8ff', 'icon_color': '#3182ce',
-                    'text': f'Hợp đồng phòng {room_num} sắp hết hạn ({c.days_until_expiry()} ngày)',
-                    'time': now - timedelta(hours=1), 'read': False, 'target': 'guest',
-                })
+            try:
+                expiring = self.contract_service.get_expiring_soon(30)
+                for c in expiring:
+                    room_num = self._get_room_number(c.room_id)
+                    notifs.append({
+                        'id': f'exp_{c.id}', 'icon': '📄', 'icon_bg': '#ebf8ff', 'icon_color': '#3182ce',
+                        'text': f'Hợp đồng phòng {room_num} sắp hết hạn ({c.days_until_expiry()} ngày)',
+                        'time': now.isoformat(), 'read': False, 'target': 'guest',
+                    })
+            except Exception:
+                pass
 
-        # Thêm vài thông báo mẫu nếu chưa có gì
+        # Yêu cầu sửa chữa pending → tạo notification tương ứng
+        if self.repair_service:
+            try:
+                pending_repairs = self.repair_service.get_pending()
+                for r in pending_repairs:
+                    nid = f'repair_{r.id}'
+                    room_num = self._get_room_number(r.room_id)
+                    guest_name = self._get_guest_name(r.guest_id)
+                    notifs.append({
+                        'id': nid, 'icon': '🔧', 'icon_bg': '#c6f6d5', 'icon_color': '#22543d',
+                        'text': f'Yêu cầu sửa chữa: {r.title} (Phòng {room_num} — {guest_name})',
+                        'time': r.created_at or now.isoformat(), 'read': False, 'target': 'repair',
+                    })
+            except Exception:
+                pass
+
+        # Thêm thông báo mẫu nếu chưa có gì
         if not notifs:
             notifs.append({
                 'id': 'sys_1', 'icon': 'ⓘ', 'icon_bg': '#edf2f7', 'icon_color': '#718096',
-                'text': 'Hệ thống hoạt động bình thường', 'time': now - timedelta(hours=2),
+                'text': 'Hệ thống hoạt động bình thường', 'time': (now - timedelta(hours=2)).isoformat(),
                 'read': True, 'target': '',
             })
 
@@ -245,7 +383,8 @@ class NotificationView(QWidget):
         tabs = QHBoxLayout()
         tabs.setSpacing(20)
         self._tab_buttons = []
-        for text, key in [("Tất cả", "all"), ("Yêu cầu duyệt", "pending"), ("Đã đọc", "read")]:
+        for text, key in [("Tất cả", "all"), ("Yêu cầu duyệt", "pending"),
+                         ("Sửa chữa", "repair"), ("Đã đọc", "read")]:
             btn = QPushButton(text)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             btn.clicked.connect(lambda _, k=key: self._switch_tab(k))
@@ -299,12 +438,13 @@ class NotificationView(QWidget):
         # ── Pending contracts section ──
         pending_contracts = []
         if self.contract_service:
-            all_contracts = self.contract_service.get_all()
-            pending_contracts = [c for c in all_contracts if c.status == 'pending']
+            try:
+                all_contracts = self.contract_service.get_all()
+                pending_contracts = [c for c in all_contracts if c.status == 'pending']
+            except Exception:
+                pass
 
-        # Show pending contracts
         if self._active_tab in ('all', 'pending') and pending_contracts:
-            # Section header
             sec_header = QLabel(f"  📋  Yêu cầu đăng ký phòng ({len(pending_contracts)})")
             sec_header.setFixedHeight(40)
             sec_header.setStyleSheet(
@@ -320,10 +460,34 @@ class NotificationView(QWidget):
                 row.rejected.connect(self._on_reject)
                 self.list_layout.addWidget(row)
 
+        # ── Pending repairs section ──
+        pending_repairs = []
+        if self.repair_service:
+            try:
+                pending_repairs = self.repair_service.get_pending()
+            except Exception:
+                pass
+
+        if self._active_tab in ('all', 'repair') and pending_repairs:
+            sec_header = QLabel(f"  🔧  Yêu cầu sửa chữa ({len(pending_repairs)})")
+            sec_header.setFixedHeight(40)
+            sec_header.setStyleSheet(
+                "background-color: #c6f6d5; color: #22543d; font-weight: bold; "
+                "font-size: 13px; padding-left: 20px; border: none;")
+            self.list_layout.addWidget(sec_header)
+
+            for repair in pending_repairs:
+                room_num = self._get_room_number(repair.room_id)
+                guest_name = self._get_guest_name(repair.guest_id)
+                row = PendingRepairRow(repair, room_num, guest_name)
+                row.accepted.connect(self._on_accept_repair)
+                row.rejected.connect(self._on_reject_repair)
+                self.list_layout.addWidget(row)
+
         # ── Regular notifications ──
-        if self._active_tab != 'pending':
+        if self._active_tab not in ('pending', 'repair'):
             if self._active_tab == 'read':
-                filtered = [n for n in self._notifications if n['read']]
+                filtered = [n for n in self._notifications if n.get('read')]
             else:
                 filtered = self._notifications
 
@@ -418,8 +582,9 @@ class NotificationView(QWidget):
         self._notifications.insert(0, {
             'id': f'approved_{contract.id}', 'icon': '✅', 'icon_bg': '#e6fffa', 'icon_color': '#38a169',
             'text': f'Đã duyệt đăng ký phòng {room_num} — HĐ {contract.contract_number}',
-            'time': datetime.now(), 'read': False, 'target': 'guest',
+            'time': datetime.now().isoformat(), 'read': False, 'target': 'guest',
         })
+        self._save_notifications()
 
         # Success dialog
         self._show_result_dialog(
@@ -497,8 +662,9 @@ class NotificationView(QWidget):
         self._notifications.insert(0, {
             'id': f'rejected_{contract.id}', 'icon': '❌', 'icon_bg': '#fff5f5', 'icon_color': '#e53e3e',
             'text': f'Đã từ chối yêu cầu phòng {room_num} — HĐ {contract.contract_number}',
-            'time': datetime.now(), 'read': False, 'target': '',
+            'time': datetime.now().isoformat(), 'read': False, 'target': '',
         })
+        self._save_notifications()
 
         self._show_result_dialog(
             "❌", "#dc2626", "Đã từ chối",
@@ -544,20 +710,181 @@ class NotificationView(QWidget):
         lay.addWidget(btn)
         dlg.exec()
 
+    def _on_accept_repair(self, repair):
+        """Tiếp nhận yêu cầu sửa chữa."""
+        room_num = self._get_room_number(repair.room_id)
+        guest_name = self._get_guest_name(repair.guest_id)
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Tiếp nhận yêu cầu")
+        dlg.setFixedSize(420, 250)
+        dlg.setStyleSheet("QDialog { background-color: white; }")
+        lay = QVBoxLayout(dlg)
+        lay.setSpacing(12)
+        lay.setContentsMargins(30, 25, 30, 25)
+
+        icon = QLabel("🔧")
+        icon.setStyleSheet("font-size: 40px;")
+        icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(icon)
+
+        title = QLabel("Tiếp nhận yêu cầu sửa chữa?")
+        title.setFont(QFont("Segoe UI", 15, QFont.Weight.Bold))
+        title.setStyleSheet("color: #1a202c;")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(title)
+
+        info = QLabel(
+            f"Mục: <b>{repair.title}</b><br>"
+            f"Phòng: <b>{room_num}</b>  •  Khách: <b>{guest_name}</b>"
+        )
+        info.setStyleSheet("color: #4a5568; font-size: 13px;")
+        info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        info.setWordWrap(True)
+        lay.addWidget(info)
+        lay.addStretch()
+
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(12)
+        btn_cancel = QPushButton("Hủy bỏ")
+        btn_cancel.setMinimumHeight(40)
+        btn_cancel.setStyleSheet(
+            "QPushButton { background-color: #f7fafc; color: #4a5568; border: 1px solid #cbd5e0; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #edf2f7; }")
+        btn_cancel.clicked.connect(dlg.reject)
+
+        btn_ok = QPushButton("✅  Tiếp nhận")
+        btn_ok.setMinimumHeight(40)
+        btn_ok.setStyleSheet(
+            "QPushButton { background-color: #2b6cb0; color: white; border: none; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #2c5282; }")
+        btn_ok.clicked.connect(dlg.accept)
+        btn_row.addWidget(btn_cancel)
+        btn_row.addWidget(btn_ok)
+        lay.addLayout(btn_row)
+
+        if dlg.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        # Cập nhật trạng thái
+        if self.repair_service:
+            self.repair_service.update_status(repair.id, 'in_progress')
+
+        self._notifications.insert(0, {
+            'id': f'repair_accepted_{repair.id}', 'icon': '🔧', 'icon_bg': '#ebf8ff', 'icon_color': '#2b6cb0',
+            'text': f'Đã tiếp nhận yêu cầu sửa chữa: {repair.title} (Phòng {room_num})',
+            'time': datetime.now().isoformat(), 'read': False, 'target': 'repair',
+        })
+        self._save_notifications()
+
+        self._show_result_dialog(
+            "✅", "#2b6cb0", "Đã tiếp nhận!",
+            f"Yêu cầu sửa chữa <b>{repair.title}</b> đã chuyển sang trạng thái đang xử lý."
+        )
+        self._refresh()
+
+    def _on_reject_repair(self, repair):
+        """Từ chối yêu cầu sửa chữa."""
+        room_num = self._get_room_number(repair.room_id)
+        guest_name = self._get_guest_name(repair.guest_id)
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Từ chối yêu cầu")
+        dlg.setFixedSize(420, 250)
+        dlg.setStyleSheet("QDialog { background-color: white; }")
+        lay = QVBoxLayout(dlg)
+        lay.setSpacing(12)
+        lay.setContentsMargins(30, 25, 30, 25)
+
+        icon = QLabel("⚠️")
+        icon.setStyleSheet("font-size: 40px;")
+        icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(icon)
+
+        title = QLabel("Từ chối yêu cầu sửa chữa?")
+        title.setFont(QFont("Segoe UI", 15, QFont.Weight.Bold))
+        title.setStyleSheet("color: #1a202c;")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(title)
+
+        info = QLabel(
+            f"Mục: <b>{repair.title}</b><br>"
+            f"Phòng: <b>{room_num}</b>  •  Khách: <b>{guest_name}</b>"
+        )
+        info.setStyleSheet("color: #4a5568; font-size: 13px;")
+        info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        info.setWordWrap(True)
+        lay.addWidget(info)
+        lay.addStretch()
+
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(12)
+        btn_cancel = QPushButton("Hủy bỏ")
+        btn_cancel.setMinimumHeight(40)
+        btn_cancel.setStyleSheet(
+            "QPushButton { background-color: #f7fafc; color: #4a5568; border: 1px solid #cbd5e0; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #edf2f7; }")
+        btn_cancel.clicked.connect(dlg.reject)
+
+        btn_ok = QPushButton("❌  Từ chối")
+        btn_ok.setMinimumHeight(40)
+        btn_ok.setStyleSheet(
+            "QPushButton { background-color: #dc2626; color: white; border: none; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #b91c1c; }")
+        btn_ok.clicked.connect(dlg.accept)
+        btn_row.addWidget(btn_cancel)
+        btn_row.addWidget(btn_ok)
+        lay.addLayout(btn_row)
+
+        if dlg.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        if self.repair_service:
+            self.repair_service.update_status(repair.id, 'rejected')
+
+        self._notifications.insert(0, {
+            'id': f'repair_rejected_{repair.id}', 'icon': '❌', 'icon_bg': '#fff5f5', 'icon_color': '#e53e3e',
+            'text': f'Đã từ chối yêu cầu sửa chữa: {repair.title} (Phòng {room_num})',
+            'time': datetime.now().isoformat(), 'read': False, 'target': '',
+        })
+        self._save_notifications()
+
+        self._show_result_dialog(
+            "❌", "#dc2626", "Đã từ chối",
+            f"Yêu cầu sửa chữa <b>{repair.title}</b> đã bị từ chối."
+        )
+        self._refresh()
+
     def _mark_all_read(self):
         for n in self._notifications:
             n['read'] = True
+        self._save_notifications()
         self._refresh()
 
     def _on_click(self, notif):
         notif['read'] = True
+        self._save_notifications()
         self._refresh()
         self.navigate_requested.emit(notif.get('target', ''))
 
     def get_unread_count(self) -> int:
-        count = sum(1 for n in self._notifications if not n['read'])
-        # Count pending contracts too
+        count = sum(1 for n in self._notifications if not n.get('read'))
+        # Count pending contracts
         if self.contract_service:
-            pending = [c for c in self.contract_service.get_all() if c.status == 'pending']
-            count += len(pending)
+            try:
+                pending = [c for c in self.contract_service.get_all() if c.status == 'pending']
+                count += len(pending)
+            except Exception:
+                pass
+        # Count pending repairs
+        if self.repair_service:
+            try:
+                pending_repairs = self.repair_service.get_pending()
+                count += len(pending_repairs)
+            except Exception:
+                pass
         return count

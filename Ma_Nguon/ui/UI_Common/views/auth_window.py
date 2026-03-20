@@ -179,19 +179,26 @@ class AuthWindow(QWidget, Ui_AuthWindow):
                 has_room = False
                 if self.container.guest_service and self.container.contract_service:
                     all_guests = self.container.guest_service.get_all_guests()
-                    guest = None
+                    # Find ALL matching guests (by email, phone, or user_id)
+                    matching_guests = []
                     for g in all_guests:
-                        if getattr(g, 'email', None) == getattr(user, 'email', None) or \
-                           getattr(g, 'phone', None) == getattr(user, 'phone', None):
-                            guest = g
-                            break
-                    if guest:
+                        if getattr(g, 'user_id', 0) == getattr(user, 'id', -1):
+                            matching_guests.append(g)
+                        elif getattr(g, 'email', None) == getattr(user, 'email', None):
+                            matching_guests.append(g)
+                        elif getattr(g, 'phone', None) == getattr(user, 'phone', None):
+                            matching_guests.append(g)
+
+                    if matching_guests:
                         contracts = self.container.contract_service.get_all()
-                        for c in contracts:
-                            if str(getattr(c, 'guest_id', '')) == str(getattr(guest, 'id', '')):
-                                if getattr(c, 'status', '') in ('active', 'Đang thuê', 'Còn hiệu lực'):
-                                    has_room = True
-                                    break
+                        for guest in matching_guests:
+                            for c in contracts:
+                                if str(getattr(c, 'guest_id', '')) == str(getattr(guest, 'id', '')):
+                                    if getattr(c, 'status', '') in ('active', 'Đang thuê', 'Còn hiệu lực'):
+                                        has_room = True
+                                        break
+                            if has_room:
+                                break
                 
                 if has_room:
                     from ui.UI_Guest.views.guest_window import GuestWindow

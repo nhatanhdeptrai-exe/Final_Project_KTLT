@@ -110,6 +110,7 @@ class AdminWindow(QMainWindow):
                 contract_service=self.container.contract_service if self.container else None,
                 room_service=self.container.room_service if self.container else None,
                 guest_service=self.container.guest_service if self.container else None,
+                repair_service=self.container.repair_request_service if self.container else None,
             )
             self._notif_view.navigate_requested.connect(self._on_notif_navigate)
             return self._notif_view
@@ -358,4 +359,8 @@ class AdminWindow(QMainWindow):
         self.ui.mainContentStack.setCurrentIndex(index)
 
     def _on_logout(self):
+        """Đăng xuất → quay lại trang đăng nhập."""
+        from ui.UI_Common.views.auth_window import AuthWindow
+        self._auth = AuthWindow(self.container)
+        self._auth.show()
         self.close()
