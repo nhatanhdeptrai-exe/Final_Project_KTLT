@@ -39,16 +39,16 @@
    <item>
     <layout class="QHBoxLayout">
      <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
-     <item><widget class="QLabel"><property name="class"><string>InfoLabel</string></property><property name="text"><string>Ngân hàng:</string></property></widget></item>
-     <item><widget class="QLabel"><property name="class"><string>ValueLabel</string></property><property name="text"><string>VPBank - 0888898345</string></property></widget></item>
+     <item><widget class="QLabel"><property name="class" stdset="0"><string>InfoLabel</string></property><property name="text"><string>Ngân hàng:</string></property></widget></item>
+     <item><widget class="QLabel"><property name="class" stdset="0"><string>ValueLabel</string></property><property name="text"><string>VPBank - 0888898345</string></property></widget></item>
      <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
     </layout>
    </item>
    <item>
     <layout class="QHBoxLayout">
      <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
-     <item><widget class="QLabel"><property name="class"><string>InfoLabel</string></property><property name="text"><string>Chủ tài khoản:</string></property></widget></item>
-     <item><widget class="QLabel"><property name="class"><string>ValueLabel</string></property><property name="text"><string>NGUYEN VAN A</string></property></widget></item>
+     <item><widget class="QLabel"><property name="class" stdset="0"><string>InfoLabel</string></property><property name="text"><string>Chủ tài khoản:</string></property></widget></item>
+     <item><widget class="QLabel"><property name="class" stdset="0"><string>ValueLabel</string></property><property name="text"><string>NGUYEN VAN A</string></property></widget></item>
      <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
     </layout>
    </item>

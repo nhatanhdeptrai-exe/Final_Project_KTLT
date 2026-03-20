@@ -93,7 +93,7 @@
                   </property>
                   <item>
                     <widget class="QFrame">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>StatCard</string>
                       </property>
                       <property name="styleSheet">
@@ -117,7 +117,7 @@
                                 <property name="text">
                                   <string>Tổng yêu cầu</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatTitle</string>
                                 </property>
                               </widget>
@@ -127,7 +127,7 @@
                                 <property name="text">
                                   <string>7</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatValueBlue</string>
                                 </property>
                               </widget>
@@ -146,7 +146,7 @@
                   </item>
                   <item>
                     <widget class="QFrame">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>StatCard</string>
                       </property>
                       <property name="styleSheet">
@@ -170,7 +170,7 @@
                                 <property name="text">
                                   <string>Chờ tiếp nhận</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatTitle</string>
                                 </property>
                               </widget>
@@ -180,7 +180,7 @@
                                 <property name="text">
                                   <string>1</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatValueOrange</string>
                                 </property>
                               </widget>
@@ -199,7 +199,7 @@
                   </item>
                   <item>
                     <widget class="QFrame">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>StatCard</string>
                       </property>
                       <property name="styleSheet">
@@ -223,7 +223,7 @@
                                 <property name="text">
                                   <string>Đang xử lý</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatTitle</string>
                                 </property>
                               </widget>
@@ -233,7 +233,7 @@
                                 <property name="text">
                                   <string>2</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatValuePurple</string>
                                 </property>
                               </widget>
@@ -252,7 +252,7 @@
                   </item>
                   <item>
                     <widget class="QFrame">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>StatCard</string>
                       </property>
                       <property name="styleSheet">
@@ -276,7 +276,7 @@
                                 <property name="text">
                                   <string>Hoàn thành</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatTitle</string>
                                 </property>
                               </widget>
@@ -286,7 +286,7 @@
                                 <property name="text">
                                   <string>3</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatValueGreen</string>
                                 </property>
                               </widget>
@@ -312,7 +312,7 @@
                       <property name="text">
                         <string>Tất cả</string>
                       </property>
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>FilterPill</string>
                       </property>
                       <property name="checkable">
@@ -328,7 +328,7 @@
                       <property name="text">
                         <string>Điện</string>
                       </property>
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>FilterPill</string>
                       </property>
                       <property name="checkable">
@@ -341,7 +341,7 @@
                       <property name="text">
                         <string>Nước</string>
                       </property>
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>FilterPill</string>
                       </property>
                       <property name="checkable">
@@ -354,7 +354,7 @@
                       <property name="text">
                         <string>Khóa cửa</string>
                       </property>
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>FilterPill</string>
                       </property>
                       <property name="checkable">
@@ -367,7 +367,7 @@
                       <property name="text">
                         <string>Điều hòa</string>
                       </property>
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>FilterPill</string>
                       </property>
                       <property name="checkable">
@@ -380,7 +380,7 @@
                       <property name="text">
                         <string>Tường/Trần</string>
                       </property>
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>FilterPill</string>
                       </property>
                       <property name="checkable">
@@ -402,7 +402,7 @@
                           <string>Tất cả trạng thái</string>
                         </property>
                       </item>
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>Filter</string>
                       </property>
                       <property name="minimumSize">
@@ -418,7 +418,7 @@
                       <property name="text">
                         <string>+ Tiếp nhận yêu cầu</string>
                       </property>
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>BtnTeal</string>
                       </property>
                       <property name="minimumSize">
@@ -433,7 +433,7 @@
               </item>
               <item>
                 <widget class="QFrame" name="frameTable">
-                  <property name="class">
+                  <property name="class" stdset="0">
                     <string>TableContainer</string>
                   </property>
                   <layout class="QVBoxLayout">
@@ -447,7 +447,7 @@
                             <property name="text">
                               <string>Mã YC</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="minimumSize">
@@ -463,7 +463,7 @@
                             <property name="text">
                               <string>Phòng</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="minimumSize">
@@ -479,7 +479,7 @@
                             <property name="text">
                               <string>Khách thuê</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="minimumSize">
@@ -495,7 +495,7 @@
                             <property name="text">
                               <string>Danh mục</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="alignment">
@@ -514,7 +514,7 @@
                             <property name="text">
                               <string>Mô tả sự cố</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="minimumSize">
@@ -530,7 +530,7 @@
                             <property name="text">
                               <string>Ưu tiên</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="alignment">
@@ -549,7 +549,7 @@
                             <property name="text">
                               <string>Ngày gửi</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="minimumSize">
@@ -565,7 +565,7 @@
                             <property name="text">
                               <string>Trạng thái</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="minimumSize">
@@ -581,7 +581,7 @@
                             <property name="text">
                               <string>Thao tác</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="alignment">

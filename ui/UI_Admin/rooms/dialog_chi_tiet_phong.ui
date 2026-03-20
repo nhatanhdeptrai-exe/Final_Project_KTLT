@@ -65,55 +65,55 @@ QPushButton#btnClose { background-color: #f7fafc; border: 1px solid #cbd5e0; bor
          <property name="spacing"><number>10</number></property>
          <item row="0" column="0">
           <widget class="QFrame">
-           <property name="class"><string>Card</string></property>
+           <property name="class" stdset="0"><string>Card</string></property>
            <layout class="QVBoxLayout">
-            <item><widget class="QLabel"><property name="text"><string>TẦNG</string></property><property name="class"><string>SmallHeading</string></property></widget></item>
-            <item><widget class="QLabel"><property name="text"><string>Tầng 1</string></property><property name="class"><string>Content</string></property></widget></item>
+            <item><widget class="QLabel"><property name="text"><string>TẦNG</string></property><property name="class" stdset="0"><string>SmallHeading</string></property></widget></item>
+            <item><widget class="QLabel"><property name="text"><string>Tầng 1</string></property><property name="class" stdset="0"><string>Content</string></property></widget></item>
            </layout>
           </widget>
          </item>
          <item row="0" column="1">
           <widget class="QFrame">
-           <property name="class"><string>Card</string></property>
+           <property name="class" stdset="0"><string>Card</string></property>
            <layout class="QVBoxLayout">
-            <item><widget class="QLabel"><property name="text"><string>DIỆN TÍCH</string></property><property name="class"><string>SmallHeading</string></property></widget></item>
-            <item><widget class="QLabel"><property name="text"><string>25 m²</string></property><property name="class"><string>Content</string></property></widget></item>
+            <item><widget class="QLabel"><property name="text"><string>DIỆN TÍCH</string></property><property name="class" stdset="0"><string>SmallHeading</string></property></widget></item>
+            <item><widget class="QLabel"><property name="text"><string>25 m²</string></property><property name="class" stdset="0"><string>Content</string></property></widget></item>
            </layout>
           </widget>
          </item>
          <item row="1" column="0">
           <widget class="QFrame">
-           <property name="class"><string>Card</string></property>
+           <property name="class" stdset="0"><string>Card</string></property>
            <layout class="QVBoxLayout">
-            <item><widget class="QLabel"><property name="text"><string>LOẠI PHÒNG</string></property><property name="class"><string>SmallHeading</string></property></widget></item>
-            <item><widget class="QLabel"><property name="text"><string>Phòng đơn</string></property><property name="class"><string>Content</string></property></widget></item>
+            <item><widget class="QLabel"><property name="text"><string>LOẠI PHÒNG</string></property><property name="class" stdset="0"><string>SmallHeading</string></property></widget></item>
+            <item><widget class="QLabel"><property name="text"><string>Phòng đơn</string></property><property name="class" stdset="0"><string>Content</string></property></widget></item>
            </layout>
           </widget>
          </item>
          <item row="1" column="1">
           <widget class="QFrame">
-           <property name="class"><string>Card</string></property>
+           <property name="class" stdset="0"><string>Card</string></property>
            <layout class="QVBoxLayout">
-            <item><widget class="QLabel"><property name="text"><string>THIẾT BỊ</string></property><property name="class"><string>SmallHeading</string></property></widget></item>
-            <item><widget class="QLabel"><property name="text"><string>Điều hòa, Nóng lạnh</string></property><property name="class"><string>Content</string></property></widget></item>
+            <item><widget class="QLabel"><property name="text"><string>THIẾT BỊ</string></property><property name="class" stdset="0"><string>SmallHeading</string></property></widget></item>
+            <item><widget class="QLabel"><property name="text"><string>Điều hòa, Nóng lạnh</string></property><property name="class" stdset="0"><string>Content</string></property></widget></item>
            </layout>
           </widget>
          </item>
          <item row="2" column="0">
           <widget class="QFrame">
-           <property name="class"><string>Card</string></property>
+           <property name="class" stdset="0"><string>Card</string></property>
            <layout class="QVBoxLayout">
-            <item><widget class="QLabel"><property name="text"><string>GIÁ ĐIỆN</string></property><property name="class"><string>SmallHeading</string></property></widget></item>
-            <item><widget class="QLabel"><property name="text"><string>3.500đ/kWh</string></property><property name="class"><string>Content</string></property></widget></item>
+            <item><widget class="QLabel"><property name="text"><string>GIÁ ĐIỆN</string></property><property name="class" stdset="0"><string>SmallHeading</string></property></widget></item>
+            <item><widget class="QLabel"><property name="text"><string>3.500đ/kWh</string></property><property name="class" stdset="0"><string>Content</string></property></widget></item>
            </layout>
           </widget>
          </item>
          <item row="2" column="1">
           <widget class="QFrame">
-           <property name="class"><string>Card</string></property>
+           <property name="class" stdset="0"><string>Card</string></property>
            <layout class="QVBoxLayout">
-            <item><widget class="QLabel"><property name="text"><string>GIÁ NƯỚC</string></property><property name="class"><string>SmallHeading</string></property></widget></item>
-            <item><widget class="QLabel"><property name="text"><string>15.000đ/m³</string></property><property name="class"><string>Content</string></property></widget></item>
+            <item><widget class="QLabel"><property name="text"><string>GIÁ NƯỚC</string></property><property name="class" stdset="0"><string>SmallHeading</string></property></widget></item>
+            <item><widget class="QLabel"><property name="text"><string>15.000đ/m³</string></property><property name="class" stdset="0"><string>Content</string></property></widget></item>
            </layout>
           </widget>
          </item>
@@ -122,9 +122,9 @@ QPushButton#btnClose { background-color: #f7fafc; border: 1px solid #cbd5e0; bor
        
        <item>
         <widget class="QFrame">
-         <property name="class"><string>CardDesc</string></property>
+         <property name="class" stdset="0"><string>CardDesc</string></property>
          <layout class="QVBoxLayout">
-          <item><widget class="QLabel"><property name="text"><string>📝 MÔ TẢ PHÒNG</string></property><property name="class"><string>SmallHeading</string></property></widget></item>
+          <item><widget class="QLabel"><property name="text"><string>📝 MÔ TẢ PHÒNG</string></property><property name="class" stdset="0"><string>SmallHeading</string></property></widget></item>
           <item><widget class="QLabel"><property name="text"><string>Phòng thoáng mát, view đường phố, cửa sổ lớn. Nội thất cơ bản đầy đủ.</string></property><property name="wordWrap"><bool>true</bool></property><property name="styleSheet"><string>color: #2d3748; font-size: 13px;</string></property></widget></item>
          </layout>
         </widget>
@@ -132,9 +132,9 @@ QPushButton#btnClose { background-color: #f7fafc; border: 1px solid #cbd5e0; bor
        
        <item>
         <widget class="QFrame">
-         <property name="class"><string>CardGuest</string></property>
+         <property name="class" stdset="0"><string>CardGuest</string></property>
          <layout class="QVBoxLayout">
-          <item><widget class="QLabel"><property name="text"><string>👤 KHÁCH ĐANG THUÊ</string></property><property name="class"><string>SmallHeading</string></property></widget></item>
+          <item><widget class="QLabel"><property name="text"><string>👤 KHÁCH ĐANG THUÊ</string></property><property name="class" stdset="0"><string>SmallHeading</string></property></widget></item>
           <item><widget class="QLabel"><property name="text"><string>Nguyễn Văn An</string></property><property name="styleSheet"><string>color: #2b6cb0; font-size: 14px; font-weight: bold;</string></property></widget></item>
           <item><widget class="QLabel"><property name="text"><string>📞 0901234567</string></property><property name="styleSheet"><string>color: #4a5568; font-size: 12px;</string></property></widget></item>
          </layout>
@@ -143,21 +143,21 @@ QPushButton#btnClose { background-color: #f7fafc; border: 1px solid #cbd5e0; bor
        
        <item>
         <widget class="QFrame">
-         <property name="class"><string>CardContract</string></property>
+         <property name="class" stdset="0"><string>CardContract</string></property>
          <layout class="QVBoxLayout">
           <item><widget class="QLabel"><property name="text"><string>📄 HỢP ĐỒNG HIỆN TẠI</string></property><property name="styleSheet"><string>color: #38a169; font-size: 10px; font-weight: bold;</string></property></widget></item>
           <item>
            <layout class="QHBoxLayout">
             <item>
              <layout class="QVBoxLayout">
-              <item><widget class="QLabel"><property name="text"><string>Ngày bắt đầu</string></property><property name="class"><string>SmallHeading</string></property></widget></item>
-              <item><widget class="QLabel"><property name="text"><string>01/01/2025</string></property><property name="class"><string>Content</string></property></widget></item>
+              <item><widget class="QLabel"><property name="text"><string>Ngày bắt đầu</string></property><property name="class" stdset="0"><string>SmallHeading</string></property></widget></item>
+              <item><widget class="QLabel"><property name="text"><string>01/01/2025</string></property><property name="class" stdset="0"><string>Content</string></property></widget></item>
              </layout>
             </item>
             <item>
              <layout class="QVBoxLayout">
-              <item><widget class="QLabel"><property name="text"><string>Ngày kết thúc</string></property><property name="class"><string>SmallHeading</string></property></widget></item>
-              <item><widget class="QLabel"><property name="text"><string>31/12/2025</string></property><property name="class"><string>Content</string></property></widget></item>
+              <item><widget class="QLabel"><property name="text"><string>Ngày kết thúc</string></property><property name="class" stdset="0"><string>SmallHeading</string></property></widget></item>
+              <item><widget class="QLabel"><property name="text"><string>31/12/2025</string></property><property name="class" stdset="0"><string>Content</string></property></widget></item>
              </layout>
             </item>
            </layout>

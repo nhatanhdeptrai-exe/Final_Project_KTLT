@@ -115,7 +115,7 @@
                   </property>
                   <item>
                     <widget class="QFrame" name="card1">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>Card</string>
                       </property>
                       <property name="minimumSize">
@@ -145,7 +145,7 @@
                                   <string>Doanh thu
 tháng này</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>CardTitle</string>
                                 </property>
                               </widget>
@@ -183,7 +183,7 @@ tháng này</string>
                             <property name="text">
                               <string>45.000.000 đ</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>CardValue</string>
                             </property>
                           </widget>
@@ -193,7 +193,7 @@ tháng này</string>
                             <property name="text">
                               <string>+15% so với tháng trước</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>CardSub</string>
                             </property>
                           </widget>
@@ -210,7 +210,7 @@ tháng này</string>
                   </item>
                   <item>
                     <widget class="QFrame" name="card2">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>Card</string>
                       </property>
                       <property name="minimumSize">
@@ -240,7 +240,7 @@ tháng này</string>
                                   <string>Phòng
 đang trống</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>CardTitle</string>
                                 </property>
                               </widget>
@@ -278,7 +278,7 @@ tháng này</string>
                             <property name="text">
                               <string>3</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>CardValueDark</string>
                             </property>
                           </widget>
@@ -288,7 +288,7 @@ tháng này</string>
                             <property name="text">
                               <string>Trên tổng số 24 phòng</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>CardSub</string>
                             </property>
                           </widget>
@@ -305,7 +305,7 @@ tháng này</string>
                   </item>
                   <item>
                     <widget class="QFrame" name="card3">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>Card</string>
                       </property>
                       <property name="minimumSize">
@@ -335,7 +335,7 @@ tháng này</string>
                                   <string>Hợp đồng
 sắp hết hạn</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>CardTitle</string>
                                 </property>
                               </widget>
@@ -373,7 +373,7 @@ sắp hết hạn</string>
                             <property name="text">
                               <string>5</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>CardValueDark</string>
                             </property>
                           </widget>
@@ -383,7 +383,7 @@ sắp hết hạn</string>
                             <property name="text">
                               <string>Trong vòng 30 ngày tới</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>CardSub</string>
                             </property>
                           </widget>
@@ -400,7 +400,7 @@ sắp hết hạn</string>
                   </item>
                   <item>
                     <widget class="QFrame" name="card4">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>Card</string>
                       </property>
                       <property name="minimumSize">
@@ -430,7 +430,7 @@ sắp hết hạn</string>
                                   <string>Yêu cầu sửa
 chữa mới</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>CardTitle</string>
                                 </property>
                               </widget>
@@ -468,7 +468,7 @@ chữa mới</string>
                             <property name="text">
                               <string>2</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>CardValueDark</string>
                             </property>
                           </widget>
@@ -478,7 +478,7 @@ chữa mới</string>
                             <property name="text">
                               <string>1 khẩn cấp, 1 bình thường</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>CardSub</string>
                             </property>
                           </widget>
@@ -502,7 +502,7 @@ chữa mới</string>
                   </property>
                   <item>
                     <widget class="QFrame" name="chartFrame">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>Card</string>
                       </property>
                       <property name="minimumSize">
@@ -559,7 +559,7 @@ chữa mới</string>
                   </item>
                   <item>
                     <widget class="QFrame" name="unpaidFrame">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>Card</string>
                       </property>
                       <property name="minimumSize">
@@ -673,7 +673,7 @@ chữa mới</string>
                                           <property name="text">
                                             <string>🔔 Nhắc nhở</string>
                                           </property>
-                                          <property name="class">
+                                          <property name="class" stdset="0">
                                             <string>BtnNotify</string>
                                           </property>
                                         </widget>
@@ -737,7 +737,7 @@ chữa mới</string>
                                           <property name="text">
                                             <string>🔔 Nhắc nhở</string>
                                           </property>
-                                          <property name="class">
+                                          <property name="class" stdset="0">
                                             <string>BtnNotify</string>
                                           </property>
                                         </widget>
@@ -801,7 +801,7 @@ chữa mới</string>
                                           <property name="text">
                                             <string>🔔 Nhắc nhở</string>
                                           </property>
-                                          <property name="class">
+                                          <property name="class" stdset="0">
                                             <string>BtnNotify</string>
                                           </property>
                                         </widget>
@@ -827,7 +827,7 @@ chữa mới</string>
               </item>
               <item>
                 <widget class="QFrame" name="activitiesFrame">
-                  <property name="class">
+                  <property name="class" stdset="0">
                     <string>Card</string>
                   </property>
                   <property name="minimumSize">

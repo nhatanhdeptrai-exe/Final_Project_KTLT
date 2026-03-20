@@ -147,7 +147,7 @@
        </item>
        <item>
         <widget class="QLabel">
-         <property name="class">
+         <property name="class" stdset="0">
           <string>SubText</string>
          </property>
          <property name="text">
@@ -180,7 +180,7 @@
           <layout class="QVBoxLayout">
            <item>
             <widget class="QLabel">
-             <property name="class">
+             <property name="class" stdset="0">
               <string>InputLabel</string>
              </property>
              <property name="text">
@@ -190,7 +190,7 @@
            </item>
            <item>
             <widget class="QLineEdit" name="inpForgotEmail">
-             <property name="class">
+             <property name="class" stdset="0">
               <string>FormInput</string>
              </property>
              <property name="minimumSize">
@@ -228,7 +228,7 @@
          </item>
          <item>
           <widget class="QPushButton" name="btnSendOTP">
-           <property name="class">
+           <property name="class" stdset="0">
             <string>BtnPrimary</string>
            </property>
            <property name="text">
@@ -270,7 +270,7 @@
          </item>
          <item>
           <widget class="QPushButton" name="btnBackToLogin1">
-           <property name="class">
+           <property name="class" stdset="0">
             <string>LinkBtn</string>
            </property>
            <property name="text">
@@ -398,7 +398,7 @@
        </item>
        <item>
         <widget class="QLabel">
-         <property name="class">
+         <property name="class" stdset="0">
           <string>SubText</string>
          </property>
          <property name="text">
@@ -431,7 +431,7 @@
           <layout class="QVBoxLayout">
            <item>
             <widget class="QLabel">
-             <property name="class">
+             <property name="class" stdset="0">
               <string>InputLabel</string>
              </property>
              <property name="text">
@@ -441,7 +441,7 @@
            </item>
            <item>
             <widget class="QLineEdit" name="inpOTP">
-             <property name="class">
+             <property name="class" stdset="0">
               <string>FormInput</string>
              </property>
              <property name="minimumSize">
@@ -454,7 +454,7 @@
            </item>
            <item>
             <widget class="QLabel" name="lblTimer">
-             <property name="class">
+             <property name="class" stdset="0">
               <string>TimerText</string>
              </property>
              <property name="text">
@@ -492,7 +492,7 @@
          </item>
          <item>
           <widget class="QPushButton" name="btnVerifyOTP">
-           <property name="class">
+           <property name="class" stdset="0">
             <string>BtnPrimary</string>
            </property>
            <property name="text">
@@ -534,7 +534,7 @@
          </item>
          <item>
           <widget class="QPushButton" name="btnBackToLogin2">
-           <property name="class">
+           <property name="class" stdset="0">
             <string>LinkBtn</string>
            </property>
            <property name="text">
@@ -672,7 +672,7 @@
            </property>
            <item>
             <widget class="QLabel">
-             <property name="class">
+             <property name="class" stdset="0">
               <string>InputLabel</string>
              </property>
              <property name="text">
@@ -682,7 +682,7 @@
            </item>
            <item>
             <widget class="QLineEdit" name="inpNewPass">
-             <property name="class">
+             <property name="class" stdset="0">
               <string>FormInput</string>
              </property>
              <property name="placeholderText">
@@ -701,7 +701,7 @@
            </item>
            <item>
             <widget class="QLabel">
-             <property name="class">
+             <property name="class" stdset="0">
               <string>ValidationText</string>
              </property>
              <property name="text">
@@ -711,7 +711,7 @@
            </item>
            <item>
             <widget class="QLabel">
-             <property name="class">
+             <property name="class" stdset="0">
               <string>ValidationText</string>
              </property>
              <property name="text">
@@ -734,7 +734,7 @@
            </item>
            <item>
             <widget class="QLabel">
-             <property name="class">
+             <property name="class" stdset="0">
               <string>InputLabel</string>
              </property>
              <property name="text">
@@ -744,7 +744,7 @@
            </item>
            <item>
             <widget class="QLineEdit" name="inpNewPassConfirm">
-             <property name="class">
+             <property name="class" stdset="0">
               <string>FormInput</string>
              </property>
              <property name="placeholderText">
@@ -788,7 +788,7 @@
          </item>
          <item>
           <widget class="QPushButton" name="btnResetPass">
-           <property name="class">
+           <property name="class" stdset="0">
             <string>BtnPrimary</string>
            </property>
            <property name="text">
@@ -830,7 +830,7 @@
          </item>
          <item>
           <widget class="QPushButton" name="btnBackToLogin3">
-           <property name="class">
+           <property name="class" stdset="0">
             <string>LinkBtn</string>
            </property>
            <property name="text">
@@ -1003,7 +1003,7 @@
        </item>
        <item>
         <widget class="QLabel">
-         <property name="class">
+         <property name="class" stdset="0">
           <string>SubText</string>
          </property>
          <property name="text">
@@ -1041,7 +1041,7 @@
          </item>
          <item>
           <widget class="QPushButton" name="btnBackToLogin4">
-           <property name="class">
+           <property name="class" stdset="0">
             <string>LinkBtn</string>
            </property>
            <property name="text">

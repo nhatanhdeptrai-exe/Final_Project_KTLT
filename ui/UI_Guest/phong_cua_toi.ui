@@ -464,7 +464,7 @@ BÊN THUÊ (Bên B): Trần Thị B...</string>
               </item>
               <item>
                 <widget class="QFrame">
-                  <property name="class">
+                  <property name="class" stdset="0">
                     <string>FormCard</string>
                   </property>
                   <layout class="QVBoxLayout">
@@ -476,7 +476,7 @@ BÊN THUÊ (Bên B): Trần Thị B...</string>
                     </property>
                     <item>
                       <widget class="QLabel">
-                        <property name="class">
+                        <property name="class" stdset="0">
                           <string>FormTitle</string>
                         </property>
                         <property name="text">
@@ -486,7 +486,7 @@ BÊN THUÊ (Bên B): Trần Thị B...</string>
                     </item>
                     <item>
                       <widget class="QLabel">
-                        <property name="class">
+                        <property name="class" stdset="0">
                           <string>InputLabel</string>
                         </property>
                         <property name="text">
@@ -496,14 +496,14 @@ BÊN THUÊ (Bên B): Trần Thị B...</string>
                     </item>
                     <item>
                       <widget class="QLineEdit" name="inpMntTitle">
-                        <property name="class">
+                        <property name="class" stdset="0">
                           <string>FormInput</string>
                         </property>
                       </widget>
                     </item>
                     <item>
                       <widget class="QLabel">
-                        <property name="class">
+                        <property name="class" stdset="0">
                           <string>InputLabel</string>
                         </property>
                         <property name="text">
@@ -513,14 +513,14 @@ BÊN THUÊ (Bên B): Trần Thị B...</string>
                     </item>
                     <item>
                       <widget class="QLineEdit" name="inpMntPriority">
-                        <property name="class">
+                        <property name="class" stdset="0">
                           <string>FormInput</string>
                         </property>
                       </widget>
                     </item>
                     <item>
                       <widget class="QLabel">
-                        <property name="class">
+                        <property name="class" stdset="0">
                           <string>InputLabel</string>
                         </property>
                         <property name="text">
@@ -530,7 +530,7 @@ BÊN THUÊ (Bên B): Trần Thị B...</string>
                     </item>
                     <item>
                       <widget class="QTextEdit" name="inpMntDesc">
-                        <property name="class">
+                        <property name="class" stdset="0">
                           <string>FormInput</string>
                         </property>
                         <property name="placeholderText">
@@ -540,7 +540,7 @@ BÊN THUÊ (Bên B): Trần Thị B...</string>
                     </item>
                     <item>
                       <widget class="QPushButton" name="btnSubmitMnt">
-                        <property name="class">
+                        <property name="class" stdset="0">
                           <string>BtnPrimary</string>
                         </property>
                         <property name="text">

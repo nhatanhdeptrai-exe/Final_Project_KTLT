@@ -70,7 +70,7 @@
                   </property>
                   <item>
                     <widget class="QFrame">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>StatCard</string>
                       </property>
                       <layout class="QHBoxLayout">
@@ -91,7 +91,7 @@
                                 <property name="text">
                                   <string>24</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatValue</string>
                                 </property>
                               </widget>
@@ -101,7 +101,7 @@
                                 <property name="text">
                                   <string>Tổng khách thuê</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatTitle</string>
                                 </property>
                               </widget>
@@ -120,7 +120,7 @@
                   </item>
                   <item>
                     <widget class="QFrame">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>StatCard</string>
                       </property>
                       <layout class="QHBoxLayout">
@@ -141,7 +141,7 @@
                                 <property name="text">
                                   <string>18</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatValue</string>
                                 </property>
                               </widget>
@@ -151,7 +151,7 @@
                                 <property name="text">
                                   <string>Đang thuê</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatTitle</string>
                                 </property>
                               </widget>
@@ -170,7 +170,7 @@
                   </item>
                   <item>
                     <widget class="QFrame">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>StatCard</string>
                       </property>
                       <layout class="QHBoxLayout">
@@ -191,7 +191,7 @@
                                 <property name="text">
                                   <string>4</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatValue</string>
                                 </property>
                               </widget>
@@ -201,7 +201,7 @@
                                 <property name="text">
                                   <string>Sắp hết hạn</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatTitle</string>
                                 </property>
                               </widget>
@@ -220,7 +220,7 @@
                   </item>
                   <item>
                     <widget class="QFrame">
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>StatCard</string>
                       </property>
                       <layout class="QHBoxLayout">
@@ -241,7 +241,7 @@
                                 <property name="text">
                                   <string>2</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatValue</string>
                                 </property>
                               </widget>
@@ -251,7 +251,7 @@
                                 <property name="text">
                                   <string>Đã chấm dứt</string>
                                 </property>
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>StatTitle</string>
                                 </property>
                               </widget>
@@ -277,7 +277,7 @@
                       <property name="placeholderText">
                         <string>🔍 Tìm kiếm theo tên, SĐT, phòng...</string>
                       </property>
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>Search</string>
                       </property>
                       <property name="minimumSize">
@@ -302,7 +302,7 @@
                           <string>Tất cả trạng thái</string>
                         </property>
                       </item>
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>Filter</string>
                       </property>
                       <property name="minimumSize">
@@ -320,7 +320,7 @@
                           <string>Tất cả phòng</string>
                         </property>
                       </item>
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>Filter</string>
                       </property>
                       <property name="minimumSize">
@@ -336,7 +336,7 @@
                       <property name="text">
                         <string>+ Thêm khách thuê</string>
                       </property>
-                      <property name="class">
+                      <property name="class" stdset="0">
                         <string>BtnAdd</string>
                       </property>
                       <property name="minimumSize">
@@ -351,7 +351,7 @@
               </item>
               <item>
                 <widget class="QFrame" name="frameTable">
-                  <property name="class">
+                  <property name="class" stdset="0">
                     <string>TableContainer</string>
                   </property>
                   <layout class="QVBoxLayout">
@@ -365,7 +365,7 @@
                             <property name="text">
                               <string>Mã KT</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="minimumSize">
@@ -381,7 +381,7 @@
                             <property name="text">
                               <string>Khách thuê</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="minimumSize">
@@ -397,7 +397,7 @@
                             <property name="text">
                               <string>Phòng</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="minimumSize">
@@ -413,7 +413,7 @@
                             <property name="text">
                               <string>CCCD/CMND</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="minimumSize">
@@ -429,7 +429,7 @@
                             <property name="text">
                               <string>Ngày bắt đầu</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="minimumSize">
@@ -445,7 +445,7 @@
                             <property name="text">
                               <string>Ngày kết thúc</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="minimumSize">
@@ -461,7 +461,7 @@
                             <property name="text">
                               <string>Trạng thái HĐ</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="minimumSize">
@@ -477,7 +477,7 @@
                             <property name="text">
                               <string>Thao tác</string>
                             </property>
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>TableHeader</string>
                             </property>
                             <property name="alignment">
