@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>DialogQuanLyHD</class>
+ <widget class="QDialog" name="DialogQuanLyHD">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>480</width><height>450</height></rect></property>
+  <property name="windowTitle"><string>Quản lý hợp đồng</string></property>
+  <property name="styleSheet"><string>
+QDialog { background-color: white; border-radius: 8px; }
+QFrame#frameActive { background-color: #f0fff4; border-radius: 8px; border: 1px solid #c6f6d5; padding: 15px; }
+QLabel.CH { color: #a0aec0; font-size: 11px; }
+QLabel.CC { color: #2b6cb0; font-size: 14px; font-weight: bold; }
+QPushButton#btnExtend { background-color: #f7fafc; border: 1px solid #cbd5e0; color: #4a5568; padding: 8px 12px; border-radius: 6px; font-weight: bold; }
+QPushButton#btnTerminate { background-color: #fff5f5; border: 1px solid #fed7d7; color: #e53e3e; padding: 8px 12px; border-radius: 6px; font-weight: bold; }
+QPushButton#btnClose { background-color: #f7fafc; border: 1px solid #cbd5e0; border-radius: 6px; padding: 8px 20px; color: #4a5568; font-weight: bold; }
+</string></property>
+  <layout class="QVBoxLayout">
+   <property name="spacing"><number>15</number></property>
+   <property name="leftMargin"><number>25</number></property><property name="topMargin"><number>25</number></property>
+   <property name="rightMargin"><number>25</number></property><property name="bottomMargin"><number>25</number></property>
+   
+   <item>
+    <widget class="QLabel"><property name="text"><string>📋 Quản lý hợp đồng — Nguyễn Văn An</string></property><property name="styleSheet"><string>font-size: 18px; font-weight: bold; color: #2d3748;</string></property></widget>
+   </item>
+   
+   <item>
+    <layout class="QHBoxLayout">
+     <item><widget class="QLabel"><property name="text"><string>Hợp đồng hiện tại</string></property><property name="styleSheet"><string>color: #3182ce; font-weight: bold; border-bottom: 2px solid #3182ce; padding-bottom: 5px;</string></property></widget></item>
+     <item><widget class="QLabel"><property name="text"><string>Lịch sử hợp đồng</string></property><property name="styleSheet"><string>color: #a0aec0; padding-bottom: 5px;</string></property></widget></item>
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+    </layout>
+   </item>
+   
+   <item>
+    <widget class="QFrame" name="frameActive">
+     <layout class="QVBoxLayout">
+      <item><widget class="QLabel"><property name="text"><string>📄 HỢP ĐỒNG ĐANG HIỆU LỰC</string></property><property name="styleSheet"><string>color: #38a169; font-weight: bold; font-size: 12px;</string></property></widget></item>
+      <item>
+       <layout class="QGridLayout">
+        <property name="spacing"><number>10</number></property>
+        <item row="0" column="0"><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>Mã HĐ</string></property><property name="class"><string>CH</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>HD001</string></property><property name="class"><string>CC</string></property></widget></item></layout></item>
+        <item row="0" column="1"><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>Phòng</string></property><property name="class"><string>CH</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>P101</string></property><property name="class"><string>CC</string></property></widget></item></layout></item>
+        <item row="1" column="0"><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>Ngày bắt đầu</string></property><property name="class"><string>CH</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>01/01/2025</string></property><property name="class"><string>CC</string></property></widget></item></layout></item>
+        <item row="1" column="1"><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>Ngày kết thúc</string></property><property name="class"><string>CH</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>31/12/2025</string></property><property name="class"><string>CC</string></property></widget></item></layout></item>
+        <item row="2" column="0"><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>Giá thuê</string></property><property name="class"><string>CH</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>3.500.000đ/tháng</string></property><property name="class"><string>CC</string></property></widget></item></layout></item>
+        <item row="2" column="1"><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>Trạng thái</string></property><property name="class"><string>CH</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>● Đang thuê</string></property><property name="styleSheet"><string>color:#38a169; font-weight:bold;</string></property></widget></item></layout></item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   
+   <item>
+    <layout class="QHBoxLayout">
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QPushButton" name="btnExtend"><property name="text"><string>🔄 Gia hạn HĐ</string></property></widget></item>
+     <item><widget class="QPushButton" name="btnTerminate"><property name="text"><string>✕ Chấm dứt HĐ</string></property></widget></item>
+    </layout>
+   </item>
+   
+   <item><spacer><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
+   
+   <item>
+    <layout class="QHBoxLayout">
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QPushButton" name="btnClose"><property name="text"><string>Đóng</string></property><property name="minimumSize"><size><width>90</width><height>36</height></size></property></widget></item>
+    </layout>
+   </item>
+
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

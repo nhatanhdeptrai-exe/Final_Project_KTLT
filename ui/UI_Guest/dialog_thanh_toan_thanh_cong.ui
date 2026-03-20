@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogPaymentSuccess</class>
+ <widget class="QDialog" name="DialogPaymentSuccess">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>250</height>
+   </rect>
+  </property>
+  <property name="styleSheet">
+   <string>
+    QDialog { background-color: white; border-radius: 12px; }
+    QLabel#SuccessIcon { font-size: 60px; color: #38a169; background-color: #e6fffa; border-radius: 40px; margin: 10px; }
+    QLabel#Title { font-size: 22px; font-weight: bold; color: #1a202c; }
+    QPushButton#btnHome { background-color: #0298a0; color: white; font-weight: bold; font-size: 16px; border-radius: 8px; padding: 12px; }
+   </string>
+  </property>
+  <layout class="QVBoxLayout">
+   <property name="margin"><number>30</number></property>
+   <property name="spacing"><number>20</number></property>
+   <item><spacer><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QLabel" name="SuccessIcon"><property name="minimumSize"><size><width>80</width><height>80</height></size></property><property name="maximumSize"><size><width>80</width><height>80</height></size></property><property name="text"><string>✔</string></property><property name="alignment"><set>Qt::AlignCenter</set></property></widget></item>
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+    </layout>
+   </item>
+   <item><widget class="QLabel" name="Title"><property name="text"><string>Giao dịch thành công</string></property><property name="alignment"><set>Qt::AlignCenter</set></property></widget></item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QPushButton" name="btnHome"><property name="minimumSize"><size><width>200</width><height>0</height></size></property><property name="text"><string>Về trang chủ</string></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property></widget></item>
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+    </layout>
+   </item>
+   <item><spacer><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
+  </layout>
+ </widget>
+</ui>

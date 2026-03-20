@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogQRPayment</class>
+ <widget class="QDialog" name="DialogQRPayment">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="styleSheet">
+   <string>
+    QDialog { background-color: white; border-radius: 12px; }
+    QLabel#Title { font-size: 22px; font-weight: bold; color: #2b4c59; }
+    QLabel#QRImage { background-color: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; min-height: 350px; }
+    QLabel#AmountInfo { font-size: 20px; font-weight: bold; color: #2b4c59; }
+    QLabel.InfoLabel { font-size: 15px; color: #4a5568; }
+    QLabel.ValueLabel { font-size: 15px; font-weight: bold; color: #2d3748; }
+    QPushButton#btnConfirmPay { background-color: #0298a0; color: white; font-weight: bold; font-size: 16px; border-radius: 6px; padding: 12px; }
+    QPushButton#btnClose { border: none; font-size: 20px; color: #a0aec0; background: transparent; font-weight: bold; }
+    QPushButton#btnClose:hover { color: #e53e3e; }
+   </string>
+  </property>
+  <layout class="QVBoxLayout">
+   <property name="margin"><number>30</number></property>
+   <property name="spacing"><number>15</number></property>
+   <item>
+    <layout class="QHBoxLayout">
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QLabel" name="Title"><property name="text"><string>Quét mã QR để thanh toán</string></property></widget></item>
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QPushButton" name="btnClose"><property name="text"><string>X</string></property><property name="maximumSize"><size><width>30</width><height>30</height></size></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property></widget></item>
+    </layout>
+   </item>
+   <item><widget class="QLabel" name="QRImage"><property name="text"><string>[ QR CODE PLACEHOLDER ]</string></property><property name="alignment"><set>Qt::AlignCenter</set></property></widget></item>
+   <item><widget class="QLabel" name="AmountInfo"><property name="text"><string>Số tiền: 4.857.500 VNĐ</string></property><property name="alignment"><set>Qt::AlignCenter</set></property></widget></item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QLabel"><property name="class"><string>InfoLabel</string></property><property name="text"><string>Ngân hàng:</string></property></widget></item>
+     <item><widget class="QLabel"><property name="class"><string>ValueLabel</string></property><property name="text"><string>VPBank - 0888898345</string></property></widget></item>
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QLabel"><property name="class"><string>InfoLabel</string></property><property name="text"><string>Chủ tài khoản:</string></property></widget></item>
+     <item><widget class="QLabel"><property name="class"><string>ValueLabel</string></property><property name="text"><string>NGUYEN VAN A</string></property></widget></item>
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout">
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QPushButton" name="btnConfirmPay"><property name="minimumSize"><size><width>300</width><height>0</height></size></property><property name="text"><string>Xác nhận thanh toán</string></property><property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property></widget></item>
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+    </layout>
+   </item>
+   <item><widget class="Line"><property name="orientation"><enum>Qt::Horizontal</enum></property><property name="styleSheet"><string>color: #e2e8f0;</string></property></widget></item>
+   <item><widget class="QLabel"><property name="text"><string>Nội dung chuyển khoản:</string></property><property name="styleSheet"><string>color: #a0aec0; font-style: italic; font-size: 13px;</string></property><property name="alignment"><set>Qt::AlignCenter</set></property></widget></item>
+   <item><widget class="QLabel"><property name="text"><string>Phòng 24 - Tháng 03/2026</string></property><property name="styleSheet"><string>color: #0298a0; font-weight: bold; font-size: 18px;</string></property><property name="alignment"><set>Qt::AlignCenter</set></property></widget></item>
+   <item><spacer><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
+  </layout>
+ </widget>
+</ui>

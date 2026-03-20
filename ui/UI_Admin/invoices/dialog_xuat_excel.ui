@@ -1,0 +1,109 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>DialogXuatExcel</class>
+ <widget class="QDialog" name="DialogXuatExcel">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>450</width><height>480</height></rect></property>
+  <property name="windowTitle"><string>Xuất dữ liệu Excel</string></property>
+  <property name="styleSheet"><string>
+QDialog { background-color: white; border-radius: 8px; }
+QLabel.Section { color: #a0aec0; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+QPushButton.OptionBtn { background-color: white; border: 1px solid #cbd5e0; border-radius: 8px; padding: 15px; text-align: left; }
+QPushButton.OptionBtn:checked { border: 2px solid #3182ce; background-color: #ebf8ff; }
+QLabel.OptTitle { color: #2d3748; font-size: 14px; font-weight: bold; }
+QLabel.OptDesc { color: #a0aec0; font-size: 12px; }
+QLineEdit.DateInput { border: 1px solid #cbd5e0; border-radius: 6px; padding: 8px; background-color: white; }
+QFrame#frameNote { background-color: #ebf8ff; border-radius: 8px; padding: 15px; }
+QLabel#lblNote { color: #2b6cb0; font-size: 12px; }
+QPushButton#btnCancel { background-color: #f7fafc; border: 1px solid #cbd5e0; border-radius: 6px; padding: 8px 20px; color: #4a5568; font-weight: bold; }
+QPushButton#btnConfirm { background-color: #0b8480; border: none; border-radius: 6px; padding: 8px 20px; color: white; font-weight: bold; }
+</string></property>
+  <layout class="QVBoxLayout">
+   <property name="spacing"><number>18</number></property>
+   <property name="leftMargin"><number>25</number></property><property name="topMargin"><number>25</number></property>
+   <property name="rightMargin"><number>25</number></property><property name="bottomMargin"><number>25</number></property>
+   
+   <item>
+    <widget class="QLabel"><property name="text"><string>⬇ Xuất dữ liệu hóa đơn Excel</string></property><property name="styleSheet"><string>font-size: 18px; font-weight: bold; color: #2d3748;</string></property></widget>
+   </item>
+   
+   <item><widget class="QLabel"><property name="text"><string>PHẠM VI XUẤT</string></property><property name="class"><string>Section</string></property></widget></item>
+   
+   <!-- Option 1 -->
+   <item>
+    <widget class="QPushButton" name="btnExportAll">
+     <property name="class"><string>OptionBtn</string></property>
+     <property name="checkable"><bool>true</bool></property>
+     <property name="checked"><bool>true</bool></property>
+     <layout class="QHBoxLayout">
+      <item><widget class="QLabel"><property name="text"><string>📋</string></property><property name="styleSheet"><string>font-size: 24px;</string></property></widget></item>
+      <item>
+       <layout class="QVBoxLayout">
+        <item><widget class="QLabel"><property name="text"><string>Xuất toàn bộ</string></property><property name="class"><string>OptTitle</string></property></widget></item>
+        <item><widget class="QLabel"><property name="text"><string>Tất cả hóa đơn trong hệ thống</string></property><property name="class"><string>OptDesc</string></property></widget></item>
+       </layout>
+      </item>
+      <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     </layout>
+    </widget>
+   </item>
+
+   <!-- Option 2 -->
+   <item>
+    <widget class="QPushButton" name="btnExportFilter">
+     <property name="class"><string>OptionBtn</string></property>
+     <property name="checkable"><bool>true</bool></property>
+     <layout class="QHBoxLayout">
+      <item><widget class="QLabel"><property name="text"><string>🔍</string></property><property name="styleSheet"><string>font-size: 24px;</string></property></widget></item>
+      <item>
+       <layout class="QVBoxLayout">
+        <item><widget class="QLabel"><property name="text"><string>Xuất theo bộ lọc hiện tại</string></property><property name="class"><string>OptTitle</string></property></widget></item>
+        <item><widget class="QLabel"><property name="text"><string>Chỉ xuất kết quả đang hiển thị</string></property><property name="class"><string>OptDesc</string></property></widget></item>
+       </layout>
+      </item>
+      <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     </layout>
+    </widget>
+   </item>
+   
+   <item><widget class="QLabel"><property name="text"><string>KHOẢNG THỜI GIAN</string></property><property name="class"><string>Section</string></property><property name="styleSheet"><string>margin-top: 10px;</string></property></widget></item>
+   
+   <item>
+    <layout class="QHBoxLayout">
+     <item>
+      <layout class="QVBoxLayout">
+       <item><widget class="QLabel"><property name="text"><string>TỪ THÁNG</string></property><property name="styleSheet"><string>color: #4a5568; font-weight: bold; font-size: 11px;</string></property></widget></item>
+       <item><widget class="QLineEdit" name="inpFrom"><property name="placeholderText"><string>01/2025</string></property><property name="class"><string>DateInput</string></property></widget></item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout">
+       <item><widget class="QLabel"><property name="text"><string>ĐẾN THÁNG</string></property><property name="styleSheet"><string>color: #4a5568; font-weight: bold; font-size: 11px;</string></property></widget></item>
+       <item><widget class="QLineEdit" name="inpTo"><property name="placeholderText"><string>03/2025</string></property><property name="class"><string>DateInput</string></property></widget></item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   
+   <item>
+    <widget class="QFrame" name="frameNote">
+     <layout class="QVBoxLayout">
+      <item><widget class="QLabel" name="lblNote"><property name="text"><string>📄 File xuất sẽ bao gồm: Mã HĐ, Phòng, Khách thuê, Tháng, Tiền phòng, Tiền điện, Tiền nước, Tổng tiền, Trạng thái, Ngày thanh toán</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+     </layout>
+    </widget>
+   </item>
+   
+   <item><spacer><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
+   
+   <item>
+    <layout class="QHBoxLayout">
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QPushButton" name="btnCancel"><property name="text"><string>Hủy</string></property></widget></item>
+     <item><widget class="QPushButton" name="btnConfirm"><property name="text"><string>⬇ Xác nhận xuất</string></property></widget></item>
+    </layout>
+   </item>
+
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

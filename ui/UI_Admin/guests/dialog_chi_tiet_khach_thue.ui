@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>DialogChiTietGuest</class>
+ <widget class="QDialog" name="DialogChiTietGuest">
+  <property name="geometry"><rect><x>0</x><y>0</y><width>500</width><height>650</height></rect></property>
+  <property name="windowTitle"><string>Hồ sơ khách thuê</string></property>
+  <property name="styleSheet"><string>
+QDialog { background-color: white; border-radius: 8px; }
+QLabel.SectionTitle { color: #a0aec0; font-size: 11px; font-weight: bold; text-transform: uppercase; }
+QFrame.Card { background-color: #f7fafc; border-radius: 6px; padding: 10px; }
+QLabel.CardHeader { color: #a0aec0; font-size: 10px; font-weight: bold; }
+QLabel.CardContent { color: #2d3748; font-size: 13px; font-weight: bold; }
+QPushButton#btnManage { background-color: #f0fff4; border: 1px solid #c6f6d5; color: #38a169; border-radius: 6px; font-weight: bold; }
+QPushButton#btnEdit { background-color: #fffaf0; border: 1px solid #feebc8; color: #dd6b20; border-radius: 6px; font-weight: bold; }
+QPushButton#btnDelete { background-color: #fff5f5; border: 1px solid #fed7d7; color: #e53e3e; border-radius: 6px; font-weight: bold; }
+</string></property>
+  <layout class="QVBoxLayout">
+   <property name="spacing"><number>15</number></property>
+   <property name="leftMargin"><number>25</number></property><property name="topMargin"><number>25</number></property>
+   <property name="rightMargin"><number>25</number></property><property name="bottomMargin"><number>25</number></property>
+   
+   <item>
+    <layout class="QHBoxLayout">
+     <item><widget class="QLabel"><property name="text"><string>👤 Hồ sơ khách thuê</string></property><property name="styleSheet"><string>font-size: 18px; font-weight: bold; color: #2d3748;</string></property></widget></item>
+     <item><spacer><property name="orientation"><enum>Qt::Horizontal</enum></property></spacer></item>
+     <item><widget class="QPushButton" name="btnCloseHeader"><property name="text"><string>✕</string></property><property name="styleSheet"><string>background: transparent; border: none; font-size: 18px; color: #4a5568;</string></property></widget></item>
+    </layout>
+   </item>
+
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="widgetResizable"><bool>true</bool></property>
+     <property name="styleSheet"><string>border: none; background-color: transparent;</string></property>
+     <widget class="QWidget" name="scrollContents">
+      <layout class="QVBoxLayout">
+       <property name="spacing"><number>15</number></property>
+       <property name="leftMargin"><number>0</number></property><property name="rightMargin"><number>10</number></property>
+       
+       <item><widget class="QLabel"><property name="text"><string>THÔNG TIN CÁ NHÂN</string></property><property name="class"><string>SectionTitle</string></property></widget></item>
+       
+       <item>
+        <layout class="QGridLayout">
+         <property name="spacing"><number>10</number></property>
+         <item row="0" column="0"><widget class="QFrame"><property name="class"><string>Card</string></property><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>HỌ VÀ TÊN</string></property><property name="class"><string>CardHeader</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>Nguyễn Văn An</string></property><property name="class"><string>CardContent</string></property></widget></item></layout></widget></item>
+         <item row="0" column="1"><widget class="QFrame"><property name="class"><string>Card</string></property><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>MÃ KHÁCH THUÊ</string></property><property name="class"><string>CardHeader</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>KT001</string></property><property name="class"><string>CardContent</string></property></widget></item></layout></widget></item>
+         <item row="1" column="0"><widget class="QFrame"><property name="class"><string>Card</string></property><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>SỐ ĐIỆN THOẠI</string></property><property name="class"><string>CardHeader</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>0901234567</string></property><property name="class"><string>CardContent</string></property></widget></item></layout></widget></item>
+         <item row="1" column="1"><widget class="QFrame"><property name="class"><string>Card</string></property><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>CCCD/CMND</string></property><property name="class"><string>CardHeader</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>079123456789</string></property><property name="class"><string>CardContent</string></property></widget></item></layout></widget></item>
+         <item row="2" column="0"><widget class="QFrame"><property name="class"><string>Card</string></property><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>NGÀY SINH</string></property><property name="class"><string>CardHeader</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>15/03/1998</string></property><property name="class"><string>CardContent</string></property></widget></item></layout></widget></item>
+         <item row="2" column="1"><widget class="QFrame"><property name="class"><string>Card</string></property><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>NGHỀ NGHIỆP</string></property><property name="class"><string>CardHeader</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>Nhân viên văn phòng</string></property><property name="class"><string>CardContent</string></property></widget></item></layout></widget></item>
+         <item row="3" column="0" colspan="2"><widget class="QFrame"><property name="class"><string>Card</string></property><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>ĐỊA CHỈ THƯỜNG TRÚ</string></property><property name="class"><string>CardHeader</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>123 Lê Lợi, Q.1, TP.HCM</string></property><property name="class"><string>CardContent</string></property></widget></item></layout></widget></item>
+        </layout>
+       </item>
+       
+       <item><widget class="QLabel"><property name="text"><string>THÔNG TIN HỢP ĐỒNG</string></property><property name="class"><string>SectionTitle</string></property><property name="styleSheet"><string>margin-top: 10px;</string></property></widget></item>
+       
+       <item>
+        <layout class="QGridLayout">
+         <property name="spacing"><number>10</number></property>
+         <item row="0" column="0"><widget class="QFrame"><property name="class"><string>Card</string></property><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>PHÒNG</string></property><property name="class"><string>CardHeader</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>P101</string></property><property name="class"><string>CardContent</string></property></widget></item></layout></widget></item>
+         <item row="0" column="1"><widget class="QFrame"><property name="class"><string>Card</string></property><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>TRẠNG THÁI</string></property><property name="class"><string>CardHeader</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>● Đang thuê</string></property><property name="styleSheet"><string>color: #38a169; font-weight: bold; font-size: 12px; background: #f0fff4; padding: 2px 8px; border-radius: 10px; max-width: 80px;</string></property></widget></item></layout></widget></item>
+         <item row="1" column="0"><widget class="QFrame"><property name="class"><string>Card</string></property><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>NGÀY BẮT ĐẦU</string></property><property name="class"><string>CardHeader</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>01/01/2025</string></property><property name="class"><string>CardContent</string></property></widget></item></layout></widget></item>
+         <item row="1" column="1"><widget class="QFrame"><property name="class"><string>Card</string></property><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>NGÀY KẾT THÚC</string></property><property name="class"><string>CardHeader</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>31/12/2025</string></property><property name="class"><string>CardContent</string></property></widget></item></layout></widget></item>
+         <item row="2" column="0"><widget class="QFrame"><property name="class"><string>Card</string></property><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>GIÁ THUÊ</string></property><property name="class"><string>CardHeader</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>3.500.000đ/tháng</string></property><property name="class"><string>CardContent</string></property></widget></item></layout></widget></item>
+         <item row="2" column="1"><widget class="QFrame"><property name="class"><string>Card</string></property><layout class="QVBoxLayout"><item><widget class="QLabel"><property name="text"><string>TIỀN CỌC</string></property><property name="class"><string>CardHeader</string></property></widget></item><item><widget class="QLabel"><property name="text"><string>7.000.000đ</string></property><property name="class"><string>CardContent</string></property></widget></item></layout></widget></item>
+        </layout>
+       </item>
+       
+       <item><spacer><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
+       
+       <item>
+        <layout class="QHBoxLayout">
+         <item><widget class="QPushButton" name="btnManage"><property name="text"><string>📋 Quản lý HĐ</string></property><property name="minimumSize"><size><width>0</width><height>36</height></size></property></widget></item>
+         <item><widget class="QPushButton" name="btnEdit"><property name="text"><string>✏️ Chỉnh sửa</string></property><property name="minimumSize"><size><width>0</width><height>36</height></size></property></widget></item>
+        </layout>
+       </item>
+       <item><widget class="QPushButton" name="btnDelete"><property name="text"><string>🗑 Xóa khách thuê</string></property><property name="minimumSize"><size><width>0</width><height>36</height></size></property></widget></item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

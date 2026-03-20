@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogAddRoom</class>
+ <widget class="QDialog" name="DialogAddRoom">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>650</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Thêm phòng mới / Cập nhật</string>
+  </property>
+  <property name="styleSheet">
+   <string>QDialog { background-color: white; border-radius: 12px; }
+QLabel { color: #4a5568; font-size: 13px; font-weight: bold; }
+QLineEdit, QComboBox, QTextEdit {
+	background-color: white;
+	border: 1px solid #cbd5e0;
+	border-radius: 6px;
+	padding: 8px 12px;
+	color: #2d3748;
+	font-weight: normal;
+}
+QLineEdit:focus, QComboBox:focus, QTextEdit:focus {
+	border: 1px solid #3182ce;
+}
+QPushButton#btnCancel {
+	background-color: #edf2f7;
+	color: #4a5568;
+	border: none;
+	border-radius: 6px;
+	padding: 10px 20px;
+	font-weight: bold;
+}
+QPushButton#btnCancel:hover { background-color: #e2e8f0; }
+QPushButton#btnSave {
+	background-color: #0d8b8a;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	padding: 10px 20px;
+	font-weight: bold;
+}
+QPushButton#btnSave:hover { background-color: #0a6b6a; }
+</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing"><number>15</number></property>
+   <property name="leftMargin"><number>25</number></property>
+   <property name="topMargin"><number>25</number></property>
+   <property name="rightMargin"><number>25</number></property>
+   <property name="bottomMargin"><number>25</number></property>
+   
+   <!-- HEADER -->
+   <item>
+    <widget class="QLabel" name="lblDialogTitle">
+     <property name="font"><font><pointsize>15</pointsize><weight>75</weight><bold>true</bold></font></property>
+     <property name="styleSheet"><string>color: #2b455b;</string></property>
+     <property name="text"><string>✍️ Cập nhật thông tin phòng</string></property>
+     <property name="alignment"><set>Qt::AlignCenter</set></property>
+    </widget>
+   </item>
+
+   <item>
+    <widget class="QLabel" name="lineSeparator">
+     <property name="maximumSize"><size><width>16777215</width><height>2</height></size></property>
+     <property name="styleSheet"><string>background-color: #e2e8f0;</string></property>
+    </widget>
+   </item>
+
+   <!-- FORM FIELDS (GRID) -->
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <property name="spacing"><number>15</number></property>
+     
+     <!-- Row 0: Tên phòng & Giá thuê -->
+     <item row="0" column="0">
+      <layout class="QVBoxLayout" name="vbox1">
+       <property name="spacing"><number>5</number></property>
+       <item><widget class="QLabel" name="label_1"><property name="text"><string>TÊN PHÒNG *</string></property></widget></item>
+       <item><widget class="QLineEdit" name="inputRoomName"><property name="placeholderText"><string>VD: P101</string></property></widget></item>
+      </layout>
+     </item>
+     <item row="0" column="1">
+      <layout class="QVBoxLayout" name="vbox2">
+       <property name="spacing"><number>5</number></property>
+       <item><widget class="QLabel" name="label_2"><property name="text"><string>GIÁ THUÊ (đ/THÁNG) *</string></property></widget></item>
+       <item><widget class="QLineEdit" name="inputPrice"><property name="placeholderText"><string>3500000</string></property></widget></item>
+      </layout>
+     </item>
+
+     <!-- Row 1: Tầng & Diện tích -->
+     <item row="1" column="0">
+      <layout class="QVBoxLayout" name="vbox3">
+       <property name="spacing"><number>5</number></property>
+       <item><widget class="QLabel" name="label_3"><property name="text"><string>TẦNG</string></property></widget></item>
+       <item><widget class="QComboBox" name="cbFloor">
+        <item><property name="text"><string>Tầng 1</string></property></item>
+        <item><property name="text"><string>Tầng 2</string></property></item>
+       </widget></item>
+      </layout>
+     </item>
+     <item row="1" column="1">
+      <layout class="QVBoxLayout" name="vbox4">
+       <property name="spacing"><number>5</number></property>
+       <item><widget class="QLabel" name="label_4"><property name="text"><string>DIỆN TÍCH (m²)</string></property></widget></item>
+       <item><widget class="QLineEdit" name="inputArea"><property name="placeholderText"><string>25</string></property></widget></item>
+      </layout>
+     </item>
+
+     <!-- Row 2: Loại phòng & Trạng thái -->
+     <item row="2" column="0">
+      <layout class="QVBoxLayout" name="vbox5">
+       <property name="spacing"><number>5</number></property>
+       <item><widget class="QLabel" name="label_5"><property name="text"><string>LOẠI PHÒNG</string></property></widget></item>
+       <item><widget class="QComboBox" name="cbType">
+        <item><property name="text"><string>Phòng đơn</string></property></item>
+        <item><property name="text"><string>Phòng đôi</string></property></item>
+       </widget></item>
+      </layout>
+     </item>
+     <item row="2" column="1">
+      <layout class="QVBoxLayout" name="vbox6">
+       <property name="spacing"><number>5</number></property>
+       <item><widget class="QLabel" name="label_6"><property name="text"><string>TRẠNG THÁI</string></property></widget></item>
+       <item><widget class="QComboBox" name="cbStatus">
+        <item><property name="text"><string>Trống</string></property></item>
+        <item><property name="text"><string>Đang thuê</string></property></item>
+       </widget></item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+
+   <!-- Row 3 (Full width): Thiết bị / Tiện nghi -->
+   <item>
+    <layout class="QVBoxLayout" name="vbox7">
+     <property name="spacing"><number>5</number></property>
+     <item><widget class="QLabel" name="label_7"><property name="text"><string>THIẾT BỊ / TIỆN NGHI</string></property></widget></item>
+     <item><widget class="QLineEdit" name="inputAmenities"><property name="placeholderText"><string>Điều hòa, Nóng lạnh...</string></property></widget></item>
+    </layout>
+   </item>
+
+   <!-- Row 4 (Full width): Mô tả -->
+   <item>
+    <layout class="QVBoxLayout" name="vbox8">
+     <property name="spacing"><number>5</number></property>
+     <item><widget class="QLabel" name="label_8"><property name="text"><string>MÔ TẢ</string></property></widget></item>
+     <item><widget class="QTextEdit" name="inputDescription">
+      <property name="placeholderText"><string>Ghi chú thêm về phòng...</string></property>
+      <property name="minimumSize"><size><width>0</width><height>80</height></size></property>
+     </widget></item>
+    </layout>
+   </item>
+
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation"><enum>Qt::Vertical</enum></property>
+     <property name="sizeHint" stdset="0"><size><width>20</width><height>40</height></size></property>
+    </spacer>
+   </item>
+
+   <!-- FOOTER (Buttons) -->
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation"><enum>Qt::Horizontal</enum></property>
+       <property name="sizeHint" stdset="0"><size><width>40</width><height>20</height></size></property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnCancel">
+       <property name="text"><string>Hủy</string></property>
+       <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnSave">
+       <property name="text"><string>💾 Lưu phòng</string></property>
+       <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

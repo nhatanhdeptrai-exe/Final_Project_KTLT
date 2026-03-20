@@ -1,0 +1,1069 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+ <class>DialogForgotPass</class>
+ <widget class="QDialog" name="DialogForgotPass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>750</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="styleSheet">
+   <string>
+    QDialog { background-color: #d1dbdb; }
+    QLabel#TitleLabel { font-size: 38px; font-weight: bold; color: black; }
+    QLabel.SubText { font-size: 16px; color: #2d3748; }
+    QLabel.InputLabel { font-size: 14px; color: #2d3748; }
+    QLabel.ValidationText { font-size: 12px; color: #0298a0; }
+    QLabel.TimerText { font-size: 14px; color: #718096; }
+    
+    QLineEdit.FormInput { background-color: white; border: none; border-radius: 6px; padding: 12px 15px; font-size: 14px; color: #2d3748; }
+    
+    QPushButton.BtnPrimary { background-color: #0298a0; color: white; font-weight: bold; font-size: 18px; border-radius: 8px; padding: 15px; }
+    QPushButton.LinkBtn { background-color: transparent; color: #1a202c; text-decoration: underline; font-size: 15px; border: none; }
+    
+    QLabel#IconSmall { background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #1a6b8c, stop:1 #061c2b); border: 4px solid #0d4352; border-radius: 40px; font-size: 35px; color: white; }
+    QLabel#CheckCircle { background-color: transparent; border: 8px solid #0298a0; border-radius: 60px; font-size: 60px; color: #0298a0; font-weight: bold; }
+   </string>
+  </property>
+  <layout class="QVBoxLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QStackedWidget" name="stackForgotPass">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="pageEmail">
+      <layout class="QVBoxLayout">
+       <property name="margin">
+        <number>50</number>
+       </property>
+       <property name="spacing">
+        <number>20</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="IconSmall1">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>80</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>80</height>
+            </size>
+           </property>
+           <property name="objectName">
+            <string>IconSmall</string>
+           </property>
+           <property name="text">
+            <string>🏠</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="TitleLabel1">
+           <property name="objectName">
+            <string>TitleLabel</string>
+           </property>
+           <property name="text">
+            <string>Quên mật khẩu?</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeft | Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel">
+         <property name="class">
+          <string>SubText</string>
+         </property>
+         <property name="text">
+          <string>Vui lòng nhập Email để khôi phục mật khẩu</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer />
+         </item>
+         <item>
+          <layout class="QVBoxLayout">
+           <item>
+            <widget class="QLabel">
+             <property name="class">
+              <string>InputLabel</string>
+             </property>
+             <property name="text">
+              <string>Địa chỉ email</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="inpForgotEmail">
+             <property name="class">
+              <string>FormInput</string>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>500</width>
+               <height>50</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer />
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>30</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer />
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnSendOTP">
+           <property name="class">
+            <string>BtnPrimary</string>
+           </property>
+           <property name="text">
+            <string>Tiếp tục</string>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>500</width>
+             <height>55</height>
+            </size>
+           </property>
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer />
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer />
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnBackToLogin1">
+           <property name="class">
+            <string>LinkBtn</string>
+           </property>
+           <property name="text">
+            <string>Quay lại màn hình đăng nhập</string>
+           </property>
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer />
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer />
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageOTP">
+      <layout class="QVBoxLayout">
+       <property name="margin">
+        <number>50</number>
+       </property>
+       <property name="spacing">
+        <number>20</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="IconSmall2">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>80</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>80</height>
+            </size>
+           </property>
+           <property name="objectName">
+            <string>IconSmall</string>
+           </property>
+           <property name="text">
+            <string>🏠</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="TitleLabel2">
+           <property name="objectName">
+            <string>TitleLabel</string>
+           </property>
+           <property name="text">
+            <string>Quên mật khẩu?</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeft | Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel">
+         <property name="class">
+          <string>SubText</string>
+         </property>
+         <property name="text">
+          <string>Vui lòng nhập mã otp đã được gửi đến email</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer />
+         </item>
+         <item>
+          <layout class="QVBoxLayout">
+           <item>
+            <widget class="QLabel">
+             <property name="class">
+              <string>InputLabel</string>
+             </property>
+             <property name="text">
+              <string>Nhập mã otp để xác thực</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="inpOTP">
+             <property name="class">
+              <string>FormInput</string>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>500</width>
+               <height>50</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="lblTimer">
+             <property name="class">
+              <string>TimerText</string>
+             </property>
+             <property name="text">
+              <string>1:56</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer />
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer />
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnVerifyOTP">
+           <property name="class">
+            <string>BtnPrimary</string>
+           </property>
+           <property name="text">
+            <string>Xác nhận</string>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>500</width>
+             <height>55</height>
+            </size>
+           </property>
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer />
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer />
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnBackToLogin2">
+           <property name="class">
+            <string>LinkBtn</string>
+           </property>
+           <property name="text">
+            <string>Quay lại màn hình đăng nhập</string>
+           </property>
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer />
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer />
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageResetPass">
+      <layout class="QVBoxLayout">
+       <property name="margin">
+        <number>50</number>
+       </property>
+       <property name="spacing">
+        <number>20</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="IconSmall3">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>80</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>80</height>
+            </size>
+           </property>
+           <property name="objectName">
+            <string>IconSmall</string>
+           </property>
+           <property name="text">
+            <string>🏠</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="TitleLabel3">
+           <property name="objectName">
+            <string>TitleLabel</string>
+           </property>
+           <property name="text">
+            <string>Đổi mật khẩu</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeft | Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>10</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer />
+         </item>
+         <item>
+          <layout class="QVBoxLayout">
+           <property name="spacing">
+            <number>10</number>
+           </property>
+           <item>
+            <widget class="QLabel">
+             <property name="class">
+              <string>InputLabel</string>
+             </property>
+             <property name="text">
+              <string>Mật khẩu</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="inpNewPass">
+             <property name="class">
+              <string>FormInput</string>
+             </property>
+             <property name="placeholderText">
+              <string>Nhập mật khẩu mới</string>
+             </property>
+             <property name="echoMode">
+              <enum>QLineEdit::Password</enum>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>500</width>
+               <height>50</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel">
+             <property name="class">
+              <string>ValidationText</string>
+             </property>
+             <property name="text">
+              <string>✓ Độ dài tối thiểu 6 ký tự</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel">
+             <property name="class">
+              <string>ValidationText</string>
+             </property>
+             <property name="text">
+              <string>✓ Có ít nhất 1 chữ cái viết hoa</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer>
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint">
+              <size>
+               <width>10</width>
+               <height>10</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel">
+             <property name="class">
+              <string>InputLabel</string>
+             </property>
+             <property name="text">
+              <string>Xác nhận mật khẩu</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="inpNewPassConfirm">
+             <property name="class">
+              <string>FormInput</string>
+             </property>
+             <property name="placeholderText">
+              <string>Nhập lại mật khẩu mới</string>
+             </property>
+             <property name="echoMode">
+              <enum>QLineEdit::Password</enum>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>500</width>
+               <height>50</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer />
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer />
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnResetPass">
+           <property name="class">
+            <string>BtnPrimary</string>
+           </property>
+           <property name="text">
+            <string>Xác nhận</string>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>500</width>
+             <height>55</height>
+            </size>
+           </property>
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer />
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer />
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnBackToLogin3">
+           <property name="class">
+            <string>LinkBtn</string>
+           </property>
+           <property name="text">
+            <string>Quay lại màn hình đăng nhập</string>
+           </property>
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer />
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer />
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageSuccess">
+      <layout class="QVBoxLayout">
+       <property name="margin">
+        <number>50</number>
+       </property>
+       <property name="spacing">
+        <number>20</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="IconSmall4">
+           <property name="minimumSize">
+            <size>
+             <width>80</width>
+             <height>80</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>80</height>
+            </size>
+           </property>
+           <property name="objectName">
+            <string>IconSmall</string>
+           </property>
+           <property name="text">
+            <string>🏠</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="TitleLabel4">
+           <property name="objectName">
+            <string>TitleLabel</string>
+           </property>
+           <property name="text">
+            <string>Đổi mật khẩu</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeft | Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>30</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer />
+         </item>
+         <item>
+          <widget class="QLabel" name="CheckCircle">
+           <property name="minimumSize">
+            <size>
+             <width>120</width>
+             <height>120</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>120</width>
+             <height>120</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>✓</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer />
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel">
+         <property name="class">
+          <string>SubText</string>
+         </property>
+         <property name="text">
+          <string>Đổi mật khẩu thành công! Vui lòng
+đăng nhập lại với mật khẩu mới.</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer>
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint">
+          <size>
+           <width>10</width>
+           <height>30</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout">
+         <item>
+          <spacer />
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnBackToLogin4">
+           <property name="class">
+            <string>LinkBtn</string>
+           </property>
+           <property name="text">
+            <string>Quay lại màn hình đăng nhập</string>
+           </property>
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer />
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer />
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+</ui>

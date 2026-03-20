@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogRegisterRoom</class>
+ <widget class="QDialog" name="DialogRegisterRoom">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>450</width>
+    <height>220</height>
+   </rect>
+  </property>
+  <property name="styleSheet">
+   <string>
+    QDialog { background-color: #f7fafc; border-radius: 12px; }
+    QLabel#Title { font-size: 24px; font-weight: bold; color: #1a202c; }
+    QLabel#SubText { font-size: 15px; color: #4a5568; }
+    QPushButton#btnYes { background-color: #0298a0; color: white; font-weight: bold; font-size: 16px; border-radius: 8px; padding: 10px; }
+    QPushButton#btnNo { background-color: white; color: #0298a0; font-weight: bold; font-size: 16px; border: 2px solid #0298a0; border-radius: 8px; padding: 10px; }
+   </string>
+  </property>
+  <layout class="QVBoxLayout">
+   <property name="margin"><number>30</number></property>
+   <property name="spacing"><number>20</number></property>
+   <item>
+    <widget class="QLabel" name="Title">
+     <property name="text"><string>Bạn có chắc muốn đăng ký
+phòng mới?</string></property>
+     <property name="alignment"><set>Qt::AlignCenter</set></property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="SubText">
+     <property name="text"><string>Hợp đồng phòng hiện tại của bạn sẽ hết hiệu
+lực vĩnh viễn một khi đăng ký phòng mới</string></property>
+     <property name="alignment"><set>Qt::AlignCenter</set></property>
+    </widget>
+   </item>
+   <item><spacer><property name="orientation"><enum>Qt::Vertical</enum></property></spacer></item>
+   <item>
+    <layout class="QHBoxLayout">
+     <property name="spacing"><number>20</number></property>
+     <item>
+      <widget class="QPushButton" name="btnYes">
+       <property name="text"><string>Có</string></property>
+       <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnNo">
+       <property name="text"><string>Không</string></property>
+       <property name="cursor"><cursorShape>PointingHandCursor</cursorShape></property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+</ui>
