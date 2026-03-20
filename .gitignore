@@ -1,7 +1,26 @@
+# Python
 __pycache__/
 *.pyc
-.venv/
-.env
-.vscode/
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# IDE
 .idea/
-.gemini/
+.vscode/
+*.swp
+*.swo
+
+# Sensitive config (chứa mật khẩu email)
+config/settings.py
+
+# Data files (local only)
+data/json/users.json
+data/excel/*.xlsx
+data/backups/backup_*
+data/exports/*
+!data/exports/.gitkeep
+
+# Logs
+*.log
