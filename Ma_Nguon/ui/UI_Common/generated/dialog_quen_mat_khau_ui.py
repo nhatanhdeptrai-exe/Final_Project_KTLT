@@ -1,4 +1,4 @@
-﻿# Form implementation generated from reading ui file 'D:\Documents\Do_AN\ui\UI_Common\dialog_quen_mat_khau_qt6.ui'
+# Form implementation generated from reading ui file 'D:\Documents\Do_AN\ui\UI_Common\dialog_quen_mat_khau_qt6.ui'
 #
 # Created by: PyQt6 UI code generator 6.10.2
 #
@@ -350,67 +350,67 @@ class Ui_DialogForgotPass(object):
         _translate = QtCore.QCoreApplication.translate
         DialogForgotPass.setStyleSheet(_translate("DialogForgotPass", "\n"
 "    QDialog { background-color: #d1dbdb; }\n"
-"    QLabel#TitleLabel { font-size: 38px; font-weight: bold; color: black; }\n"
-"    QLabel.SubText { font-size: 16px; color: #2d3748; }\n"
-"    QLabel.InputLabel { font-size: 14px; color: #2d3748; }\n"
-"    QLabel.ValidationText { font-size: 12px; color: #0298a0; }\n"
-"    QLabel.TimerText { font-size: 14px; color: #718096; }\n"
+"    QLabel#TitleLabel1, QLabel#TitleLabel2, QLabel#TitleLabel3, QLabel#TitleLabel4 { font-size: 38px; font-weight: bold; color: black; }\n"
+"    QLabel[class=\"SubText\"] { font-size: 16px; color: #2d3748; }\n"
+"    QLabel[class=\"InputLabel\"] { font-size: 14px; color: #2d3748; }\n"
+"    QLabel[class=\"ValidationText\"] { font-size: 12px; color: #0298a0; }\n"
+"    QLabel[class=\"TimerText\"] { font-size: 14px; color: #718096; }\n"
 "    \n"
-"    QLineEdit.FormInput { background-color: white; border: none; border-radius: 6px; padding: 12px 15px; font-size: 14px; color: #2d3748; }\n"
+"    QLineEdit[class=\"FormInput\"] { background-color: white; border: none; border-radius: 6px; padding: 12px 15px; font-size: 14px; color: #2d3748; }\n"
 "    \n"
-"    QPushButton.BtnPrimary { background-color: #0298a0; color: white; font-weight: bold; font-size: 18px; border-radius: 8px; padding: 15px; }\n"
-"    QPushButton.LinkBtn { background-color: transparent; color: #1a202c; text-decoration: underline; font-size: 15px; border: none; }\n"
+"    QPushButton[class=\"BtnPrimary\"] { background-color: #0298a0; color: white; font-weight: bold; font-size: 18px; border-radius: 8px; padding: 15px; }\n"
+"    QPushButton[class=\"LinkBtn\"] { background-color: transparent; color: #1a202c; text-decoration: underline; font-size: 15px; border: none; }\n"
 "    \n"
-"    QLabel#IconSmall { background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #1a6b8c, stop:1 #061c2b); border: 4px solid #0d4352; border-radius: 40px; font-size: 35px; color: white; }\n"
+"    QLabel#IconSmall1, QLabel#IconSmall2, QLabel#IconSmall3, QLabel#IconSmall4 { background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #1a6b8c, stop:1 #061c2b); border: 4px solid #0d4352; border-radius: 40px; font-size: 35px; color: white; }\n"
 "    QLabel#CheckCircle { background-color: transparent; border: 8px solid #0298a0; border-radius: 60px; font-size: 60px; color: #0298a0; font-weight: bold; }\n"
 "   "))
-        self.IconSmall1.setText(_translate("DialogForgotPass", "ðŸ "))
-        self.TitleLabel1.setText(_translate("DialogForgotPass", "QuÃªn máº­t kháº©u?"))
+        self.IconSmall1.setText(_translate("DialogForgotPass", "🏠"))
+        self.TitleLabel1.setText(_translate("DialogForgotPass", "Quên mật khẩu?"))
         self.label.setProperty("class", _translate("DialogForgotPass", "SubText"))
-        self.label.setText(_translate("DialogForgotPass", "Vui lÃ²ng nháº­p Email Ä‘á»ƒ khÃ´i phá»¥c máº­t kháº©u"))
+        self.label.setText(_translate("DialogForgotPass", "Vui lòng nhập Email để khôi phục mật khẩu"))
         self.label1.setProperty("class", _translate("DialogForgotPass", "InputLabel"))
-        self.label1.setText(_translate("DialogForgotPass", "Äá»‹a chá»‰ email"))
+        self.label1.setText(_translate("DialogForgotPass", "Địa chỉ email"))
         self.inpForgotEmail.setProperty("class", _translate("DialogForgotPass", "FormInput"))
         self.btnSendOTP.setProperty("class", _translate("DialogForgotPass", "BtnPrimary"))
-        self.btnSendOTP.setText(_translate("DialogForgotPass", "Tiáº¿p tá»¥c"))
+        self.btnSendOTP.setText(_translate("DialogForgotPass", "Tiếp tục"))
         self.btnBackToLogin1.setProperty("class", _translate("DialogForgotPass", "LinkBtn"))
-        self.btnBackToLogin1.setText(_translate("DialogForgotPass", "Quay láº¡i mÃ n hÃ¬nh Ä‘Äƒng nháº­p"))
-        self.IconSmall2.setText(_translate("DialogForgotPass", "ðŸ "))
-        self.TitleLabel2.setText(_translate("DialogForgotPass", "QuÃªn máº­t kháº©u?"))
+        self.btnBackToLogin1.setText(_translate("DialogForgotPass", "Quay lại màn hình đăng nhập"))
+        self.IconSmall2.setText(_translate("DialogForgotPass", "🏠"))
+        self.TitleLabel2.setText(_translate("DialogForgotPass", "Quên mật khẩu?"))
         self.label2.setProperty("class", _translate("DialogForgotPass", "SubText"))
-        self.label2.setText(_translate("DialogForgotPass", "Vui lÃ²ng nháº­p mÃ£ otp Ä‘Ã£ Ä‘Æ°á»£c gá»­i Ä‘áº¿n email"))
+        self.label2.setText(_translate("DialogForgotPass", "Vui lòng nhập mã otp đã được gửi đến email"))
         self.label3.setProperty("class", _translate("DialogForgotPass", "InputLabel"))
-        self.label3.setText(_translate("DialogForgotPass", "Nháº­p mÃ£ otp Ä‘á»ƒ xÃ¡c thá»±c"))
+        self.label3.setText(_translate("DialogForgotPass", "Nhập mã otp để xác thực"))
         self.inpOTP.setProperty("class", _translate("DialogForgotPass", "FormInput"))
         self.lblTimer.setProperty("class", _translate("DialogForgotPass", "TimerText"))
         self.lblTimer.setText(_translate("DialogForgotPass", "1:56"))
         self.btnVerifyOTP.setProperty("class", _translate("DialogForgotPass", "BtnPrimary"))
-        self.btnVerifyOTP.setText(_translate("DialogForgotPass", "XÃ¡c nháº­n"))
+        self.btnVerifyOTP.setText(_translate("DialogForgotPass", "Xác nhận"))
         self.btnBackToLogin2.setProperty("class", _translate("DialogForgotPass", "LinkBtn"))
-        self.btnBackToLogin2.setText(_translate("DialogForgotPass", "Quay láº¡i mÃ n hÃ¬nh Ä‘Äƒng nháº­p"))
-        self.IconSmall3.setText(_translate("DialogForgotPass", "ðŸ "))
-        self.TitleLabel3.setText(_translate("DialogForgotPass", "Äá»•i máº­t kháº©u"))
+        self.btnBackToLogin2.setText(_translate("DialogForgotPass", "Quay lại màn hình đăng nhập"))
+        self.IconSmall3.setText(_translate("DialogForgotPass", "🏠"))
+        self.TitleLabel3.setText(_translate("DialogForgotPass", "Đổi mật khẩu"))
         self.label4.setProperty("class", _translate("DialogForgotPass", "InputLabel"))
-        self.label4.setText(_translate("DialogForgotPass", "Máº­t kháº©u"))
+        self.label4.setText(_translate("DialogForgotPass", "Mật khẩu"))
         self.inpNewPass.setProperty("class", _translate("DialogForgotPass", "FormInput"))
-        self.inpNewPass.setPlaceholderText(_translate("DialogForgotPass", "Nháº­p máº­t kháº©u má»›i"))
+        self.inpNewPass.setPlaceholderText(_translate("DialogForgotPass", "Nhập mật khẩu mới"))
         self.label5.setProperty("class", _translate("DialogForgotPass", "ValidationText"))
-        self.label5.setText(_translate("DialogForgotPass", "âœ“ Äá»™ dÃ i tá»‘i thiá»ƒu 6 kÃ½ tá»±"))
+        self.label5.setText(_translate("DialogForgotPass", "✓ Độ dài tối thiểu 6 ký tự"))
         self.label6.setProperty("class", _translate("DialogForgotPass", "ValidationText"))
-        self.label6.setText(_translate("DialogForgotPass", "âœ“ CÃ³ Ã­t nháº¥t 1 chá»¯ cÃ¡i viáº¿t hoa"))
+        self.label6.setText(_translate("DialogForgotPass", "✓ Có ít nhất 1 chữ cái viết hoa"))
         self.label7.setProperty("class", _translate("DialogForgotPass", "InputLabel"))
-        self.label7.setText(_translate("DialogForgotPass", "XÃ¡c nháº­n máº­t kháº©u"))
+        self.label7.setText(_translate("DialogForgotPass", "Xác nhận mật khẩu"))
         self.inpNewPassConfirm.setProperty("class", _translate("DialogForgotPass", "FormInput"))
-        self.inpNewPassConfirm.setPlaceholderText(_translate("DialogForgotPass", "Nháº­p láº¡i máº­t kháº©u má»›i"))
+        self.inpNewPassConfirm.setPlaceholderText(_translate("DialogForgotPass", "Nhập lại mật khẩu mới"))
         self.btnResetPass.setProperty("class", _translate("DialogForgotPass", "BtnPrimary"))
-        self.btnResetPass.setText(_translate("DialogForgotPass", "XÃ¡c nháº­n"))
+        self.btnResetPass.setText(_translate("DialogForgotPass", "Xác nhận"))
         self.btnBackToLogin3.setProperty("class", _translate("DialogForgotPass", "LinkBtn"))
-        self.btnBackToLogin3.setText(_translate("DialogForgotPass", "Quay láº¡i mÃ n hÃ¬nh Ä‘Äƒng nháº­p"))
-        self.IconSmall4.setText(_translate("DialogForgotPass", "ðŸ "))
-        self.TitleLabel4.setText(_translate("DialogForgotPass", "Äá»•i máº­t kháº©u"))
-        self.CheckCircle.setText(_translate("DialogForgotPass", "âœ“"))
+        self.btnBackToLogin3.setText(_translate("DialogForgotPass", "Quay lại màn hình đăng nhập"))
+        self.IconSmall4.setText(_translate("DialogForgotPass", "🏠"))
+        self.TitleLabel4.setText(_translate("DialogForgotPass", "Đổi mật khẩu"))
+        self.CheckCircle.setText(_translate("DialogForgotPass", "✓"))
         self.label8.setProperty("class", _translate("DialogForgotPass", "SubText"))
-        self.label8.setText(_translate("DialogForgotPass", "Äá»•i máº­t kháº©u thÃ nh cÃ´ng! Vui lÃ²ng\n"
-"Ä‘Äƒng nháº­p láº¡i vá»›i máº­t kháº©u má»›i."))
+        self.label8.setText(_translate("DialogForgotPass", "Đổi mật khẩu thành công! Vui lòng\n"
+"đăng nhập lại với mật khẩu mới."))
         self.btnBackToLogin4.setProperty("class", _translate("DialogForgotPass", "LinkBtn"))
-        self.btnBackToLogin4.setText(_translate("DialogForgotPass", "Quay láº¡i mÃ n hÃ¬nh Ä‘Äƒng nháº­p"))
+        self.btnBackToLogin4.setText(_translate("DialogForgotPass", "Quay lại màn hình đăng nhập"))

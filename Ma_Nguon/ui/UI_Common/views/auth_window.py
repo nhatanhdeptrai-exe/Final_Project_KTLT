@@ -2,9 +2,9 @@
 from pathlib import Path
 from PyQt6.QtWidgets import (QWidget, QMessageBox, QDialog, QVBoxLayout,
                               QLabel, QLineEdit, QPushButton, QInputDialog)
-from PyQt6.QtCore import Qt, QThread, pyqtSignal
+from PyQt6.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QIcon, QPixmap, QPainter, QColor, QFont
-from ui.auth_main_ui import Ui_AuthWindow  # File tự sinh từ .ui — KHÔNG CHỈNH SỬA
+from ui.UI_Common.generated.auth_main_ui import Ui_AuthWindow  # File tự sinh từ .ui — KHÔNG CHỈNH SỬA
 
 
 # === Helper: Tạo icon từ Unicode ===
@@ -107,9 +107,10 @@ class OTPDialog(QDialog):
 # Mọi chỉnh sửa giao diện/logic đều ở đây
 # =============================================
 class AuthWindow(QWidget, Ui_AuthWindow):
-    def __init__(self, auth_service):
+    def __init__(self, container):
         super().__init__()
-        self.auth_service = auth_service
+        self.container = container
+        self.auth_service = container.auth_service
         self._worker = None
 
         # Setup UI từ file tự sinh (KHÔNG dùng loadUi nữa)
@@ -163,9 +164,24 @@ class AuthWindow(QWidget, Ui_AuthWindow):
         usr, pwd = self.inputUsername.text().strip(), self.inputPassword.text()
         ok, msg, user = self.auth_service.login(usr, pwd)
         if ok:
-            QMessageBox.information(self, "Thành công", f"Chào {user.full_name}!")
+            self._open_main_window(user)
         else:
             QMessageBox.warning(self, "Lỗi", msg)
+
+    def _open_main_window(self, user):
+        """Phân luồng giao diện dựa trên role. (Tạm thời chưa có UI admin/guest)"""
+        try:
+            self.hide()
+            if user.role == 'admin':
+                from ui.UI_Admin.views.admin_window import AdminWindow
+                self._main_window = AdminWindow(user, self.container)
+            else:
+                from ui.UI_Guest.views.guest_window import GuestWindow
+                self._main_window = GuestWindow(user, self.container)
+            self._main_window.show()
+        except ImportError:
+            QMessageBox.information(self, "OK", f"Đăng nhập thành công!\nRole: {user.role}\n(Giao diện đang được xây dựng)")
+            self.show()
 
     # === Register ===
     def register(self):
@@ -231,7 +247,7 @@ class AuthWindow(QWidget, Ui_AuthWindow):
 # ForgotPasswordDialog — Kế thừa Ui_DialogForgotPass
 # File UI tự sinh: dialog_quen_mat_khau_ui.py (KHÔNG SỬA)
 # =============================================
-from ui.dialog_quen_mat_khau_ui import Ui_DialogForgotPass
+from ui.UI_Common.generated.dialog_quen_mat_khau_ui import Ui_DialogForgotPass
 
 
 class ForgotPasswordDialog(QDialog, Ui_DialogForgotPass):
