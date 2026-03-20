@@ -472,8 +472,55 @@ class AccountManagementView(QWidget):
         QMessageBox.information(self, "Thành công", "Lưu thông tin ngân hàng thành công")
 
     def _on_logout(self):
-        reply = QMessageBox.question(
-            self, "Đăng xuất", "Bạn có chắc muốn đăng xuất?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        if reply == QMessageBox.StandardButton.Yes:
+        from PyQt6.QtWidgets import QDialog
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Đăng xuất")
+        dlg.setFixedSize(380, 220)
+        dlg.setStyleSheet("QDialog { background-color: white; }")
+        lay = QVBoxLayout(dlg)
+        lay.setSpacing(12)
+        lay.setContentsMargins(30, 25, 30, 25)
+
+        icon = QLabel("🚪")
+        icon.setStyleSheet("font-size: 40px;")
+        icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(icon)
+
+        title = QLabel("Bạn có chắc muốn đăng xuất?")
+        title.setFont(QFont("Segoe UI", 15, QFont.Weight.Bold))
+        title.setStyleSheet("color: #1a202c;")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(title)
+
+        sub = QLabel("Bạn sẽ quay lại trang đăng nhập")
+        sub.setStyleSheet("color: #718096; font-size: 13px;")
+        sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(sub)
+        lay.addStretch()
+
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(12)
+        btn_cancel = QPushButton("Hủy bỏ")
+        btn_cancel.setMinimumHeight(40)
+        btn_cancel.setStyleSheet(
+            "QPushButton { background-color: #f7fafc; color: #4a5568; border: 1px solid #cbd5e0; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #edf2f7; }")
+        btn_cancel.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_cancel.clicked.connect(dlg.reject)
+
+        btn_ok = QPushButton("🚪  Đăng xuất")
+        btn_ok.setMinimumHeight(40)
+        btn_ok.setStyleSheet(
+            "QPushButton { background-color: #e53e3e; color: white; border: none; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #c53030; }")
+        btn_ok.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_ok.clicked.connect(dlg.accept)
+
+        btn_row.addWidget(btn_cancel)
+        btn_row.addWidget(btn_ok)
+        lay.addLayout(btn_row)
+
+        if dlg.exec() == QDialog.DialogCode.Accepted:
             self.logout_requested.emit()

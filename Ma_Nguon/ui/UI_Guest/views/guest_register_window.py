@@ -45,7 +45,7 @@ class GuestRegisterWindow(QMainWindow):
                     auth_service=self.container.auth_service if self.container else None,
                     guest_service=self.container.guest_service if self.container else None,
                 )
-                page_widget.logout_requested.connect(self.close)
+                page_widget.logout_requested.connect(self._do_logout)
             else:
                 page_widget = self._create_placeholder(title)
             stack.addWidget(page_widget)
@@ -88,3 +88,10 @@ class GuestRegisterWindow(QMainWindow):
             btn.setChecked(True)
 
         self.ui.stackGuestMain.setCurrentIndex(index)
+
+    def _do_logout(self):
+        """Đăng xuất → quay lại trang đăng nhập."""
+        from ui.UI_Common.views.auth_window import AuthWindow
+        self._auth = AuthWindow(self.container)
+        self._auth.show()
+        self.close()
