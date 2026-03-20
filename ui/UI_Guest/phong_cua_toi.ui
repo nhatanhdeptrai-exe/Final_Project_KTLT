@@ -113,13 +113,13 @@
                         </item>
                         <item>
                           <widget class="QFrame">
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>Card</string>
                             </property>
                             <layout class="QVBoxLayout">
                               <item>
                                 <widget class="QLabel">
-                                  <property name="class">
+                                  <property name="class" stdset="0">
                                     <string>CardTitle</string>
                                   </property>
                                   <property name="text">
@@ -129,7 +129,7 @@
                               </item>
                               <item>
                                 <widget class="QLabel">
-                                  <property name="class">
+                                  <property name="class" stdset="0">
                                     <string>CardLabel</string>
                                   </property>
                                   <property name="text">
@@ -139,7 +139,7 @@
                               </item>
                               <item>
                                 <widget class="QLabel">
-                                  <property name="class">
+                                  <property name="class" stdset="0">
                                     <string>CardValue</string>
                                   </property>
                                   <property name="text">
@@ -149,7 +149,7 @@
                               </item>
                               <item>
                                 <widget class="QLabel">
-                                  <property name="class">
+                                  <property name="class" stdset="0">
                                     <string>CardLabel</string>
                                   </property>
                                   <property name="text">
@@ -159,7 +159,7 @@
                               </item>
                               <item>
                                 <widget class="QLabel">
-                                  <property name="class">
+                                  <property name="class" stdset="0">
                                     <string>CardValue</string>
                                   </property>
                                   <property name="text">
@@ -169,7 +169,7 @@
                               </item>
                               <item>
                                 <widget class="QLabel">
-                                  <property name="class">
+                                  <property name="class" stdset="0">
                                     <string>CardLabel</string>
                                   </property>
                                   <property name="text">
@@ -179,7 +179,7 @@
                               </item>
                               <item>
                                 <widget class="QLabel">
-                                  <property name="class">
+                                  <property name="class" stdset="0">
                                     <string>CardValue</string>
                                   </property>
                                   <property name="text">
@@ -189,7 +189,7 @@
                               </item>
                               <item>
                                 <widget class="QLabel">
-                                  <property name="class">
+                                  <property name="class" stdset="0">
                                     <string>CardLabel</string>
                                   </property>
                                   <property name="text">
@@ -199,7 +199,7 @@
                               </item>
                               <item>
                                 <widget class="QLabel">
-                                  <property name="class">
+                                  <property name="class" stdset="0">
                                     <string>CardValue</string>
                                   </property>
                                   <property name="text">
@@ -209,7 +209,7 @@
                               </item>
                               <item>
                                 <widget class="QLabel">
-                                  <property name="class">
+                                  <property name="class" stdset="0">
                                     <string>CardLabel</string>
                                   </property>
                                   <property name="text">
@@ -219,7 +219,7 @@
                               </item>
                               <item>
                                 <widget class="QLabel">
-                                  <property name="class">
+                                  <property name="class" stdset="0">
                                     <string>StatusActive</string>
                                   </property>
                                   <property name="text">
@@ -229,7 +229,7 @@
                               </item>
                               <item>
                                 <widget class="QPushButton" name="btnReqMaintenance">
-                                  <property name="class">
+                                  <property name="class" stdset="0">
                                     <string>BtnPrimary</string>
                                   </property>
                                   <property name="text">
@@ -242,7 +242,7 @@
                         </item>
                         <item>
                           <widget class="QPushButton" name="btnRegNewRoom">
-                            <property name="class">
+                            <property name="class" stdset="0">
                               <string>BtnPrimary</string>
                             </property>
                             <property name="text">
@@ -359,7 +359,7 @@ BÊN THUÊ (Bên B): Trần Thị B...</string>
                             </item>
                             <item>
                               <widget class="QPushButton" name="btnViewContract">
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>BtnPrimary</string>
                                 </property>
                                 <property name="styleSheet">
@@ -391,7 +391,7 @@ BÊN THUÊ (Bên B): Trần Thị B...</string>
                             </item>
                             <item>
                               <widget class="QPushButton" name="btnPrintContract">
-                                <property name="class">
+                                <property name="class" stdset="0">
                                   <string>BtnPrimary</string>
                                 </property>
                                 <property name="styleSheet">
