@@ -169,15 +169,36 @@ class AuthWindow(QWidget, Ui_AuthWindow):
             QMessageBox.warning(self, "Lỗi", msg)
 
     def _open_main_window(self, user):
-        """Phân luồng giao diện dựa trên role. (Tạm thời chưa có UI admin/guest)"""
+        """Phân luồng giao diện dựa trên role."""
         try:
             self.hide()
             if user.role == 'admin':
                 from ui.UI_Admin.views.admin_window import AdminWindow
                 self._main_window = AdminWindow(user, self.container)
             else:
-                from ui.UI_Guest.views.guest_window import GuestWindow
-                self._main_window = GuestWindow(user, self.container)
+                has_room = False
+                if self.container.guest_service and self.container.contract_service:
+                    all_guests = self.container.guest_service.get_all_guests()
+                    guest = None
+                    for g in all_guests:
+                        if getattr(g, 'email', None) == getattr(user, 'email', None) or \
+                           getattr(g, 'phone', None) == getattr(user, 'phone', None):
+                            guest = g
+                            break
+                    if guest:
+                        contracts = self.container.contract_service.get_all()
+                        for c in contracts:
+                            if str(getattr(c, 'guest_id', '')) == str(getattr(guest, 'id', '')):
+                                if getattr(c, 'status', '') in ('active', 'Đang thuê', 'Còn hiệu lực'):
+                                    has_room = True
+                                    break
+                
+                if has_room:
+                    from ui.UI_Guest.views.guest_window import GuestWindow
+                    self._main_window = GuestWindow(user, self.container)
+                else:
+                    from ui.UI_Guest.views.guest_register_window import GuestRegisterWindow
+                    self._main_window = GuestRegisterWindow(user, self.container)
             self._main_window.show()
         except Exception as e:
             QMessageBox.information(self, "Lỗi", f"Không thể mở giao diện:\n{e}")

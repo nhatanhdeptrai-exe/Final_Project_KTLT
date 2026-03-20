@@ -106,7 +106,11 @@ class AdminWindow(QMainWindow):
             )
         if btn_name == "navThongBao":
             from ui.UI_Admin.views.notification_view import NotificationView
-            self._notif_view = NotificationView()
+            self._notif_view = NotificationView(
+                contract_service=self.container.contract_service if self.container else None,
+                room_service=self.container.room_service if self.container else None,
+                guest_service=self.container.guest_service if self.container else None,
+            )
             self._notif_view.navigate_requested.connect(self._on_notif_navigate)
             return self._notif_view
         if btn_name == "navTaiKhoan":
@@ -162,7 +166,7 @@ class AdminWindow(QMainWindow):
     def _on_bell_clicked(self):
         """Show notification popup below bell button."""
         import time
-        from ui.UI_Admin.views.notification_view import _generate_sample_notifications, _time_ago
+        from ui.UI_Admin.views.notification_view import _time_ago
 
         # Toggle: if popup just closed (within 300ms), don't reopen
         now = time.time()
@@ -181,7 +185,7 @@ class AdminWindow(QMainWindow):
         popup.setStyleSheet("""
             QFrame { background: white; border: 1px solid #e2e8f0; border-radius: 10px; }
         """)
-        popup.setFixedWidth(380)
+        popup.setFixedWidth(400)
         self._bell_popup = popup
 
         p_lay = QVBoxLayout(popup)
@@ -208,14 +212,49 @@ class AdminWindow(QMainWindow):
         h_lay.addWidget(btn_all)
         p_lay.addWidget(header_w)
 
-        # Divider
         div = QFrame()
         div.setFixedHeight(1)
         div.setStyleSheet("background-color: #edf2f7;")
         p_lay.addWidget(div)
 
-        # Notification items (latest 5)
-        notifs = self._notif_view._notifications[:5] if self._notif_view else _generate_sample_notifications()[:5]
+        # ── Pending contracts ──
+        pending_contracts = []
+        if self.container and self.container.contract_service:
+            all_c = self.container.contract_service.get_all()
+            pending_contracts = [c for c in all_c if c.status == 'pending']
+
+        for contract in pending_contracts[:3]:
+            row_w = QWidget()
+            row_w.setFixedHeight(55)
+            row_w.setStyleSheet("background-color: #fffcf0; border-bottom: 1px solid #fef3c7;")
+            rl = QHBoxLayout(row_w)
+            rl.setContentsMargins(16, 4, 16, 4)
+            rl.setSpacing(10)
+
+            icon = QLabel("📋")
+            icon.setFixedSize(30, 30)
+            icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            icon.setStyleSheet("background-color: #fef3c7; border-radius: 15px; font-size: 14px; border: none;")
+            rl.addWidget(icon)
+
+            room_num = f"#{contract.room_id}"
+            if self._notif_view:
+                room_num = self._notif_view._get_room_number(contract.room_id)
+            txt = QLabel(f"Yêu cầu đăng ký phòng {room_num}")
+            txt.setStyleSheet("font-size: 12px; font-weight: bold; color: #92400e; border: none;")
+            txt.setWordWrap(True)
+            rl.addWidget(txt, 1)
+
+            badge = QLabel("Chờ duyệt")
+            badge.setStyleSheet(
+                "font-size: 10px; color: #d97706; background-color: #fef3c7; "
+                "border-radius: 4px; padding: 2px 6px; font-weight: bold; border: none;")
+            rl.addWidget(badge)
+
+            p_lay.addWidget(row_w)
+
+        # ── Regular notifications ──
+        notifs = self._notif_view._notifications[:5] if self._notif_view else []
         for notif in notifs:
             row_w = QPushButton()
             row_w.setFixedHeight(55)
@@ -262,7 +301,7 @@ class AdminWindow(QMainWindow):
 
         # Show below bell
         pos = bell.mapToGlobal(bell.rect().bottomRight())
-        pos.setX(pos.x() - 380)
+        pos.setX(pos.x() - 400)
         popup.move(pos)
 
         # Track close time for toggle behavior

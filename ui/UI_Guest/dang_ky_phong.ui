@@ -1,0 +1,186 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ui version="4.0">
+  <class>DangKyPhongView</class>
+  <widget class="QWidget" name="PageDangKyPhong">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1050</width>
+        <height>645</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>Đăng ký phòng</string>
+    </property>
+    <property name="styleSheet">
+      <string>QWidget { background-color: #f0f4f7; }</string>
+    </property>
+    <layout class="QVBoxLayout" name="contentLayout">
+      <property name="leftMargin">
+        <number>0</number>
+      </property>
+      <property name="topMargin">
+        <number>0</number>
+      </property>
+      <property name="rightMargin">
+        <number>0</number>
+      </property>
+      <property name="bottomMargin">
+        <number>0</number>
+      </property>
+      <item>
+        <widget class="QStackedWidget" name="mainContentStack">
+          <widget class="QWidget" name="pageDangKyPhong">
+            <layout class="QVBoxLayout">
+              <property name="leftMargin">
+                <number>20</number>
+              </property>
+              <property name="topMargin">
+                <number>20</number>
+              </property>
+              <property name="rightMargin">
+                <number>20</number>
+              </property>
+              <property name="bottomMargin">
+                <number>20</number>
+              </property>
+              <item>
+                <layout class="QHBoxLayout">
+                  <item>
+                    <widget class="QLineEdit" name="inputSearchRoom">
+                      <property name="minimumSize">
+                        <size>
+                          <width>250</width>
+                          <height>40</height>
+                        </size>
+                      </property>
+                      <property name="placeholderText">
+                        <string>🔍 Tìm tên phòng...</string>
+                      </property>
+                      <property name="styleSheet">
+                        <string>background-color: white; border: 1px solid #cbd5e0; border-radius: 6px; padding: 8px 15px;</string>
+                      </property>
+                    </widget>
+                  </item>
+                  <item>
+                    <widget class="QComboBox" name="cbFilterStatus">
+                      <property name="minimumSize">
+                        <size>
+                          <width>150</width>
+                          <height>40</height>
+                        </size>
+                      </property>
+                      <property name="styleSheet">
+                        <string>background-color: white; border: 1px solid #cbd5e0; border-radius: 6px; padding: 8px 15px;</string>
+                      </property>
+                      <item>
+                        <property name="text">
+                          <string>Tất cả trạng thái</string>
+                        </property>
+                      </item>
+                      <item>
+                        <property name="text">
+                          <string>Trống</string>
+                        </property>
+                      </item>
+                      <item>
+                        <property name="text">
+                          <string>Đang thuê</string>
+                        </property>
+                      </item>
+                    </widget>
+                  </item>
+                  <item>
+                    <spacer>
+                      <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                      </property>
+                    </spacer>
+                  </item>
+                </layout>
+              </item>
+              <item>
+                <widget class="QScrollArea" name="scrollAreaRooms">
+                  <property name="widgetResizable">
+                    <bool>true</bool>
+                  </property>
+                  <property name="styleSheet">
+                    <string>QScrollArea { border: none; background-color: transparent; }</string>
+                  </property>
+                  <widget class="QWidget" name="scrollAreaWidgetContents">
+                    <property name="styleSheet">
+                      <string>background-color: transparent;</string>
+                    </property>
+                    <layout class="QGridLayout" name="gridRooms">
+                      <property name="spacing">
+                        <number>20</number>
+                      </property>
+                      <item row="0" column="0">
+                        <widget class="QWidget" name="dummyRoomCard">
+                          <property name="minimumSize">
+                            <size>
+                              <width>250</width>
+                              <height>300</height>
+                            </size>
+                          </property>
+                          <property name="maximumSize">
+                            <size>
+                              <width>250</width>
+                              <height>300</height>
+                            </size>
+                          </property>
+                          <property name="styleSheet">
+                            <string>background-color: white; border: 1px solid #e2e8f0; border-radius: 12px;</string>
+                          </property>
+                          <layout class="QVBoxLayout">
+                            <item>
+                              <widget class="QLabel">
+                                <property name="text">
+                                  <string>P101</string>
+                                </property>
+                                <property name="styleSheet">
+                                  <string>font-size: 18px; font-weight: bold; border:none; color: #2d3748;</string>
+                                </property>
+                              </widget>
+                            </item>
+                            <item>
+                              <widget class="QLabel">
+                                <property name="text">
+                                  <string>3.5M/tháng</string>
+                                </property>
+                                <property name="styleSheet">
+                                  <string>color: #3182ce; font-weight: bold; border:none;</string>
+                                </property>
+                              </widget>
+                            </item>
+                            <item>
+                              <spacer>
+                                <property name="orientation">
+                                  <enum>Qt::Vertical</enum>
+                                </property>
+                              </spacer>
+                            </item>
+                          </layout>
+                        </widget>
+                      </item>
+                      <item row="1" column="5">
+                        <spacer>
+                          <property name="orientation">
+                            <enum>Qt::Vertical</enum>
+                          </property>
+                        </spacer>
+                      </item>
+                    </layout>
+                  </widget>
+                </widget>
+              </item>
+            </layout>
+          </widget>
+        </widget>
+      </item>
+    </layout>
+  </widget>
+  <resources/>
+  <connections/>
+</ui>

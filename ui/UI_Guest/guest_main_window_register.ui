@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>GuestMainWindowRegister</class>
+ <widget class="QMainWindow" name="GuestMainWindowRegister">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1280</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Quản lý phòng trọ - Đăng ký phòng</string>
+  </property>
+  <property name="styleSheet">
+   <string>QMainWindow { background-color: #f0f4f7; }
+QWidget#headerWidget { background-color: #d1dde3; }
+QWidget#sidebarWidget { background-color: white; border-right: 2px solid #e2e8f0; }
+QWidget#mainPage { background-color: #f0f4f7; }
+
+/* Header */
+QLabel#logoIcon { background-color: #0b3d42; border-radius: 20px; color: white; font-size: 18px; }
+QLabel#logoText { color: #2b455b; font-weight: bold; font-size: 18px; }
+QLabel#lblPageTitle { color: #2b455b; font-weight: bold; font-size: 20px; }
+QLabel#lblAvatar { background-color: #a0aec0; border-radius: 22px; color: white; font-size: 24px; padding-bottom: 3px; }
+
+/* Sidebar */
+QWidget#sidebarWidget QPushButton { text-align: left; padding: 15px 25px; border: none; background-color: transparent; color: #a0aec0; font-size: 15px; font-weight: bold; }
+QWidget#sidebarWidget QPushButton:hover { color: #2b455b; }
+QWidget#sidebarWidget QPushButton:checked { color: #0b3d42; border-left: 5px solid #0b3d42; padding-left: 20px; }
+
+/* Registration Page Content */
+QWidget#containerPage { background-color: white; border-radius: 8px; border: 1px solid #e2e8f0; }
+
+/* Search and Filters */
+QLineEdit#txtSearchRoom { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; color: #4a5568; background-color: white;}
+QComboBox.FilterCombo { padding: 8px 12px; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 14px; background-color: white; color: #4a5568; }
+
+/* Room Card */
+QFrame.RoomCard { background-color: white; border: 1px solid #e2e8f0; border-radius: 12px; }
+QLabel.RoomName { color: #1a202c; font-size: 18px; font-weight: bold; }
+QLabel.RoomPrice { color: #0298a0; font-size: 16px; font-weight: bold; }
+QLabel.StatusEmpty { background-color: #e6ffed; color: #38a169; border-radius: 10px; padding: 4px 10px; font-size: 12px; font-weight: bold; }
+QLabel.CardInfo { color: #4a5568; font-size: 13px; }
+QToolButton.BtnMore { border: none; background-color: transparent; font-size: 18px; font-weight: bold; color: #a0aec0; }
+QToolButton.BtnMore:hover { color: #2b455b; }
+
+QPushButton.BtnDetail { background-color: white; color: #0298a0; border: 1px solid #0298a0; border-radius: 6px; padding: 8px; font-weight: bold; }
+QPushButton.BtnDetail:hover { background-color: #e6f2f2; }
+QPushButton.BtnBook { background-color: #0298a0; color: white; border-radius: 6px; padding: 8px; font-weight: bold; }
+QPushButton.BtnBook:hover { background-color: #027a80; }
+
+/* Pagination */
+QLabel#lblPagination { color: #718096; font-size: 13px; }
+QPushButton.PageBtn { background-color: transparent; color: #4a5568; border: none; font-size: 13px; font-weight: bold; padding: 5px 10px; border-radius: 4px; }
+QPushButton.PageBtn:hover { background-color: #edf2f7; }
+QPushButton.PageBtnActive { background-color: #0298a0; color: white; border: none; font-size: 13px; font-weight: bold; padding: 5px 10px; border-radius: 4px; }</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayoutMain">
+    <property name="spacing"><number>0</number></property>
+    <property name="leftMargin"><number>0</number></property>
+    <property name="topMargin"><number>0</number></property>
+    <property name="rightMargin"><number>0</number></property>
+    <property name="bottomMargin"><number>0</number></property>
+    <item>
+     <widget class="QWidget" name="headerWidget" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>75</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>75</height>
+       </size>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayoutHeader">
+       <property name="spacing"><number>20</number></property>
+       <property name="leftMargin"><number>20</number></property>
+       <property name="rightMargin"><number>30</number></property>
+       <item>
+        <widget class="QLabel" name="logoIcon">
+         <property name="minimumSize">
+          <size>
+           <width>40</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>🏠</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="logoText">
+         <property name="text">
+          <string>Quản lý phòng trọ</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacerHeader1">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblPageTitle">
+         <property name="text">
+          <string>Đăng ký phòng</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacerHeader2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="lblAvatar">
+         <property name="minimumSize">
+          <size>
+           <width>48</width>
+           <height>48</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>48</width>
+           <height>48</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>👤</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayoutBody">
+      <property name="spacing"><number>0</number></property>
+      <item>
+       <widget class="QWidget" name="sidebarWidget" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>230</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>230</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayoutSidebar">
+         <property name="spacing"><number>10</number></property>
+         <property name="leftMargin"><number>0</number></property>
+         <property name="topMargin"><number>20</number></property>
+         <property name="rightMargin"><number>0</number></property>
+         <property name="bottomMargin"><number>20</number></property>
+         <item>
+          <widget class="QPushButton" name="btnNavRegister">
+           <property name="text">
+            <string>🏠  Đăng ký phòng</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnNavAccount">
+           <property name="text">
+            <string>👤  Quản lý tài khoản</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacerSidebar">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QStackedWidget" name="stackGuestMain">
+        <widget class="QWidget" name="pageRong" />
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

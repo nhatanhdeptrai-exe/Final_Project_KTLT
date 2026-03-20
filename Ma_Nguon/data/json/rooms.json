@@ -25,7 +25,7 @@
       "area": 25.0,
       "price": 3500000,
       "deposit": 3500000,
-      "status": "available",
+      "status": "occupied",
       "description": "Phòng đơn tầng 1",
       "amenities": [
         "Điều hòa",
@@ -34,7 +34,7 @@
       "room_type": "Phòng đơn",
       "images": [],
       "created_at": "2026-01-01T00:00:00",
-      "updated_at": "2026-03-01T00:00:00"
+      "updated_at": "2026-03-21T04:58:09.963572"
     },
     {
       "id": 3,
