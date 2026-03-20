@@ -179,8 +179,8 @@ class AuthWindow(QWidget, Ui_AuthWindow):
                 from ui.UI_Guest.views.guest_window import GuestWindow
                 self._main_window = GuestWindow(user, self.container)
             self._main_window.show()
-        except ImportError:
-            QMessageBox.information(self, "OK", f"Đăng nhập thành công!\nRole: {user.role}\n(Giao diện đang được xây dựng)")
+        except Exception as e:
+            QMessageBox.information(self, "Lỗi", f"Không thể mở giao diện:\n{e}")
             self.show()
 
     # === Register ===

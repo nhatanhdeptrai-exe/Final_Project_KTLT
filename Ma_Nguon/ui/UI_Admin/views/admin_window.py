@@ -1,0 +1,322 @@
+"""
+AdminWindow — Cửa sổ chính cho Admin.
+Load giao diện từ UI đã sinh, gắn sidebar navigation + sub-pages.
+"""
+from PyQt6.QtWidgets import (
+    QMainWindow, QWidget, QButtonGroup, QLabel, QVBoxLayout,
+    QFrame, QHBoxLayout, QPushButton
+)
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont, QCursor
+from ui.UI_Admin.generated.ui_admin_main_window import Ui_MainWindow
+
+
+class AdminWindow(QMainWindow):
+    """Cửa sổ chính giao diện Admin (shell)."""
+
+    # (sidebar button attr, page title, generated module or None for custom)
+    PAGE_DEFS = [
+        ("navTrangChu",       "Trang chủ",            "ui_trang_chu"),
+        ("navQuanLyPhong",    "Quản lý phòng",        None),            # Custom view
+        ("navQuanLyKhachThu", "Quản lý khách thuê",   None),            # Custom view
+        ("navHoaDon",         "Hóa đơn / Thanh toán", None),            # Custom view
+        ("navSuaChua",        "Yêu cầu sửa chữa",    None),            # Custom view
+        ("navThongBao",       "Thông báo",            None),            # Custom view
+        ("navTaiKhoan",       "Quản lý tài khoản",   None),            # Custom view
+    ]
+
+    # Map notification targets to page indices
+    TARGET_PAGE_MAP = {
+        'invoice': 3,  # navHoaDon
+        'repair': 4,   # navSuaChua
+        'room': 1,     # navQuanLyPhong
+        'guest': 2,    # navQuanLyKhachThu
+    }
+
+    def __init__(self, user=None, container=None):
+        super().__init__()
+        self.user = user
+        self.container = container
+        self._notif_view = None
+
+        # Load generated UI shell
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+
+        # Load sub-pages into stack
+        self._pages = []
+        self._load_pages()
+
+        # Setup sidebar navigation
+        self._setup_navigation()
+
+        # Setup header buttons (bell + avatar)
+        self._setup_header()
+
+        # Default: first page
+        self._navigate(0)
+
+    # ── Load Pages ──────────────────────────────────────────
+    def _load_pages(self):
+        """Dynamically import and add each sub-page to mainContentStack."""
+        stack = self.ui.mainContentStack
+
+        # Remove the default empty page
+        while stack.count() > 0:
+            w = stack.widget(0)
+            stack.removeWidget(w)
+            w.deleteLater()
+
+        for btn_name, title, module_name in self.PAGE_DEFS:
+            if module_name is None:
+                page_widget = self._create_custom_page(btn_name, title)
+            else:
+                page_widget = self._create_generated_page(module_name, title)
+            stack.addWidget(page_widget)
+            self._pages.append(page_widget)
+
+    def _create_custom_page(self, btn_name: str, title: str) -> QWidget:
+        """Tạo trang tùy chỉnh (có logic CRUD)."""
+        if btn_name == "navQuanLyPhong":
+            from ui.UI_Admin.views.room_management_view import RoomManagementView
+            room_service = self.container.room_service if self.container else None
+            return RoomManagementView(room_service=room_service)
+        if btn_name == "navQuanLyKhachThu":
+            from ui.UI_Admin.views.guest_management_view import GuestManagementView
+            return GuestManagementView(
+                guest_service=self.container.guest_service if self.container else None,
+                contract_service=self.container.contract_service if self.container else None,
+                room_service=self.container.room_service if self.container else None,
+            )
+        if btn_name == "navHoaDon":
+            from ui.UI_Admin.views.invoice_management_view import InvoiceManagementView
+            return InvoiceManagementView(
+                invoice_service=self.container.invoice_service if self.container else None,
+                contract_service=self.container.contract_service if self.container else None,
+                guest_service=self.container.guest_service if self.container else None,
+                room_service=self.container.room_service if self.container else None,
+            )
+        if btn_name == "navSuaChua":
+            from ui.UI_Admin.views.repair_management_view import RepairManagementView
+            return RepairManagementView(
+                repair_service=self.container.repair_request_service if self.container else None,
+                guest_service=self.container.guest_service if self.container else None,
+                room_service=self.container.room_service if self.container else None,
+                contract_service=self.container.contract_service if self.container else None,
+            )
+        if btn_name == "navThongBao":
+            from ui.UI_Admin.views.notification_view import NotificationView
+            self._notif_view = NotificationView()
+            self._notif_view.navigate_requested.connect(self._on_notif_navigate)
+            return self._notif_view
+        if btn_name == "navTaiKhoan":
+            from ui.UI_Admin.views.account_management_view import AccountManagementView
+            view = AccountManagementView(
+                user=self.user,
+                auth_service=self.container.auth_service if self.container else None,
+            )
+            view.logout_requested.connect(self._on_logout)
+            return view
+        # Fallback
+        return self._create_placeholder(title)
+
+    def _create_generated_page(self, module_name: str, title: str) -> QWidget:
+        """Import a generated UI module and build a QWidget page from it."""
+        try:
+            import importlib
+            mod = importlib.import_module(
+                f"ui.UI_Admin.generated.{module_name}"
+            )
+            ui_class = mod.Ui_MainWindow
+            page = QWidget()
+            ui = ui_class()
+            ui.setupUi(page)
+            page._ui = ui
+            return page
+        except Exception as e:
+            return self._create_placeholder(title, str(e))
+
+    def _create_placeholder(self, title: str, error: str = None) -> QWidget:
+        """Tạo trang placeholder khi chưa implement hoặc lỗi."""
+        page = QWidget()
+        layout = QVBoxLayout(page)
+        msg = f"⚠️ Không thể tải trang: {title}\n{error}" if error else f"🚧 {title} — Đang xây dựng"
+        lbl = QLabel(msg)
+        lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lbl.setStyleSheet("color: #e53e3e; font-size: 14px;")
+        layout.addWidget(lbl)
+        return page
+
+    # ── Header Buttons ──────────────────────────────────────
+    def _setup_header(self):
+        """Wire bell + avatar buttons in header."""
+        bell = getattr(self.ui, 'btnBell', None)
+        if bell:
+            bell.clicked.connect(self._on_bell_clicked)
+
+        avatar = getattr(self.ui, 'lblAvatar', None)
+        if avatar:
+            avatar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+            avatar.mousePressEvent = lambda ev: self._navigate(6)  # navTaiKhoan index
+
+    def _on_bell_clicked(self):
+        """Show notification popup below bell button."""
+        import time
+        from ui.UI_Admin.views.notification_view import _generate_sample_notifications, _time_ago
+
+        # Toggle: if popup just closed (within 300ms), don't reopen
+        now = time.time()
+        if hasattr(self, '_bell_closed_at') and (now - self._bell_closed_at) < 0.3:
+            return
+
+        # Close existing popup if any
+        if hasattr(self, '_bell_popup') and self._bell_popup and self._bell_popup.isVisible():
+            self._bell_popup.close()
+            self._bell_popup = None
+            return
+
+        bell = self.ui.btnBell
+
+        popup = QFrame(self, Qt.WindowType.Popup)
+        popup.setStyleSheet("""
+            QFrame { background: white; border: 1px solid #e2e8f0; border-radius: 10px; }
+        """)
+        popup.setFixedWidth(380)
+        self._bell_popup = popup
+
+        p_lay = QVBoxLayout(popup)
+        p_lay.setContentsMargins(0, 8, 0, 8)
+        p_lay.setSpacing(0)
+
+        # Header
+        header_w = QWidget()
+        header_w.setFixedHeight(40)
+        h_lay = QHBoxLayout(header_w)
+        h_lay.setContentsMargins(16, 8, 16, 8)
+        t = QLabel("🔔 Thông báo")
+        t.setStyleSheet("font-weight: bold; font-size: 14px; color: #2d3748;")
+        h_lay.addWidget(t)
+        h_lay.addStretch()
+        from PyQt6.QtWidgets import QPushButton
+        btn_all = QPushButton("Xem tất cả →")
+        btn_all.setStyleSheet(
+            "QPushButton { color: #0b8480; font-size: 12px; font-weight: bold; "
+            "border: none; background: transparent; }"
+            "QPushButton:hover { color: #065e5b; }")
+        btn_all.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        btn_all.clicked.connect(lambda: (popup.close(), self._navigate(5)))
+        h_lay.addWidget(btn_all)
+        p_lay.addWidget(header_w)
+
+        # Divider
+        div = QFrame()
+        div.setFixedHeight(1)
+        div.setStyleSheet("background-color: #edf2f7;")
+        p_lay.addWidget(div)
+
+        # Notification items (latest 5)
+        notifs = self._notif_view._notifications[:5] if self._notif_view else _generate_sample_notifications()[:5]
+        for notif in notifs:
+            row_w = QPushButton()
+            row_w.setFixedHeight(55)
+            row_w.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+            row_w.setStyleSheet(
+                "QPushButton { border: none; background: white; border-bottom: 1px solid #f0f0f0; "
+                "text-align: left; padding: 0; }"
+                "QPushButton:hover { background-color: #f7fafc; }")
+
+            rl = QHBoxLayout(row_w)
+            rl.setContentsMargins(16, 4, 16, 4)
+            rl.setSpacing(12)
+
+            icon = QLabel(notif['icon'])
+            icon.setFixedSize(30, 30)
+            icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            icon.setStyleSheet(
+                f"background-color: {notif['icon_bg']}; color: {notif['icon_color']}; "
+                f"border-radius: 15px; font-size: 14px; border: none;")
+            rl.addWidget(icon)
+
+            txt = QLabel(notif['text'])
+            txt.setStyleSheet(
+                f"font-size: 12px; border: none; "
+                f"{'font-weight:bold;color:#2d3748;' if not notif['read'] else 'color:#4a5568;'}")
+            txt.setWordWrap(True)
+            rl.addWidget(txt, 1)
+
+            time_l = QLabel(_time_ago(notif['time']))
+            time_l.setStyleSheet(
+                f"font-size: 10px; border: none; "
+                f"color: {'#0b8480' if not notif['read'] else '#a0aec0'};")
+            rl.addWidget(time_l)
+
+            if not notif['read']:
+                dot = QLabel()
+                dot.setFixedSize(8, 8)
+                dot.setStyleSheet("background-color: #e53e3e; border-radius: 4px; border: none;")
+                rl.addWidget(dot)
+
+            target = notif.get('target', '')
+            row_w.clicked.connect(lambda _, t=target: (popup.close(), self._on_notif_navigate(t)))
+            p_lay.addWidget(row_w)
+
+        # Show below bell
+        pos = bell.mapToGlobal(bell.rect().bottomRight())
+        pos.setX(pos.x() - 380)
+        popup.move(pos)
+
+        # Track close time for toggle behavior
+        import time as _time
+        _orig_close = popup.closeEvent
+        def _on_popup_close(ev):
+            self._bell_closed_at = _time.time()
+            self._bell_popup = None
+            if _orig_close:
+                _orig_close(ev)
+        popup.closeEvent = _on_popup_close
+
+        popup.show()
+
+    def _on_notif_navigate(self, target: str):
+        """Navigate to target page based on notification."""
+        idx = self.TARGET_PAGE_MAP.get(target, 5)  # default to notification page
+        self._navigate(idx)
+
+    # ── Navigation ──────────────────────────────────────────
+    def _setup_navigation(self):
+        """Gắn signal cho từng nút sidebar."""
+        self._nav_group = QButtonGroup(self)
+        self._nav_group.setExclusive(True)
+
+        for idx, (btn_name, _title, _mod) in enumerate(self.PAGE_DEFS):
+            btn = getattr(self.ui, btn_name, None)
+            if btn is None:
+                continue
+            self._nav_group.addButton(btn, idx)
+            btn.clicked.connect(lambda checked, i=idx: self._navigate(i))
+
+        for btn in self._nav_group.buttons():
+            btn.setChecked(False)
+
+    def _navigate(self, index: int):
+        """Chuyển trang trong mainContentStack."""
+        if index < 0 or index >= len(self.PAGE_DEFS):
+            return
+
+        btn_name, title, _mod = self.PAGE_DEFS[index]
+
+        # Update header title
+        self.ui.lblPageTitle.setText(title)
+
+        # Update checked state
+        for btn in self._nav_group.buttons():
+            btn.setChecked(False)
+        btn = getattr(self.ui, btn_name, None)
+        if btn:
+            btn.setChecked(True)
+
+        # Switch page
+        self.ui.mainContentStack.setCurrentIndex(index)
+
+    def _on_logout(self):
+        self.close()

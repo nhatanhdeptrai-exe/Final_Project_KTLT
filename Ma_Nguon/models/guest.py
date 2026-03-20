@@ -29,8 +29,8 @@ class Guest:
     def from_dict(cls, data: dict) -> 'Guest':
         return cls(
             id=data.get('id'), user_id=data.get('user_id', 0),
-            full_name=data.get('full_name', ''), phone=data.get('phone', ''),
-            email=data.get('email', ''), id_card=data.get('id_card', ''),
-            address=data.get('address', ''), occupation=data.get('occupation', ''),
+            full_name=str(data.get('full_name', '')), phone=str(data.get('phone', '')),
+            email=str(data.get('email', '')), id_card=str(data.get('id_card', '')),
+            address=str(data.get('address', '')), occupation=str(data.get('occupation', '')),
             created_at=data.get('created_at'), updated_at=data.get('updated_at'),
         )
