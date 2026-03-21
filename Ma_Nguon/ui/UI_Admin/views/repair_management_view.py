@@ -12,6 +12,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont, QColor
 
 from models.repair_request import RepairRequest
+from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 
 # ── Stat Card ────────────────────────────────────────────
@@ -150,9 +151,7 @@ class RepairDetailDialog(QDialog):
         self.accept()
 
     def _on_delete(self):
-        reply = QMessageBox.question(self, "Xác nhận", f"Xóa yêu cầu YC{self.req.id:03d}?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        if reply == QMessageBox.StandardButton.Yes:
+        if ask_question(self, "Xác nhận", f"Xóa yêu cầu YC{self.req.id:03d}?"):
             self.delete_requested.emit(self.req.id); self.accept()
 
 
@@ -210,9 +209,9 @@ class RepairCreateDialog(QDialog):
 
     def _on_save(self):
         if self.cb_guest.currentIndex() == 0:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng chọn khách thuê"); return
+            show_warning(self, "Lỗi", "Vui lòng chọn khách thuê"); return
         if not self.inp_desc.toPlainText().strip():
-            QMessageBox.warning(self, "Lỗi", "Vui lòng mô tả sự cố"); return
+            show_warning(self, "Lỗi", "Vui lòng mô tả sự cố"); return
 
         guest_id = self.cb_guest.currentData()
         info = self.guests_rooms.get(guest_id, ('','',''))
@@ -449,10 +448,10 @@ class RepairManagementView(QWidget):
                 title=data['title'], description=data['description'],
                 priority=data['priority'])
             if ok:
-                QMessageBox.information(self, "Thành công", msg)
+                show_success(self, "Thành công", msg)
                 self.refresh_data()
             else:
-                QMessageBox.warning(self, "Lỗi", msg)
+                show_warning(self, "Lỗi", msg)
 
     def _on_detail(self, req):
         guest = self._guests_by_id.get(req.guest_id)
@@ -468,15 +467,15 @@ class RepairManagementView(QWidget):
     def _on_status_change(self, req_id, new_status):
         ok, msg = self.repair_service.update_status(req_id, new_status)
         if ok:
-            QMessageBox.information(self, "Thành công", msg)
+            show_success(self, "Thành công", msg)
             self.refresh_data()
         else:
-            QMessageBox.warning(self, "Lỗi", msg)
+            show_warning(self, "Lỗi", msg)
 
     def _on_delete(self, req_id):
         ok = self.repair_service.repair_repo.delete(req_id)
         if ok:
-            QMessageBox.information(self, "Thành công", "Xóa yêu cầu thành công")
+            show_success(self, "Thành công", "Xóa yêu cầu thành công")
             self.refresh_data()
         else:
-            QMessageBox.warning(self, "Lỗi", "Không thể xóa")
+            show_warning(self, "Lỗi", "Không thể xóa")

@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (QWidget, QMessageBox, QDialog, QVBoxLayout,
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QIcon, QPixmap, QPainter, QColor, QFont
 from ui.UI_Common.generated.auth_main_ui import Ui_AuthWindow  # File tự sinh từ .ui — KHÔNG CHỈNH SỬA
+from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 
 # === Helper: Tạo icon từ Unicode ===
@@ -97,7 +98,7 @@ class OTPDialog(QDialog):
     def verify(self):
         self.otp_code = self.inp.text().strip()
         if len(self.otp_code) != 6:
-            QMessageBox.warning(self, "Lỗi", "Nhập đủ 6 số")
+            show_warning(self, "Lỗi", "Nhập đủ 6 số")
             return
         self.accept()
 
@@ -166,7 +167,7 @@ class AuthWindow(QWidget, Ui_AuthWindow):
         if ok:
             self._open_main_window(user)
         else:
-            QMessageBox.warning(self, "Lỗi", msg)
+            show_warning(self, "Lỗi", msg)
 
     def _open_main_window(self, user):
         """Phân luồng giao diện dựa trên role."""
@@ -208,7 +209,7 @@ class AuthWindow(QWidget, Ui_AuthWindow):
                     self._main_window = GuestRegisterWindow(user, self.container)
             self._main_window.show()
         except Exception as e:
-            QMessageBox.information(self, "Lỗi", f"Không thể mở giao diện:\n{e}")
+            show_info(self, "Lỗi", f"Không thể mở giao diện:\n{e}")
             self.show()
 
     # === Register ===
@@ -220,9 +221,9 @@ class AuthWindow(QWidget, Ui_AuthWindow):
         confirm = self.inpRegPassConfirm.text()
 
         if not (name and phone and email and pwd):
-            return QMessageBox.warning(self, "Lỗi", "Nhập đủ thông tin")
+            return show_warning(self, "Lỗi", "Nhập đủ thông tin")
         if pwd != confirm:
-            return QMessageBox.warning(self, "Lỗi", "Mật khẩu không khớp")
+            return show_warning(self, "Lỗi", "Mật khẩu không khớp")
 
         if self.auth_service.email_service and self.auth_service.email_service.is_configured():
             dlg = OTPDialog(email, self)
@@ -237,13 +238,13 @@ class AuthWindow(QWidget, Ui_AuthWindow):
                     if ok:
                         ok2, msg2 = self.auth_service.register(name, phone, email, pwd, confirm)
                         if ok2:
-                            QMessageBox.information(self, "OK", "Đăng ký thành công!")
+                            show_success(self, "Thành công", "Đăng ký thành công!")
                             self.stackAuth.setCurrentIndex(0)
                         else:
-                            QMessageBox.warning(self, "Lỗi", msg2)
+                            show_warning(self, "Lỗi", msg2)
                         return
                     else:
-                        QMessageBox.warning(self, "Lỗi", msg)
+                        show_warning(self, "Lỗi", msg)
                 elif res == 2:
                     dlg = OTPDialog(email, self)
                     self._worker = OTPWorker(self.auth_service.send_registration_otp, email)
@@ -254,21 +255,21 @@ class AuthWindow(QWidget, Ui_AuthWindow):
         else:
             ok, msg = self.auth_service.register(name, phone, email, pwd, confirm)
             if ok:
-                QMessageBox.information(self, "OK", msg)
+                show_success(self, "Thành công", msg)
                 self.stackAuth.setCurrentIndex(0)
             else:
-                QMessageBox.warning(self, "Lỗi", msg)
+                show_warning(self, "Lỗi", msg)
 
     # === Quên mật khẩu ===
     def forgot(self):
         if not self.auth_service.email_service or not self.auth_service.email_service.is_configured():
-            return QMessageBox.warning(self, "Lỗi", "Chưa cấu hình mail, hãy báo Admin")
+            return show_warning(self, "Lỗi", "Chưa cấu hình mail, hãy báo Admin")
 
         try:
             dlg = ForgotPasswordDialog(self.auth_service, self)
             dlg.exec()
         except Exception as e:
-            QMessageBox.critical(self, "Lỗi", f"Không thể mở dialog quên mật khẩu:\n{e}")
+            show_error(self, "Lỗi", f"Không thể mở dialog quên mật khẩu:\n{e}")
 
 
 # =============================================
@@ -276,6 +277,7 @@ class AuthWindow(QWidget, Ui_AuthWindow):
 # File UI tự sinh: dialog_quen_mat_khau_ui.py (KHÔNG SỬA)
 # =============================================
 from ui.UI_Common.generated.dialog_quen_mat_khau_ui import Ui_DialogForgotPass
+from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 
 class ForgotPasswordDialog(QDialog, Ui_DialogForgotPass):
@@ -306,7 +308,7 @@ class ForgotPasswordDialog(QDialog, Ui_DialogForgotPass):
         """Bước 1: Gửi OTP đến email (chạy ngầm)."""
         email = self.inpForgotEmail.text().strip()
         if not email or '@' not in email:
-            return QMessageBox.warning(self, "Lỗi", "Vui lòng nhập email hợp lệ")
+            return show_warning(self, "Lỗi", "Vui lòng nhập email hợp lệ")
 
         self.btnSendOTP.setEnabled(False)
         self.btnSendOTP.setText("Đang gửi...")
@@ -322,33 +324,33 @@ class ForgotPasswordDialog(QDialog, Ui_DialogForgotPass):
         if success:
             self.stackForgotPass.setCurrentIndex(1)  # Chuyển sang trang OTP
         else:
-            QMessageBox.warning(self, "Lỗi", message)
+            show_warning(self, "Lỗi", message)
 
     def _verify_otp(self):
         """Bước 2: Xác nhận OTP."""
         otp = self.inpOTP.text().strip()
         if len(otp) != 6:
-            return QMessageBox.warning(self, "Lỗi", "Nhập đủ 6 số")
+            return show_warning(self, "Lỗi", "Nhập đủ 6 số")
 
         email = self.inpForgotEmail.text().strip()
         ok, msg = self.auth_service.email_service.verify_otp(email, otp)
         if ok:
             self.stackForgotPass.setCurrentIndex(2)  # Chuyển sang trang đổi mật khẩu
         else:
-            QMessageBox.warning(self, "Lỗi", msg)
+            show_warning(self, "Lỗi", msg)
 
     def _reset_password(self):
         """Bước 3: Đặt mật khẩu mới."""
         pwd = self.inpNewPass.text()
         confirm = self.inpNewPassConfirm.text()
         if len(pwd) < 6:
-            return QMessageBox.warning(self, "Lỗi", "Mật khẩu phải có ít nhất 6 ký tự")
+            return show_warning(self, "Lỗi", "Mật khẩu phải có ít nhất 6 ký tự")
         if pwd != confirm:
-            return QMessageBox.warning(self, "Lỗi", "Mật khẩu không khớp")
+            return show_warning(self, "Lỗi", "Mật khẩu không khớp")
 
         email = self.inpForgotEmail.text().strip()
         ok, msg = self.auth_service.reset_password(email, pwd)
         if ok:
             self.stackForgotPass.setCurrentIndex(3)  # Chuyển sang trang thành công
         else:
-            QMessageBox.warning(self, "Lỗi", msg)
+            show_warning(self, "Lỗi", msg)

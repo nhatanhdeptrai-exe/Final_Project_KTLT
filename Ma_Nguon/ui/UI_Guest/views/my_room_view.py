@@ -18,6 +18,7 @@ import os
 from PyQt6.QtWidgets import QWidget, QMessageBox
 from PyQt6.QtCore import Qt
 from ui.UI_Guest.generated.ui_phong_cua_toi import Ui_GuestMainWindow
+from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 class MyRoomView(QWidget):
     """Widget Phòng của tôi — nhúng GuestWindow."""
@@ -197,10 +198,10 @@ class MyRoomView(QWidget):
         priority = self.ui.inpMntPriority.text().strip() if hasattr(self.ui, 'inpMntPriority') else "medium"
 
         if not title:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập mục cần sửa chữa")
+            show_warning(self, "Lỗi", "Vui lòng nhập mục cần sửa chữa")
             return
         if not desc:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng mô tả chi tiết")
+            show_warning(self, "Lỗi", "Vui lòng mô tả chi tiết")
             return
 
         # Map priority text to English if needed
@@ -234,16 +235,16 @@ class MyRoomView(QWidget):
                     description=desc,
                     priority=priority_en,
                 )
-                QMessageBox.information(self, "Thành công", msg)
+                show_success(self, "Thành công", msg)
                 self.ui.inpMntTitle.clear()
                 self.ui.inpMntDesc.clear()
                 if hasattr(self.ui, 'inpMntPriority'):
                     self.ui.inpMntPriority.clear()
                 self.ui.stackGuestMain.setCurrentIndex(0)
             except Exception as e:
-                QMessageBox.warning(self, "Lỗi", f"Không thể gửi: {e}")
+                show_warning(self, "Lỗi", f"Không thể gửi: {e}")
         else:
-            QMessageBox.information(self, "Thành công", "Gửi yêu cầu sửa chữa thành công (Demo)!")
+            show_success(self, "Thành công", "Gửi yêu cầu sửa chữa thành công (Demo)!")
             self.ui.inpMntTitle.clear()
             self.ui.inpMntDesc.clear()
             if hasattr(self.ui, 'inpMntPriority'):
@@ -251,10 +252,10 @@ class MyRoomView(QWidget):
             self.ui.stackGuestMain.setCurrentIndex(0)
 
     def _view_contract(self):
-        QMessageBox.information(self, "Chi tiết", "Chức năng xem PDF chi tiết đang được phát triển.")
+        show_info(self, "Chi tiết", "Chức năng xem PDF chi tiết đang được phát triển.")
         
     def _print_contract(self):
-        QMessageBox.information(self, "In hợp đồng", "Đang gửi tín hiệu đến máy in hợp đồng...")
+        show_info(self, "In hợp đồng", "Đang gửi tín hiệu đến máy in hợp đồng...")
         
     def _register_new_room(self):
-        QMessageBox.information(self, "Đăng ký", "Để đăng ký phòng mới vui lòng liên hệ Ban quản lý tòa nhà.")
+        show_info(self, "Đăng ký", "Để đăng ký phòng mới vui lòng liên hệ Ban quản lý tòa nhà.")

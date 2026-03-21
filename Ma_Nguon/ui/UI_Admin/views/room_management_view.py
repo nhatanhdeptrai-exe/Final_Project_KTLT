@@ -17,6 +17,7 @@ from PyQt6.QtGui import QFont, QPixmap, QIcon
 from config.constants import BASE_DIR
 from models.room import Room
 from ui.UI_Admin.generated.ui_dialog_them_phong import Ui_DialogFormPhong
+from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 # Thư mục lưu ảnh phòng
 ROOM_IMAGES_DIR = BASE_DIR / 'data' / 'room_images'
@@ -220,16 +221,16 @@ class RoomFormDialog(QDialog):
         price_str = self.ui.inpPrice.text().strip().replace('.', '').replace(',', '')
 
         if not name:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập tên phòng")
+            show_warning(self, "Lỗi", "Vui lòng nhập tên phòng")
             return
         if not price_str:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập giá phòng")
+            show_warning(self, "Lỗi", "Vui lòng nhập giá phòng")
             return
 
         try:
             price = int(price_str)
         except ValueError:
-            QMessageBox.warning(self, "Lỗi", "Giá phòng không hợp lệ")
+            show_warning(self, "Lỗi", "Giá phòng không hợp lệ")
             return
 
         area_str = self.ui.inpArea.text().strip()
@@ -385,12 +386,9 @@ class RoomDetailDialog(QDialog):
         layout.addLayout(btn_row)
 
     def _on_delete(self):
-        reply = QMessageBox.question(
-            self, "Xác nhận xóa",
+        if ask_danger(self, "Xác nhận xóa",
             f"Bạn có chắc muốn xóa phòng {self.room.room_number}?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-        )
-        if reply == QMessageBox.StandardButton.Yes:
+            yes_text="Xóa", no_text="Hủy bỏ"):
             self.delete_requested.emit(self.room.id)
             self.accept()
 
@@ -535,10 +533,10 @@ class RoomManagementView(QWidget):
                     if new_room:
                         new_room.images = data['images']
                         self.room_service.update_room(new_room)
-                QMessageBox.information(self, "Thành công", msg)
+                show_success(self, "Thành công", msg)
                 self.refresh_rooms()
             else:
-                QMessageBox.warning(self, "Lỗi", msg)
+                show_warning(self, "Lỗi", msg)
 
     def _on_edit(self, room: Room):
         dlg = RoomFormDialog(room=room, parent=self)
@@ -553,10 +551,10 @@ class RoomManagementView(QWidget):
             room.images = data.get('images', room.images)
             ok, msg = self.room_service.update_room(room)
             if ok:
-                QMessageBox.information(self, "Thành công", msg)
+                show_success(self, "Thành công", msg)
                 self.refresh_rooms()
             else:
-                QMessageBox.warning(self, "Lỗi", msg)
+                show_warning(self, "Lỗi", msg)
 
     def _on_detail(self, room: Room):
         dlg = RoomDetailDialog(room, parent=self)
@@ -566,7 +564,7 @@ class RoomManagementView(QWidget):
     def _on_delete_room(self, room_id: int):
         ok, msg = self.room_service.delete_room(room_id)
         if ok:
-            QMessageBox.information(self, "Thành công", msg)
+            show_success(self, "Thành công", msg)
             self.refresh_rooms()
         else:
-            QMessageBox.warning(self, "Lỗi", msg)
+            show_warning(self, "Lỗi", msg)

@@ -12,6 +12,7 @@ from PyQt6.QtCore import Qt, pyqtSignal, QDate
 from PyQt6.QtGui import QFont, QColor
 
 from models.guest import Guest
+from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 from ui.UI_Admin.generated.ui_dialog_them_khach_thue import Ui_DialogFormKhachThue
 
 
@@ -122,21 +123,21 @@ class GuestFormDialog(QDialog):
 
         # ── Bắt buộc nhập đủ tất cả ──
         if not name:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập họ tên"); return
+            show_warning(self, "Lỗi", "Vui lòng nhập họ tên"); return
         if not phone:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập số điện thoại"); return
+            show_warning(self, "Lỗi", "Vui lòng nhập số điện thoại"); return
         if not phone.isdigit() or len(phone) != 10:
-            QMessageBox.warning(self, "Lỗi", "Số điện thoại phải đủ 10 chữ số"); return
+            show_warning(self, "Lỗi", "Số điện thoại phải đủ 10 chữ số"); return
         if not id_card:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập CCCD/CMND"); return
+            show_warning(self, "Lỗi", "Vui lòng nhập CCCD/CMND"); return
         if not id_card.isdigit() or len(id_card) != 12:
-            QMessageBox.warning(self, "Lỗi", "CCCD/CMND phải đủ 12 chữ số"); return
+            show_warning(self, "Lỗi", "CCCD/CMND phải đủ 12 chữ số"); return
         if not address:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập địa chỉ"); return
+            show_warning(self, "Lỗi", "Vui lòng nhập địa chỉ"); return
         if self.ui.cbRoom.currentIndex() == 0:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng chọn phòng"); return
+            show_warning(self, "Lỗi", "Vui lòng chọn phòng"); return
         if not price_str:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập giá thuê"); return
+            show_warning(self, "Lỗi", "Vui lòng nhập giá thuê"); return
 
         dob = self.ui.inpDob.date().toString("yyyy-MM-dd")
         start_date = self.ui.inpStartDate.date().toString("yyyy-MM-dd")
@@ -303,11 +304,9 @@ class GuestDetailDialog(QDialog):
         outer.addWidget(scroll)
 
     def _on_delete(self):
-        reply = QMessageBox.question(
-            self, "Xác nhận xóa",
+        if ask_danger(self, "Xác nhận xóa",
             f"Bạn có chắc muốn xóa khách {self.guest.full_name}?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        if reply == QMessageBox.StandardButton.Yes:
+            yes_text="Xóa", no_text="Hủy bỏ"):
             self.delete_requested.emit(self.guest.id)
             self.accept()
 
@@ -558,10 +557,10 @@ class GuestManagementView(QWidget):
             )
             ok, msg = self.guest_service.create_guest(guest)
             if ok:
-                QMessageBox.information(self, "Thành công", msg)
+                show_success(self, "Thành công", msg)
                 self.refresh_data()
             else:
-                QMessageBox.warning(self, "Lỗi", msg)
+                show_warning(self, "Lỗi", msg)
 
     def _on_edit(self, guest: Guest):
         rooms = self.room_service.get_all_rooms() if self.room_service else []
@@ -574,10 +573,10 @@ class GuestManagementView(QWidget):
             guest.address = data['address']
             ok, msg = self.guest_service.update_guest(guest)
             if ok:
-                QMessageBox.information(self, "Thành công", msg)
+                show_success(self, "Thành công", msg)
                 self.refresh_data()
             else:
-                QMessageBox.warning(self, "Lỗi", msg)
+                show_warning(self, "Lỗi", msg)
 
     def _on_detail(self, guest: Guest, row_data: dict):
         contract = row_data.get('contract')
@@ -595,17 +594,15 @@ class GuestManagementView(QWidget):
         dlg.exec()
 
     def _on_delete(self, guest: Guest):
-        reply = QMessageBox.question(
-            self, "Xác nhận xóa",
+        if ask_danger(self, "Xác nhận xóa",
             f"Bạn có chắc muốn xóa khách {guest.full_name}?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        if reply == QMessageBox.StandardButton.Yes:
+            yes_text="Xóa", no_text="Hủy bỏ"):
             self._on_delete_confirmed(guest.id)
 
     def _on_delete_confirmed(self, guest_id: int):
         ok = self.guest_service.delete_guest(guest_id)
         if ok:
-            QMessageBox.information(self, "Thành công", "Xóa khách thành công")
+            show_success(self, "Thành công", "Xóa khách thành công")
             self.refresh_data()
         else:
-            QMessageBox.warning(self, "Lỗi", "Không thể xóa khách")
+            show_warning(self, "Lỗi", "Không thể xóa khách")

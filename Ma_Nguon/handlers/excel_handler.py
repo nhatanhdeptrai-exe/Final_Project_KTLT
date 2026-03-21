@@ -17,6 +17,11 @@ class ExcelHandler:
         ExcelHandler._ensure_file(file_path)
         try:
             df = pd.read_excel(file_path, engine='openpyxl')
+            # Convert all columns to object to avoid dtype conflicts
+            for col in df.columns:
+                df[col] = df[col].astype(object)
+            # Replace NaN with None
+            df = df.where(df.notna(), None)
             return df
         except:
             return pd.DataFrame()

@@ -19,12 +19,13 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, pyqtSignal, QSize
 from PyQt6.QtGui import QFont, QPixmap
+from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 from config.constants import BASE_DIR
 from models.room import Room
 from models.contract import Contract
 
-QR_IMAGE_PATH = str(BASE_DIR / 'data' / 'qr_payment.png')
+from ui.UI_Common.bank_utils import load_bank_info, get_qr_path, QR_IMAGE_PATH
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -33,15 +34,18 @@ QR_IMAGE_PATH = str(BASE_DIR / 'data' / 'qr_payment.png')
 class BookingWizard(QDialog):
     """Wizard đăng ký phòng 3 bước."""
 
-    def __init__(self, room: Room, user=None, parent=None):
+    def __init__(self, room: Room, user=None, guest_service=None, parent=None):
         super().__init__(parent)
         self.room = room
         self.user = user
+        self.guest_service = guest_service
         self.personal_info = {}
+        self._guest = None
         self.setWindowTitle(f"Đăng ký phòng {room.room_number}")
         self.setFixedSize(620, 650)
         self.setStyleSheet("QDialog { background-color: #f0f4f7; }")
         self._build_ui()
+        self._prefill_guest_data()
 
     def _build_ui(self):
         layout = QVBoxLayout(self)
@@ -145,6 +149,33 @@ class BookingWizard(QDialog):
         outer.addWidget(card, 1)
         return page
 
+    def _prefill_guest_data(self):
+        """Auto-fill step 1 from saved guest record."""
+        if not self.guest_service or not self.user:
+            return
+        try:
+            uid = getattr(self.user, 'id', 0)
+            self._guest = self.guest_service.get_guest_by_user_id(uid)
+        except Exception:
+            self._guest = None
+        if not self._guest:
+            return
+        # Fill fields
+        name = getattr(self._guest, 'full_name', '') or ''
+        if name:
+            self.inp_name.setText(name)
+        dob = getattr(self._guest, 'dob', '') or ''
+        if dob:
+            self.inp_dob.setText(dob)
+        cccd = getattr(self._guest, 'id_card', '') or ''
+        if cccd:
+            self.inp_cccd.setText(cccd)
+        gender = getattr(self._guest, 'gender', '') or ''
+        if gender:
+            idx = self.cmb_gender.findText(gender)
+            if idx >= 0:
+                self.cmb_gender.setCurrentIndex(idx)
+
     def _on_step1_next(self):
         name = self.inp_name.text().strip()
         dob = self.inp_dob.text().strip()
@@ -152,18 +183,43 @@ class BookingWizard(QDialog):
         cccd = self.inp_cccd.text().strip()
 
         if not name:
-            return QMessageBox.warning(self, "Lỗi", "Vui lòng nhập họ và tên")
+            return show_warning(self, "Lỗi", "Vui lòng nhập họ và tên")
         if not dob:
-            return QMessageBox.warning(self, "Lỗi", "Vui lòng nhập năm sinh")
+            return show_warning(self, "Lỗi", "Vui lòng nhập năm sinh")
         if gender == "Chọn giới tính":
-            return QMessageBox.warning(self, "Lỗi", "Vui lòng chọn giới tính")
-        if not cccd:
-            return QMessageBox.warning(self, "Lỗi", "Vui lòng nhập số CCCD/CMND")
+            return show_warning(self, "Lỗi", "Vui lòng chọn giới tính")
+        if not cccd or not cccd.isdigit() or len(cccd) != 12:
+            return show_warning(self, "Lỗi", "Số CCCD/CMND phải đủ 12 chữ số")
 
         self.personal_info = {
             'full_name': name, 'dob': dob,
             'gender': gender, 'id_card': cccd,
         }
+
+        # Save guest info to system
+        if self.guest_service:
+            try:
+                if self._guest:
+                    self._guest.full_name = name
+                    self._guest.dob = dob
+                    self._guest.gender = gender
+                    self._guest.id_card = cccd
+                    self.guest_service.update_guest(self._guest)
+                else:
+                    from models.guest import Guest
+                    new_g = Guest(
+                        user_id=getattr(self.user, 'id', 0),
+                        full_name=name, dob=dob, gender=gender,
+                        id_card=cccd,
+                        phone=getattr(self.user, 'phone', ''),
+                        email=getattr(self.user, 'email', ''),
+                    )
+                    self.guest_service.create_guest(new_g)
+                    self._guest = self.guest_service.get_guest_by_user_id(
+                        getattr(self.user, 'id', 0))
+            except Exception as e:
+                print(f'[BookingWizard] save guest error: {e}')
+
         # Fill contract preview with info
         self._fill_contract_preview()
         self.stack.setCurrentIndex(1)
@@ -300,7 +356,7 @@ class BookingWizard(QDialog):
 
     def _on_step2_next(self):
         if not self.chk_agree.isChecked():
-            return QMessageBox.warning(self, "Lỗi",
+            return show_warning(self, "Lỗi",
                 "Vui lòng đọc và đồng ý với các điều khoản hợp đồng.")
         # Update QR info
         self._fill_qr_info()
@@ -397,6 +453,23 @@ class BookingWizard(QDialog):
             f"Nội dung chuyển khoản:\n"
             f"<b>Phòng {self.room.room_number} - {name} - Đặt cọc</b>"
         )
+        # Load bank info from admin settings
+        bank_info = load_bank_info()
+        if bank_info:
+            bank_name = bank_info.get('bank_name', '')
+            account = bank_info.get('account_number', '')
+            holder = bank_info.get('account_holder', '')
+            self.lbl_bank.setText(f'Ngân hàng: <b>{bank_name} - {account}</b>')
+            self.lbl_owner.setText(f'Chủ tài khoản: <b>{holder}</b>')
+        # Reload QR image
+        qr = get_qr_path()
+        if qr:
+            pixmap = QPixmap(qr)
+            if not pixmap.isNull():
+                scaled = pixmap.scaled(QSize(250, 250),
+                    Qt.AspectRatioMode.KeepAspectRatio,
+                    Qt.TransformationMode.SmoothTransformation)
+                self.lbl_qr.setPixmap(scaled)
 
     # ── Helpers ──
     def _field_label(self, text):
@@ -750,7 +823,7 @@ class DangKyPhongView(QWidget):
         return None
 
     def _on_book(self, room: Room):
-        wizard = BookingWizard(room, self.user, parent=self)
+        wizard = BookingWizard(room, self.user, guest_service=self.guest_service, parent=self)
         if wizard.exec() != QDialog.DialogCode.Accepted:
             return
 
@@ -773,7 +846,7 @@ class DangKyPhongView(QWidget):
                 guest = self._find_guest()
 
         if not guest:
-            QMessageBox.warning(self, "Lỗi",
+            show_warning(self, "Lỗi",
                 "Không thể tạo hồ sơ khách thuê.\nVui lòng liên hệ quản lý.")
             return
 
@@ -787,7 +860,7 @@ class DangKyPhongView(QWidget):
                 pass
 
         if not self.contract_service:
-            QMessageBox.warning(self, "Lỗi", "Dịch vụ hợp đồng chưa sẵn sàng.")
+            show_warning(self, "Lỗi", "Dịch vụ hợp đồng chưa sẵn sàng.")
             return
 
         # Tạo hợp đồng pending

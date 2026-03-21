@@ -11,6 +11,8 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont, QPixmap
 
 from models.user import User
+from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
+from ui.UI_Common.bank_utils import load_bank_info, save_bank_info, get_qr_path
 
 INPUT_STYLE = (
     "QLineEdit { background-color: white; border: none; border-radius: 8px; "
@@ -172,7 +174,7 @@ class AccountManagementView(QWidget):
         # Page 0: Personal Info
         page_personal = QWidget()
         pp_lay = QVBoxLayout(page_personal)
-        pp_lay.setSpacing(12)
+        pp_lay.setSpacing(8)
         pp_lay.setContentsMargins(0, 0, 0, 0)
 
         pp_lay.addWidget(self._label("Họ và tên"))
@@ -209,12 +211,14 @@ class AccountManagementView(QWidget):
         r = QHBoxLayout(); r.addStretch(); r.addWidget(btn_update_personal)
         pp_lay.addLayout(r)
 
+        pp_lay.addStretch()
+
         self.stack.addWidget(page_personal)
 
         # Page 1: Security
         page_security = QWidget()
         ps_lay = QVBoxLayout(page_security)
-        ps_lay.setSpacing(12)
+        ps_lay.setSpacing(8)
         ps_lay.setContentsMargins(0, 0, 0, 0)
 
         ps_lay.addWidget(self._label("Mật khẩu cũ"))
@@ -238,7 +242,7 @@ class AccountManagementView(QWidget):
         self.inp_confirm_pass.setStyleSheet(INPUT_STYLE)
         ps_lay.addWidget(self.inp_confirm_pass)
 
-        ps_lay.addStretch()
+        ps_lay.addSpacing(20)
 
         btn_change_pass = QPushButton("Đổi mật khẩu")
         btn_change_pass.setMinimumSize(160, 50)
@@ -250,6 +254,8 @@ class AccountManagementView(QWidget):
         btn_change_pass.clicked.connect(self._change_password)
         r2 = QHBoxLayout(); r2.addStretch(); r2.addWidget(btn_change_pass)
         ps_lay.addLayout(r2)
+
+        ps_lay.addStretch()
 
         self.stack.addWidget(page_security)
 
@@ -362,6 +368,37 @@ class AccountManagementView(QWidget):
         self.inp_name.setText(self.user.full_name or "")
         self.inp_phone.setText(str(self.user.phone) if self.user.phone else "")
         self.inp_email.setText(self.user.email or "")
+        self._load_bank_data()
+
+    def _load_bank_data(self):
+        """Khôi phục thông tin ngân hàng đã lưu."""
+        info = load_bank_info()
+        if not info:
+            return
+        # Bank name
+        bank_name = info.get('bank_name', '')
+        if bank_name:
+            idx = self.inp_bank_name.findText(bank_name)
+            if idx >= 0:
+                self.inp_bank_name.setCurrentIndex(idx)
+            else:
+                self.inp_bank_name.setEditText(bank_name)
+        # Branch
+        self.inp_bank_branch.setText(info.get('branch', ''))
+        # Holder
+        self.inp_bank_holder.setText(info.get('account_holder', ''))
+        # Account number
+        self.inp_bank_account.setText(info.get('account_number', ''))
+        # QR preview
+        qr = get_qr_path()
+        if qr:
+            pixmap = QPixmap(qr).scaled(150, 150,
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation)
+            self.lbl_qr_preview.setPixmap(pixmap)
+            self.lbl_qr_preview.show()
+            self.lbl_qr_file.setText('qr_payment.png')
+            self.lbl_qr_file.setStyleSheet('color: #2d3748; font-size: 12px; font-weight: bold;')
 
     def _save_personal(self):
         if not self.user or not self.auth_service:
@@ -371,11 +408,11 @@ class AccountManagementView(QWidget):
         email = self.inp_email.text().strip()
 
         if not name:
-            QMessageBox.warning(self, "Lỗi", "Họ và tên không được trống"); return
+            show_warning(self, "Lỗi", "Họ và tên không được trống"); return
         if not phone or len(phone) != 10 or not phone.isdigit():
-            QMessageBox.warning(self, "Lỗi", "SĐT phải đúng 10 chữ số"); return
-        if not email or '@' not in email:
-            QMessageBox.warning(self, "Lỗi", "Email không hợp lệ"); return
+            show_warning(self, "Lỗi", "SĐT phải đúng 10 chữ số"); return
+        if not email or '@gmail.com' not in email:
+            show_warning(self, "Lỗi", "Email phải có dạng abc@gmail.com"); return
 
         self.user.full_name = name
         self.user.phone = phone
@@ -385,9 +422,9 @@ class AccountManagementView(QWidget):
         if ok:
             self.lbl_name.setText(name)
             self.lbl_email.setText(email)
-            QMessageBox.information(self, "Thành công", "Cập nhật thông tin thành công")
+            show_success(self, "Thành công", "Cập nhật thông tin thành công")
         else:
-            QMessageBox.warning(self, "Lỗi", "Không thể cập nhật")
+            show_warning(self, "Lỗi", "Không thể cập nhật")
 
     def _change_password(self):
         if not self.user or not self.auth_service:
@@ -397,13 +434,13 @@ class AccountManagementView(QWidget):
         confirm = self.inp_confirm_pass.text()
 
         if not old:
-            QMessageBox.warning(self, "Lỗi", "Nhập mật khẩu cũ"); return
+            show_warning(self, "Lỗi", "Nhập mật khẩu cũ"); return
         if not self.user.check_password(old):
-            QMessageBox.warning(self, "Lỗi", "Mật khẩu cũ không đúng"); return
+            show_warning(self, "Lỗi", "Mật khẩu cũ không đúng"); return
         if not new or len(new) < 6:
-            QMessageBox.warning(self, "Lỗi", "Mật khẩu mới tối thiểu 6 ký tự"); return
+            show_warning(self, "Lỗi", "Mật khẩu mới tối thiểu 6 ký tự"); return
         if new != confirm:
-            QMessageBox.warning(self, "Lỗi", "Mật khẩu mới không khớp"); return
+            show_warning(self, "Lỗi", "Mật khẩu mới không khớp"); return
 
         self.user.set_password(new)
         ok = self.auth_service.user_repo.update(self.user)
@@ -411,9 +448,9 @@ class AccountManagementView(QWidget):
             self.inp_old_pass.clear()
             self.inp_new_pass.clear()
             self.inp_confirm_pass.clear()
-            QMessageBox.information(self, "Thành công", "Đổi mật khẩu thành công")
+            show_success(self, "Thành công", "Đổi mật khẩu thành công")
         else:
-            QMessageBox.warning(self, "Lỗi", "Không thể đổi mật khẩu")
+            show_warning(self, "Lỗi", "Không thể đổi mật khẩu")
 
     def _upload_qr(self):
         path, _ = QFileDialog.getOpenFileName(
@@ -435,41 +472,36 @@ class AccountManagementView(QWidget):
         account = self.inp_bank_account.text().strip()
         holder = self.inp_bank_holder.text().strip()
         if not bank or bank == "— Chọn ngân hàng —":
-            QMessageBox.warning(self, "Lỗi", "Vui lòng chọn ngân hàng"); return
+            show_warning(self, "Lỗi", "Vui lòng chọn ngân hàng"); return
         if not account:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập số tài khoản"); return
+            show_warning(self, "Lỗi", "Vui lòng nhập số tài khoản"); return
         if not holder:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập tên chủ tài khoản"); return
+            show_warning(self, "Lỗi", "Vui lòng nhập tên chủ tài khoản"); return
 
         # Copy QR image to data folder if selected
+        has_qr = False
         if self._qr_path:
-            import shutil, os
-            dest_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
-                os.path.dirname(os.path.abspath(__file__))))), 'data')
-            os.makedirs(dest_dir, exist_ok=True)
-            dest = os.path.join(dest_dir, 'qr_payment.png')
+            import shutil
+            from ui.UI_Common.bank_utils import QR_IMAGE_PATH
+            import os
+            os.makedirs(os.path.dirname(QR_IMAGE_PATH), exist_ok=True)
             try:
-                shutil.copy2(self._qr_path, dest)
+                shutil.copy2(self._qr_path, QR_IMAGE_PATH)
+                has_qr = True
             except Exception as e:
-                QMessageBox.warning(self, "Lỗi", f"Không thể lưu QR: {e}"); return
+                show_warning(self, "Lỗi", f"Không thể lưu QR: {e}"); return
+        else:
+            has_qr = bool(get_qr_path())
 
-        # Save bank info to a simple JSON file
-        import json, os
-        dest_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
-            os.path.dirname(os.path.abspath(__file__))))), 'data')
-        os.makedirs(dest_dir, exist_ok=True)
-        bank_file = os.path.join(dest_dir, 'bank_info.json')
         data = {
             'bank_name': bank,
             'branch': self.inp_bank_branch.text().strip(),
             'account_holder': holder,
             'account_number': account,
-            'qr_image': 'qr_payment.png' if self._qr_path else '',
+            'qr_image': 'qr_payment.png' if has_qr else '',
         }
-        with open(bank_file, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
-
-        QMessageBox.information(self, "Thành công", "Lưu thông tin ngân hàng thành công")
+        save_bank_info(data)
+        show_success(self, "Thành công", "Lưu thông tin ngân hàng thành công")
 
     def _on_logout(self):
         from PyQt6.QtWidgets import QDialog

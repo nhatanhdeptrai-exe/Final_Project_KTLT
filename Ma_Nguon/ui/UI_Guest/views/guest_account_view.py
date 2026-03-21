@@ -10,6 +10,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont
+from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 
 INPUT_STYLE = (
@@ -324,6 +325,7 @@ class GuestAccountView(QWidget):
     def _load_data(self):
         if not self.user:
             return
+        self._guest = None
         self.lbl_name.setText(self.user.full_name or "Your name")
         self.lbl_email.setText(self.user.email or "email@gmail.com")
         self.inp_name.setText(self.user.full_name or "")
@@ -332,8 +334,11 @@ class GuestAccountView(QWidget):
 
         # Load guest data
         if self.guest_service:
-            self._guest = self.guest_service.get_guest_by_user_id(
-                getattr(self.user, 'id', 0))
+            try:
+                self._guest = self.guest_service.get_guest_by_user_id(
+                    getattr(self.user, 'id', 0))
+            except Exception:
+                self._guest = None
             if self._guest:
                 self.inp_cccd.setText(getattr(self._guest, 'id_card', '') or '')
                 gender = getattr(self._guest, 'gender', '')
@@ -341,6 +346,29 @@ class GuestAccountView(QWidget):
                     self.rb_female.setChecked(True)
                 else:
                     self.rb_male.setChecked(True)
+                # Restore DOB
+                dob = getattr(self._guest, 'dob', '')
+                if dob:
+                    try:
+                        parts = dob.split('/')
+                        if len(parts) == 3:
+                            day, month, year = parts
+                        elif '-' in dob:
+                            parts = dob.split('-')
+                            year, month, day = parts
+                        else:
+                            day = month = year = ''
+                        if day:
+                            idx_d = self.cmb_day.findText(str(int(day)))
+                            if idx_d >= 0: self.cmb_day.setCurrentIndex(idx_d)
+                        if month:
+                            idx_m = self.cmb_month.findText(str(int(month)))
+                            if idx_m >= 0: self.cmb_month.setCurrentIndex(idx_m)
+                        if year:
+                            idx_y = self.cmb_year.findText(str(int(year)))
+                            if idx_y >= 0: self.cmb_year.setCurrentIndex(idx_y)
+                    except Exception:
+                        pass
 
     # ── Save personal info ──
     def _save_personal(self):
@@ -351,32 +379,67 @@ class GuestAccountView(QWidget):
         email = self.inp_email.text().strip()
         cccd = self.inp_cccd.text().strip()
 
+        # ── Validation ──
         if not name:
-            QMessageBox.warning(self, "Lỗi", "Họ và tên không được trống")
-            return
+            return show_warning(self, "Lỗi", "Họ và tên không được trống")
+        if phone and (not phone.isdigit() or len(phone) != 10):
+            return show_warning(self, "Lỗi", "SĐT phải đúng 10 chữ số")
+        if email and '@gmail.com' not in email:
+            return show_warning(self, "Lỗi", "Email phải có dạng abc@gmail.com")
+        if cccd and (not cccd.isdigit() or len(cccd) != 12):
+            return show_warning(self, "Lỗi", "Số CCCD/CMND phải đủ 12 chữ số")
+
+        # Build DOB string from comboboxes
+        day = self.cmb_day.currentText()
+        month = self.cmb_month.currentText()
+        year = self.cmb_year.currentText()
+        dob = ''
+        if day != 'Ngày' and month != 'Tháng' and year != 'Năm':
+            dob = f"{day}/{month}/{year}"
 
         self.user.full_name = name
         self.user.phone = phone
         self.user.email = email
 
-        ok = self.auth_service.user_repo.update(self.user)
+        try:
+            ok = self.auth_service.user_repo.update(self.user)
+        except Exception:
+            ok = False
         if ok:
             self.lbl_name.setText(name)
             self.lbl_email.setText(email)
 
-        # Update guest record
-        if self.guest_service and self._guest:
-            self._guest.full_name = name
-            self._guest.phone = phone
-            self._guest.email = email
-            self._guest.id_card = cccd
-            self._guest.gender = "Nữ" if self.rb_female.isChecked() else "Nam"
-            self.guest_service.update_guest(self._guest)
+        # Update or CREATE guest record
+        gender = "Nữ" if self.rb_female.isChecked() else "Nam"
+        if self.guest_service:
+            try:
+                if self._guest:
+                    self._guest.full_name = name
+                    self._guest.phone = phone
+                    self._guest.email = email
+                    self._guest.id_card = cccd
+                    self._guest.gender = gender
+                    self._guest.dob = dob
+                    self.guest_service.update_guest(self._guest)
+                else:
+                    # Auto-create guest record for register users
+                    from models.guest import Guest
+                    new_guest = Guest(
+                        user_id=getattr(self.user, 'id', 0),
+                        full_name=name, phone=phone, email=email,
+                        id_card=cccd, gender=gender, dob=dob,
+                    )
+                    self.guest_service.create_guest(new_guest)
+                    # Reload to get the saved guest with id
+                    self._guest = self.guest_service.get_guest_by_user_id(
+                        getattr(self.user, 'id', 0))
+            except Exception as e:
+                print(f'[guest_account] guest save error: {e}')
 
         if ok:
-            QMessageBox.information(self, "Thành công", "Cập nhật thông tin thành công")
+            show_success(self, "Thành công", "Cập nhật thông tin thành công")
         else:
-            QMessageBox.warning(self, "Lỗi", "Không thể cập nhật")
+            show_warning(self, "Lỗi", "Không thể cập nhật")
 
     # ── Change password ──
     def _change_password(self):
@@ -387,16 +450,16 @@ class GuestAccountView(QWidget):
         confirm = self.inp_confirm_pass.text()
 
         if not old:
-            QMessageBox.warning(self, "Lỗi", "Nhập mật khẩu cũ")
+            show_warning(self, "Lỗi", "Nhập mật khẩu cũ")
             return
         if not self.user.check_password(old):
-            QMessageBox.warning(self, "Lỗi", "Mật khẩu cũ không đúng")
+            show_warning(self, "Lỗi", "Mật khẩu cũ không đúng")
             return
         if not new or len(new) < 6:
-            QMessageBox.warning(self, "Lỗi", "Mật khẩu mới tối thiểu 6 ký tự")
+            show_warning(self, "Lỗi", "Mật khẩu mới tối thiểu 6 ký tự")
             return
         if new != confirm:
-            QMessageBox.warning(self, "Lỗi", "Mật khẩu mới không khớp")
+            show_warning(self, "Lỗi", "Mật khẩu mới không khớp")
             return
 
         self.user.set_password(new)
@@ -405,9 +468,9 @@ class GuestAccountView(QWidget):
             self.inp_old_pass.clear()
             self.inp_new_pass.clear()
             self.inp_confirm_pass.clear()
-            QMessageBox.information(self, "Thành công", "Đổi mật khẩu thành công")
+            show_success(self, "Thành công", "Đổi mật khẩu thành công")
         else:
-            QMessageBox.warning(self, "Lỗi", "Không thể đổi mật khẩu")
+            show_warning(self, "Lỗi", "Không thể đổi mật khẩu")
 
     # ── Logout ──
     def _on_logout(self):

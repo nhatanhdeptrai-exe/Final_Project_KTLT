@@ -118,7 +118,7 @@
       "area": 28.0,
       "price": 3800000,
       "deposit": 3800000,
-      "status": "available",
+      "status": "occupied",
       "description": "Phòng đơn tầng 2",
       "amenities": [
         "Điều hòa",
@@ -127,7 +127,7 @@
       "room_type": "Phòng đơn",
       "images": [],
       "created_at": "2026-01-01T00:00:00",
-      "updated_at": "2026-03-01T00:00:00"
+      "updated_at": "2026-03-21T17:51:21.937924"
     },
     {
       "id": 8,

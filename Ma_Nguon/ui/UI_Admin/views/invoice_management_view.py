@@ -13,6 +13,7 @@ from PyQt6.QtGui import QFont, QColor
 
 from models.invoice import Invoice
 from ui.UI_Admin.generated.ui_dialog_them_hoa_don import Ui_DialogFormInvoice
+from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 
 # ── Stat Card ────────────────────────────────────────────
@@ -157,9 +158,9 @@ class InvoiceFormDialog(QDialog):
 
     def _on_save(self):
         if self.ui.cbGuest.currentIndex() == 0:
-            QMessageBox.warning(self, "Lỗi", "Vui lòng chọn khách thuê"); return
+            show_warning(self, "Lỗi", "Vui lòng chọn khách thuê"); return
         if not self.ui.inpRoomPrice.text().strip():
-            QMessageBox.warning(self, "Lỗi", "Vui lòng nhập tiền phòng"); return
+            show_warning(self, "Lỗi", "Vui lòng nhập tiền phòng"); return
 
         today = QDate.currentDate()
         rent = int(self.ui.inpRoomPrice.text().replace('.', '').replace(',', '') or '0')
@@ -302,10 +303,9 @@ class InvoiceDetailDialog(QDialog):
         outer.addWidget(scroll)
 
     def _on_delete(self):
-        reply = QMessageBox.question(
-            self, "Xác nhận xóa", f"Xóa hóa đơn {self.invoice.invoice_number}?",
-            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        if reply == QMessageBox.StandardButton.Yes:
+        if ask_danger(self, "Xác nhận xóa",
+            f"Xóa hóa đơn {self.invoice.invoice_number}?",
+            yes_text="Xóa", no_text="Hủy bỏ"):
             self.delete_requested.emit(self.invoice.id)
             self.accept()
 
@@ -589,7 +589,7 @@ class InvoiceManagementView(QWidget):
                 status='unpaid', due_date=data['due_date'],
             )
             self.invoice_service.invoice_repo.create(inv)
-            QMessageBox.information(self, "Thành công", "Tạo hóa đơn thành công")
+            show_success(self, "Thành công", "Tạo hóa đơn thành công")
             self.refresh_data()
 
     def _on_detail(self, inv: Invoice):
@@ -603,15 +603,15 @@ class InvoiceManagementView(QWidget):
     def _on_pay(self, invoice_id: int):
         ok, msg = self.invoice_service.mark_paid(invoice_id)
         if ok:
-            QMessageBox.information(self, "Thành công", msg)
+            show_success(self, "Thành công", msg)
             self.refresh_data()
         else:
-            QMessageBox.warning(self, "Lỗi", msg)
+            show_warning(self, "Lỗi", msg)
 
     def _on_delete_confirmed(self, invoice_id: int):
         ok = self.invoice_service.invoice_repo.delete(invoice_id)
         if ok:
-            QMessageBox.information(self, "Thành công", "Xóa hóa đơn thành công")
+            show_success(self, "Thành công", "Xóa hóa đơn thành công")
             self.refresh_data()
         else:
-            QMessageBox.warning(self, "Lỗi", "Không thể xóa hóa đơn")
+            show_warning(self, "Lỗi", "Không thể xóa hóa đơn")

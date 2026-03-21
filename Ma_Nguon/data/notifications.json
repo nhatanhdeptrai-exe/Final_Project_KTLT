@@ -1,0 +1,22 @@
+[
+  {
+    "id": "approved_9",
+    "icon": "✅",
+    "icon_bg": "#e6fffa",
+    "icon_color": "#38a169",
+    "text": "Đã duyệt đăng ký phòng P202 — HĐ HD202603009",
+    "time": "2026-03-21T17:51:21.938635",
+    "read": false,
+    "target": "guest"
+  },
+  {
+    "id": "sys_1",
+    "icon": "ⓘ",
+    "icon_bg": "#edf2f7",
+    "icon_color": "#718096",
+    "text": "Hệ thống hoạt động bình thường",
+    "time": "2026-03-21T15:37:22.167791",
+    "read": true,
+    "target": ""
+  }
+]
