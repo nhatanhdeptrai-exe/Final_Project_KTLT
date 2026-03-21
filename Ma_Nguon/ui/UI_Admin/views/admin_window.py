@@ -16,7 +16,7 @@ class AdminWindow(QMainWindow):
 
     # (sidebar button attr, page title, generated module or None for custom)
     PAGE_DEFS = [
-        ("navTrangChu",       "Trang chủ",            "ui_trang_chu"),
+        ("navTrangChu",       "Trang chủ",            None),            # DashboardView (live data)
         ("navQuanLyPhong",    "Quản lý phòng",        None),            # Custom view
         ("navQuanLyKhachThu", "Quản lý khách thuê",   None),            # Custom view
         ("navHoaDon",         "Hóa đơn / Thanh toán", None),            # Custom view
@@ -77,6 +77,14 @@ class AdminWindow(QMainWindow):
 
     def _create_custom_page(self, btn_name: str, title: str) -> QWidget:
         """Tạo trang tùy chỉnh (có logic CRUD)."""
+        if btn_name == "navTrangChu":
+            try:
+                from ui.UI_Admin.views.dashboard_view import DashboardView
+                return DashboardView(container=self.container)
+            except Exception as e:
+                print(f"[AdminWindow] DashboardView error: {e}")
+                import traceback; traceback.print_exc()
+                return self._create_placeholder(title, str(e))
         if btn_name == "navQuanLyPhong":
             from ui.UI_Admin.views.room_management_view import RoomManagementView
             room_service = self.container.room_service if self.container else None

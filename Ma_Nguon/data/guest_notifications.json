@@ -10,6 +10,36 @@
     "user_id": 6
   },
   {
+    "id": "g_repair_done_10",
+    "icon": "✅",
+    "icon_bg": "#c6f6d5",
+    "icon_color": "#276749",
+    "text": "Sửa chữa \"uhgujbuj\" phòng #0 đã hoàn thành",
+    "time": "2026-03-22T02:51:26.820934",
+    "read": false,
+    "user_id": 5
+  },
+  {
+    "id": "g_repair_done_9",
+    "icon": "✅",
+    "icon_bg": "#c6f6d5",
+    "icon_color": "#276749",
+    "text": "Sửa chữa \"adw\" phòng #0 đã hoàn thành",
+    "time": "2026-03-22T02:51:24.129515",
+    "read": false,
+    "user_id": 5
+  },
+  {
+    "id": "g_repair_done_8",
+    "icon": "✅",
+    "icon_bg": "#c6f6d5",
+    "icon_color": "#276749",
+    "text": "Sửa chữa \"cawc\" phòng #0 đã hoàn thành",
+    "time": "2026-03-22T02:51:21.447164",
+    "read": false,
+    "user_id": 5
+  },
+  {
     "id": "g_repair_accept_10",
     "icon": "🔧",
     "icon_bg": "#ebf8ff",
