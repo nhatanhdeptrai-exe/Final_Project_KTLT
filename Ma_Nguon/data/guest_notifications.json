@@ -1,0 +1,62 @@
+[
+  {
+    "id": "g_approved_10",
+    "icon": "✅",
+    "icon_bg": "#e6fffa",
+    "icon_color": "#38a169",
+    "text": "Hợp đồng phòng P111 đã được duyệt",
+    "time": "2026-03-21T20:21:35.696068",
+    "read": false,
+    "user_id": 6
+  },
+  {
+    "id": "g_repair_accept_10",
+    "icon": "🔧",
+    "icon_bg": "#ebf8ff",
+    "icon_color": "#2b6cb0",
+    "text": "Yêu cầu sửa chữa \"uhgujbuj\" đã được tiếp nhận",
+    "time": "2026-03-21T20:19:34.920954",
+    "read": true,
+    "user_id": 5
+  },
+  {
+    "id": "g_repair_accept_9",
+    "icon": "🔧",
+    "icon_bg": "#ebf8ff",
+    "icon_color": "#2b6cb0",
+    "text": "Yêu cầu sửa chữa \"adw\" đã được tiếp nhận",
+    "time": "2026-03-21T20:13:15.254626",
+    "read": true,
+    "user_id": 5
+  },
+  {
+    "id": "g_repair_accept_8",
+    "icon": "🔧",
+    "icon_bg": "#ebf8ff",
+    "icon_color": "#2b6cb0",
+    "text": "Yêu cầu sửa chữa \"cawc\" đã được tiếp nhận",
+    "time": "2026-03-21T20:13:11.572129",
+    "read": true,
+    "user_id": 5
+  },
+  {
+    "id": "g_approved_8",
+    "icon": "✅",
+    "icon_bg": "#e6fffa",
+    "icon_color": "#38a169",
+    "text": "Hợp đồng phòng qưe đã được duyệt",
+    "time": "2026-03-21T05:57:49.812785",
+    "read": true,
+    "user_id": 5
+  },
+  {
+    "id": "g_inv_paid_8",
+    "icon": "💳",
+    "icon_bg": "#c6f6d5",
+    "icon_color": "#276749",
+    "text": "Phòng của bạn đã thanh toán tiền tháng 3/2026",
+    "time": "2026-03-21",
+    "read": true,
+    "user_id": 5
+  }
+]

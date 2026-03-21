@@ -4,9 +4,9 @@ Load giao diện từ UI đã sinh, gắn sidebar navigation + sub-pages.
 """
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QButtonGroup, QLabel, QVBoxLayout,
-    QFrame, QHBoxLayout, QPushButton
+    QFrame, QHBoxLayout, QPushButton, QMenu, QWidgetAction, QDialog
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QPoint
 from PyQt6.QtGui import QFont, QCursor
 from ui.UI_Admin.generated.ui_admin_main_window import Ui_MainWindow
 
@@ -120,7 +120,7 @@ class AdminWindow(QMainWindow):
                 user=self.user,
                 auth_service=self.container.auth_service if self.container else None,
             )
-            view.logout_requested.connect(self._on_logout)
+            view.logout_requested.connect(self._do_logout)
             return view
         # Fallback
         return self._create_placeholder(title)
@@ -162,7 +162,7 @@ class AdminWindow(QMainWindow):
         avatar = getattr(self.ui, 'lblAvatar', None)
         if avatar:
             avatar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-            avatar.mousePressEvent = lambda ev: self._navigate(6)  # navTaiKhoan index
+            avatar.mousePressEvent = lambda ev: self._show_avatar_popup()
 
     def _on_bell_clicked(self):
         """Show notification popup below bell button."""
@@ -358,8 +358,132 @@ class AdminWindow(QMainWindow):
         # Switch page
         self.ui.mainContentStack.setCurrentIndex(index)
 
+    def _show_avatar_popup(self):
+        menu = QMenu(self)
+        menu.setStyleSheet(
+            "QMenu { background-color: white; border: 1px solid #e2e8f0; "
+            "border-radius: 8px; padding: 6px 0; min-width: 220px; }"
+            "QMenu::item { padding: 0; }")
+
+        # User info
+        info_w = QWidget()
+        info_lay = QVBoxLayout(info_w)
+        info_lay.setContentsMargins(16, 12, 16, 8)
+        info_lay.setSpacing(4)
+        user_name = getattr(self.user, 'full_name', 'Admin') or 'Admin'
+        lbl_name = QLabel(user_name)
+        lbl_name.setFont(QFont("Segoe UI", 13, QFont.Weight.Bold))
+        lbl_name.setStyleSheet("color: #1a202c;")
+        info_lay.addWidget(lbl_name)
+        lbl_role = QLabel("🛡️ Quản trị viên")
+        lbl_role.setStyleSheet("color: #718096; font-size: 12px;")
+        info_lay.addWidget(lbl_role)
+        wa_info = QWidgetAction(menu)
+        wa_info.setDefaultWidget(info_w)
+        menu.addAction(wa_info)
+
+        # Separator
+        sep = QFrame()
+        sep.setFixedHeight(1)
+        sep.setStyleSheet("background-color: #e2e8f0;")
+        wa_sep = QWidgetAction(menu)
+        wa_sep.setDefaultWidget(sep)
+        menu.addAction(wa_sep)
+
+        # Account
+        btn_acc = QPushButton("👤  Quản lý tài khoản")
+        btn_acc.setStyleSheet(
+            "QPushButton { text-align: left; padding: 10px 16px; border: none; "
+            "font-size: 13px; color: #2d3748; background: transparent; }"
+            "QPushButton:hover { background-color: #f7fafc; }")
+        btn_acc.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        btn_acc.clicked.connect(lambda: (menu.close(), self._navigate(6)))
+        wa_acc = QWidgetAction(menu)
+        wa_acc.setDefaultWidget(btn_acc)
+        menu.addAction(wa_acc)
+
+        # Separator + Logout
+        sep2 = QFrame()
+        sep2.setFixedHeight(1)
+        sep2.setStyleSheet("background-color: #e2e8f0;")
+        wa_sep2 = QWidgetAction(menu)
+        wa_sep2.setDefaultWidget(sep2)
+        menu.addAction(wa_sep2)
+
+        btn_logout = QPushButton("🚪  Đăng xuất")
+        btn_logout.setStyleSheet(
+            "QPushButton { text-align: left; padding: 10px 16px; border: none; "
+            "font-size: 13px; color: #e53e3e; font-weight: bold; background: transparent; }"
+            "QPushButton:hover { background-color: #fff5f5; }")
+        btn_logout.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        btn_logout.clicked.connect(lambda: (menu.close(), self._on_logout()))
+        wa_logout = QWidgetAction(menu)
+        wa_logout.setDefaultWidget(btn_logout)
+        menu.addAction(wa_logout)
+
+        pos = self.ui.lblAvatar.mapToGlobal(
+            QPoint(self.ui.lblAvatar.width() - 220, self.ui.lblAvatar.height() + 5))
+        menu.exec(pos)
+
     def _on_logout(self):
-        """Đăng xuất → quay lại trang đăng nhập."""
+        """Đăng xuất với xác nhận."""
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Đăng xuất")
+        dlg.setFixedSize(380, 220)
+        dlg.setStyleSheet("QDialog { background-color: white; }")
+        lay = QVBoxLayout(dlg)
+        lay.setSpacing(10)
+        lay.setContentsMargins(30, 25, 30, 25)
+
+        icon = QLabel("🚪")
+        icon.setStyleSheet("font-size: 40px;")
+        icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(icon)
+
+        title = QLabel("Bạn có chắc muốn đăng xuất?")
+        title.setFont(QFont("Segoe UI", 15, QFont.Weight.Bold))
+        title.setStyleSheet("color: #1a202c;")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(title)
+
+        sub = QLabel("Bạn sẽ quay lại trang đăng nhập")
+        sub.setStyleSheet("color: #718096; font-size: 13px;")
+        sub.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(sub)
+        lay.addStretch()
+
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(12)
+        btn_cancel = QPushButton("Hủy bỏ")
+        btn_cancel.setMinimumHeight(42)
+        btn_cancel.setStyleSheet(
+            "QPushButton { background-color: #f7fafc; color: #4a5568; border: 1px solid #cbd5e0; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #edf2f7; }")
+        btn_cancel.clicked.connect(dlg.reject)
+
+        btn_ok = QPushButton("🚪  Đăng xuất")
+        btn_ok.setMinimumHeight(42)
+        btn_ok.setStyleSheet(
+            "QPushButton { background-color: #e53e3e; color: white; border: none; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #c53030; }")
+        btn_ok.clicked.connect(dlg.accept)
+
+        btn_row.addWidget(btn_cancel)
+        btn_row.addWidget(btn_ok)
+        lay.addLayout(btn_row)
+
+        if dlg.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        from ui.UI_Common.views.auth_window import AuthWindow
+        self._auth = AuthWindow(self.container)
+        self._auth.show()
+        self.close()
+
+    def _do_logout(self):
+        """Đăng xuất trực tiếp (đã xác nhận từ account view)."""
         from ui.UI_Common.views.auth_window import AuthWindow
         self._auth = AuthWindow(self.container)
         self._auth.show()

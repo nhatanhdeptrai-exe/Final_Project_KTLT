@@ -195,7 +195,7 @@ class MyRoomView(QWidget):
     def _submit_repair(self):
         title = self.ui.inpMntTitle.text().strip()
         desc = self.ui.inpMntDesc.toPlainText().strip()
-        priority = self.ui.inpMntPriority.text().strip() if hasattr(self.ui, 'inpMntPriority') else "medium"
+        priority = self.ui.inpMntPriority.currentText().strip() if hasattr(self.ui, 'inpMntPriority') else "medium"
 
         if not title:
             show_warning(self, "Lỗi", "Vui lòng nhập mục cần sửa chữa")
@@ -239,7 +239,7 @@ class MyRoomView(QWidget):
                 self.ui.inpMntTitle.clear()
                 self.ui.inpMntDesc.clear()
                 if hasattr(self.ui, 'inpMntPriority'):
-                    self.ui.inpMntPriority.clear()
+                    self.ui.inpMntPriority.setCurrentIndex(1)
                 self.ui.stackGuestMain.setCurrentIndex(0)
             except Exception as e:
                 show_warning(self, "Lỗi", f"Không thể gửi: {e}")
@@ -248,7 +248,7 @@ class MyRoomView(QWidget):
             self.ui.inpMntTitle.clear()
             self.ui.inpMntDesc.clear()
             if hasattr(self.ui, 'inpMntPriority'):
-                self.ui.inpMntPriority.clear()
+                self.ui.inpMntPriority.setCurrentIndex(1)
             self.ui.stackGuestMain.setCurrentIndex(0)
 
     def _view_contract(self):

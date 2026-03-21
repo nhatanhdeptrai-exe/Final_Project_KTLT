@@ -32,7 +32,8 @@ class InvoiceRepository:
         return ExcelHandler.delete_item(self.file_path, invoice_id)
 
     def get_by_contract_id(self, contract_id: int) -> List[Invoice]:
-        return [inv for inv in self.get_all() if inv.contract_id == contract_id]
+        cid = int(contract_id or 0)
+        return [inv for inv in self.get_all() if int(inv.contract_id or 0) == cid]
 
     def get_unpaid(self) -> List[Invoice]:
         return [inv for inv in self.get_all() if inv.status == 'unpaid']

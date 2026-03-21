@@ -43,7 +43,29 @@
       "created_at": "2026-03-21T05:56:23.273211",
       "updated_at": "2026-03-21T16:39:18.351198",
       "id": 5
+    },
+    {
+      "email": "quynhmyy987@gmail.com",
+      "phone": "0869223246",
+      "password_hash": "$2b$12$OrJ4njLA8JRYu6LFeVEMYO2gCwXkUuj.ICu/5HWscxg0DY/hKSZ1e",
+      "full_name": "Nguyễn Thị Quỳnh My",
+      "role": "guest",
+      "is_active": true,
+      "created_at": "2026-03-21T20:20:50.111872",
+      "updated_at": "2026-03-21T20:20:50.111872",
+      "id": 6
+    },
+    {
+      "email": "33@gmail.com",
+      "phone": "0333333333",
+      "password_hash": "$2b$12$eRT4DQToRimmtY.35QIp8utae5cEcHkW07LRQglrO9Syy1ULr7WPu",
+      "full_name": "33",
+      "role": "guest",
+      "is_active": true,
+      "created_at": "2026-03-21T20:41:50.011636",
+      "updated_at": "2026-03-21T20:45:15.757584",
+      "id": 7
     }
   ],
-  "last_id": 5
+  "last_id": 7
 }

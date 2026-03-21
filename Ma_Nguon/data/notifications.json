@@ -1,12 +1,22 @@
 [
   {
+    "id": "approved_10",
+    "icon": "✅",
+    "icon_bg": "#e6fffa",
+    "icon_color": "#38a169",
+    "text": "Đã duyệt đăng ký phòng P111 — HĐ HD202603010",
+    "time": "2026-03-21T20:22:00.989572",
+    "read": true,
+    "target": "guest"
+  },
+  {
     "id": "approved_9",
     "icon": "✅",
     "icon_bg": "#e6fffa",
     "icon_color": "#38a169",
     "text": "Đã duyệt đăng ký phòng P202 — HĐ HD202603009",
     "time": "2026-03-21T17:51:21.938635",
-    "read": false,
+    "read": true,
     "target": "guest"
   },
   {

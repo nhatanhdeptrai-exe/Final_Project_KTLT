@@ -203,36 +203,59 @@ class GuestInvoiceView(QWidget):
     def _load_data(self):
         if not self.user:
             return
-        # Find guest → contract → invoices
+        user_id = int(getattr(self.user, 'id', 0) or 0)
+
+        # 1. Find ALL guest records for this user (may be duplicates)
+        my_guest_ids = set()
+        self._guest = None
         if self.guest_service:
             try:
-                self._guest = self.guest_service.get_guest_by_user_id(
-                    getattr(self.user, 'id', 0))
+                all_guests = self.guest_service.get_all_guests()
+                for g in all_guests:
+                    gid = int(getattr(g, 'user_id', 0) or 0)
+                    if gid == user_id:
+                        my_guest_ids.add(int(g.id))
+                        if self._guest is None:
+                            self._guest = g
             except Exception:
-                self._guest = None
+                pass
 
-        if self.contract_service:
+        # 2. Find ALL contracts matching any of this user's guest IDs
+        self._contracts = []
+        self._contract = None
+        if my_guest_ids and self.contract_service:
             try:
-                contracts = self.contract_service.get_active_contracts()
-                guest_id = getattr(self._guest, 'id', None) if self._guest else None
-                for c in contracts:
-                    if hasattr(c, 'guest_id') and c.guest_id == guest_id:
+                all_contracts = self.contract_service.contract_repo.get_all()
+                for c in all_contracts:
+                    c_guest_id = int(getattr(c, 'guest_id', 0) or 0)
+                    if c_guest_id in my_guest_ids:
+                        self._contracts.append(c)
+                # Prefer active contract for room display
+                for c in self._contracts:
+                    if c.is_active():
                         self._contract = c
                         break
+                if not self._contract and self._contracts:
+                    self._contract = self._contracts[0]
             except Exception:
-                self._contract = None
+                pass
 
+        # 3. Get room info
         if self._contract and self.room_service:
             try:
                 self._room = self.room_service.get_room_by_id(
-                    getattr(self._contract, 'room_id', 0))
+                    int(getattr(self._contract, 'room_id', 0) or 0))
             except Exception:
                 self._room = None
 
-        if self._contract and self.invoice_service:
+        # 4. Collect invoices from ALL contracts
+        self._invoices = []
+        if self._contracts and self.invoice_service:
             try:
-                self._invoices = self.invoice_service.get_by_contract(self._contract.id)
-                # Sort: newest first
+                for ct in self._contracts:
+                    ct_id = int(getattr(ct, 'id', 0) or 0)
+                    invs = self.invoice_service.get_by_contract(ct_id)
+                    self._invoices.extend(invs)
                 self._invoices.sort(key=lambda inv: (inv.year, inv.month), reverse=True)
             except Exception:
                 self._invoices = []

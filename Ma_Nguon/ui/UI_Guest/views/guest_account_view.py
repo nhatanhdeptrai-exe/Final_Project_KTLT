@@ -120,7 +120,7 @@ class GuestAccountView(QWidget):
 
         # Header
         header = QFrame()
-        header.setMinimumHeight(130)
+        header.setMinimumHeight(60)
         header.setStyleSheet(
             "background-color: #0b8480; border-top-left-radius: 12px; "
             "border-top-right-radius: 12px;")
