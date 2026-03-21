@@ -13,7 +13,7 @@ class GuestWindow(QMainWindow):
     # (sidebar button attr, page title, custom_builder or None)
     PAGE_DEFS = [
         ("btnNavMyRoom",   "Phòng của tôi",         "my_room"),
-        ("btnNavInvoices", "Hóa đơn / Thanh toán",  None),
+        ("btnNavInvoices", "Hóa đơn / Thanh toán",  "guest_invoice"),
         ("btnNavNotif",    "Thông báo",              None),
         ("btnNavAccount",  "Quản lý tài khoản",     "guest_account"),
     ]
@@ -75,6 +75,15 @@ class GuestWindow(QMainWindow):
             )
             view.logout_requested.connect(self._do_logout)
             return view
+        if builder == "guest_invoice":
+            from ui.UI_Guest.views.guest_invoice_view import GuestInvoiceView
+            return GuestInvoiceView(
+                user=self.user,
+                invoice_service=self.container.invoice_service if self.container else None,
+                contract_service=self.container.contract_service if self.container else None,
+                room_service=self.container.room_service if self.container else None,
+                guest_service=self.container.guest_service if self.container else None,
+            )
         return self._create_placeholder(title)
 
     def _create_placeholder(self, title: str) -> QWidget:
