@@ -88,5 +88,25 @@
     "time": "2026-03-21",
     "read": true,
     "user_id": 5
+  },
+  {
+    "id": "g_inv_unpaid_10",
+    "icon": "💰",
+    "icon_bg": "#fefcbf",
+    "icon_color": "#d69e2e",
+    "text": "Hóa đơn tháng 3/2026 phòng P204 chưa thanh toán",
+    "time": "2026-03-22T04:04:42.103301",
+    "read": true,
+    "user_id": 8
+  },
+  {
+    "id": "g_approved_11",
+    "icon": "✅",
+    "icon_bg": "#e6fffa",
+    "icon_color": "#38a169",
+    "text": "Hợp đồng phòng P204 đã được duyệt",
+    "time": "2026-03-22T04:03:10.751663",
+    "read": true,
+    "user_id": 8
   }
 ]

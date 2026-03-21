@@ -1,5 +1,15 @@
 [
   {
+    "id": "approved_11",
+    "icon": "✅",
+    "icon_bg": "#e6fffa",
+    "icon_color": "#38a169",
+    "text": "Đã duyệt đăng ký phòng P204 — HĐ HD202603011",
+    "time": "2026-03-22T04:03:29.089132",
+    "read": true,
+    "target": "guest"
+  },
+  {
     "id": "approved_10",
     "icon": "✅",
     "icon_bg": "#e6fffa",
