@@ -134,6 +134,10 @@ class MyRoomView(QWidget):
         status = getattr(room, 'status', 'occupied')
         self.ui.label10.setText("• Đang thuê" if status == 'occupied' else f"• {status}")
 
+        # ── IoT Điện Nước ──
+        self._current_room_number = room_name
+        self._setup_iot_display(room_name)
+
         # label12 = Số hợp đồng
         contract_num = getattr(active_contract, 'contract_number', f'HĐ{active_contract.id}')
         self.ui.label12.setText(f"Số: {contract_num}")
@@ -148,8 +152,9 @@ class MyRoomView(QWidget):
         contract_text = (
             f"Hôm nay, ngày {start}, chúng tôi gồm:\n\n"
             f"BÊN CHO THUÊ (Bên A):\n"
-            f"Ông/Bà: Quản trị viên\n"
-            f"SĐT: 0123.456.789\n\n"
+            f"Ông/Bà: Tạ Nhật Anh\n"
+            f"SĐT: 0364216007\n"
+            f"Địa chỉ: 2 đường số 10, P. Tam Bình, Thủ Đức, TP.HCM\n\n"
             f"BÊN THUÊ (Bên B):\n"
             f"Ông/Bà: {guest_name}\n"
             f"Số CMND/CCCD: {guest_cccd}\n"
@@ -184,6 +189,109 @@ class MyRoomView(QWidget):
                                      Qt.AspectRatioMode.KeepAspectRatio,
                                      Qt.TransformationMode.SmoothTransformation))
                     self.ui.lblRoomImage.setText("")
+
+    def _setup_iot_display(self, room_number):
+        """Thêm section IoT điện nước + dọn layout."""
+        from PyQt6.QtWidgets import QVBoxLayout, QFrame, QScrollArea
+        from PyQt6.QtCore import QTimer
+
+        # 1. Di chuyển nút "Yêu cầu sửa chữa" ra ngoài frame1
+        #    từ vboxlayout2 → vboxlayout1 (cùng cấp với "Đăng ký phòng mới")
+        btn_mnt = self.ui.btnReqMaintenance
+        self.ui.vboxlayout2.removeWidget(btn_mnt)
+        reg_idx = self.ui.vboxlayout1.indexOf(self.ui.btnRegNewRoom)
+        self.ui.vboxlayout1.insertWidget(reg_idx, btn_mnt)
+
+        # 2. Thêm IoT frame vào cuối frame1 (vboxlayout2)
+        iot_frame = QFrame()
+        iot_frame.setObjectName("iotFrame")
+        iot_frame.setStyleSheet(
+            "QFrame#iotFrame { background: #fffbeb; border: 1px solid #fbbf24;"
+            " border-radius: 8px; padding: 6px 10px; }"
+            " QFrame#iotFrame QLabel { border: none; background: transparent; }")
+        iot_lay = QVBoxLayout(iot_frame)
+        iot_lay.setSpacing(2)
+        iot_lay.setContentsMargins(8, 4, 8, 4)
+
+        self._iot_status_lbl = QLabel("⚡ IOT  🔴 Kết nối...")
+        self._iot_status_lbl.setStyleSheet("color: #92400e; font-size: 10px; font-weight: bold;")
+        iot_lay.addWidget(self._iot_status_lbl)
+
+        self._guest_elec_val = QLabel("⚡ Điện: ---")
+        self._guest_elec_val.setStyleSheet("color: #b45309; font-size: 12px; font-weight: bold;")
+        iot_lay.addWidget(self._guest_elec_val)
+
+        self._guest_water_val = QLabel("💧 Nước: ---")
+        self._guest_water_val.setStyleSheet("color: #1d4ed8; font-size: 12px; font-weight: bold;")
+        iot_lay.addWidget(self._guest_water_val)
+
+        self._guest_iot_time = QLabel("")
+        self._guest_iot_time.setStyleSheet("color: #9ca3af; font-size: 9px;")
+        iot_lay.addWidget(self._guest_iot_time)
+
+        self.ui.vboxlayout2.addWidget(iot_frame)
+
+        # 3. Wrap panel trái trong scroll area
+        left_frame = self.ui.frame
+        parent_layout = self.ui.hboxlayout1
+        idx = parent_layout.indexOf(left_frame)
+        parent_layout.removeWidget(left_frame)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setMaximumWidth(355)
+        scroll.setStyleSheet("QScrollArea { background: transparent; border: none; }")
+        scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        scroll.setWidget(left_frame)
+        parent_layout.insertWidget(idx, scroll)
+
+        # 4. Timer
+        self._iot_timer = QTimer(self)
+        self._iot_timer.timeout.connect(self._refresh_iot)
+        self._iot_timer.start(3000)
+        self._refresh_iot()
+
+    def _refresh_iot(self):
+        """Cập nhật chỉ số IoT cho guest view."""
+        if not hasattr(self, '_current_room_number'):
+            return
+
+        iot_service = None
+        try:
+            parent_window = self.window()
+            container = getattr(parent_window, 'container', None)
+            if container:
+                iot_service = getattr(container, 'iot_service', None)
+        except Exception:
+            pass
+
+        if not iot_service:
+            self._iot_status_lbl.setText("⚡ IOT  🔴 Chưa kết nối")
+            return
+
+        data = iot_service.get_latest(self._current_room_number)
+        if not data:
+            self._iot_status_lbl.setText("⚡ IOT  🔴 Chưa có dữ liệu")
+            return
+
+        self._iot_status_lbl.setText("⚡ IOT  🟢 Realtime")
+
+        elec = data.get('electric', {})
+        if elec:
+            self._guest_elec_val.setText(f"⚡ Điện: {elec.get('value', 0):,.1f} {elec.get('unit', 'kWh')}")
+
+        water = data.get('water', {})
+        if water:
+            self._guest_water_val.setText(f"💧 Nước: {water.get('value', 0):,.2f} {water.get('unit', 'm³')}")
+
+        ts = data.get('last_update', '')
+        if ts:
+            try:
+                from datetime import datetime
+                dt = datetime.fromisoformat(ts)
+                self._guest_iot_time.setText(f"Cập nhật: {dt.strftime('%H:%M:%S %d/%m')}")
+            except Exception:
+                pass
 
     def _show_empty_state(self, message):
         """Thay đổi UI để báo khách chưa có phòng."""
@@ -252,10 +360,144 @@ class MyRoomView(QWidget):
             self.ui.stackGuestMain.setCurrentIndex(0)
 
     def _view_contract(self):
-        show_info(self, "Chi tiết", "Chức năng xem PDF chi tiết đang được phát triển.")
-        
+        """Mở dialog xem hợp đồng đẹp."""
+        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout, QTextBrowser
+        from PyQt6.QtGui import QFont
+
+        contract_data = self._get_contract_data()
+        if not contract_data:
+            show_warning(self, "Lỗi", "Không tìm thấy thông tin hợp đồng.")
+            return
+
+        # Build HTML from template
+        from utils.pdf_generator import PDFGenerator
+        html = PDFGenerator._build_contract_html(contract_data)
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle(f"Hợp đồng {contract_data.get('contract_number', '')}")
+        dlg.setFixedSize(650, 700)
+        dlg.setStyleSheet("QDialog { background-color: white; }")
+
+        lay = QVBoxLayout(dlg)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+
+        browser = QTextBrowser()
+        browser.setHtml(html)
+        browser.setStyleSheet("QTextBrowser { border: none; padding: 10px; }")
+        browser.setOpenExternalLinks(False)
+        lay.addWidget(browser)
+
+        # Bottom buttons
+        btn_row = QHBoxLayout()
+        btn_row.setContentsMargins(20, 10, 20, 15)
+        btn_row.setSpacing(10)
+        btn_row.addStretch()
+
+        btn_export = QPushButton("📄 Xuất PDF")
+        btn_export.setStyleSheet(
+            "QPushButton { background-color: #0b8480; color: white; border: none; "
+            "border-radius: 8px; padding: 10px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #096c69; }")
+        btn_export.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_export.clicked.connect(lambda: (dlg.close(), self._print_contract()))
+        btn_row.addWidget(btn_export)
+
+        btn_close = QPushButton("Đóng")
+        btn_close.setStyleSheet(
+            "QPushButton { background: #f7fafc; color: #4a5568; border: 1px solid #cbd5e0; "
+            "border-radius: 8px; padding: 10px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background: #edf2f7; }")
+        btn_close.clicked.connect(dlg.close)
+        btn_row.addWidget(btn_close)
+        lay.addLayout(btn_row)
+
+        dlg.exec()
+
     def _print_contract(self):
-        show_info(self, "In hợp đồng", "Đang gửi tín hiệu đến máy in hợp đồng...")
-        
+        """Xuất hợp đồng ra PDF và lưu về máy."""
+        from PyQt6.QtWidgets import QFileDialog
+        from datetime import datetime
+
+        # Collect contract data
+        contract_data = self._get_contract_data()
+        if not contract_data:
+            show_warning(self, "Lỗi", "Không tìm thấy thông tin hợp đồng.")
+            return
+
+        # Save As dialog
+        default_name = f"HopDong_{contract_data.get('contract_number', 'HD')}.pdf"
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Lưu hợp đồng", default_name,
+            "PDF Files (*.pdf);;All Files (*)")
+        if not file_path:
+            return
+
+        try:
+            from utils.pdf_generator import PDFGenerator
+            result = PDFGenerator.export_contract_pdf(contract_data, file_path)
+            show_success(self, "Xuất thành công",
+                         f"Hợp đồng đã được lưu tại:\n{result}")
+            # Auto-open the file
+            os.startfile(result)
+        except Exception as e:
+            show_error(self, "Lỗi", f"Không thể xuất PDF:\n{e}")
+
+    def _get_contract_data(self) -> dict:
+        """Thu thập dữ liệu hợp đồng cho PDF export."""
+        from datetime import datetime
+        if not self.user or not self.guest_service or not self.contract_service:
+            return {}
+
+        guest = None
+        active_contract = None
+        all_guests = self.guest_service.get_all_guests()
+        matching_guests = [g for g in all_guests
+                           if getattr(g, 'user_id', 0) == getattr(self.user, 'id', -1)
+                           or getattr(g, 'email', None) == getattr(self.user, 'email', None)
+                           or getattr(g, 'phone', None) == getattr(self.user, 'phone', None)]
+
+        if matching_guests and self.contract_service:
+            for g in matching_guests:
+                for c in self.contract_service.get_all():
+                    if str(getattr(c, 'guest_id', '')) == str(getattr(g, 'id', '')):
+                        if getattr(c, 'status', '') in ('active', 'Đang thuê'):
+                            guest = g
+                            active_contract = c
+                            break
+                if active_contract:
+                    break
+
+        if not guest or not active_contract:
+            return {}
+
+        room = None
+        if self.room_service:
+            room = self.room_service.get_room_by_id(getattr(active_contract, 'room_id', 0))
+
+        price = getattr(active_contract, 'monthly_rent', 0) or (getattr(room, 'price', 0) if room else 0)
+        deposit = getattr(active_contract, 'deposit', 0) or (getattr(room, 'deposit', 0) if room else 0)
+
+        return {
+            'contract_number': getattr(active_contract, 'contract_number', f'HD{active_contract.id}'),
+            'sign_date': datetime.now().strftime('%d/%m/%Y'),
+            'landlord_name': 'Tạ Nhật Anh',
+            'landlord_phone': '0364216007',
+            'landlord_address': '2 đường số 10, P. Tam Bình, Thủ Đức, TP.HCM',
+            'guest_name': getattr(guest, 'full_name', ''),
+            'guest_dob': getattr(guest, 'dob', '—'),
+            'guest_gender': getattr(guest, 'gender', '—'),
+            'guest_cccd': getattr(guest, 'id_card', '—'),
+            'guest_phone': getattr(guest, 'phone', '—'),
+            'guest_email': getattr(guest, 'email', '—'),
+            'room_number': getattr(room, 'room_number', '—') if room else '—',
+            'room_floor': getattr(room, 'floor', '—') if room else '—',
+            'room_area': getattr(room, 'area', '—') if room else '—',
+            'monthly_rent': f'{int(price):,}',
+            'deposit': f'{int(deposit):,}',
+            'start_date': getattr(active_contract, 'start_date', '—'),
+            'end_date': getattr(active_contract, 'end_date', '—'),
+        }
+
     def _register_new_room(self):
         show_info(self, "Đăng ký", "Để đăng ký phòng mới vui lòng liên hệ Ban quản lý tòa nhà.")

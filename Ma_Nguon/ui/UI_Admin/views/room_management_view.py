@@ -79,7 +79,7 @@ class RoomCard(QFrame):
         layout.addLayout(row1)
 
         # Row 2: Price
-        price_text = f"{self.room.price / 1_000_000:.1f}M/tháng"
+        price_text = f"{self.room.price / 1_000_000:.2f}M/tháng"
         lbl_price = QLabel(price_text)
         lbl_price.setStyleSheet("color: #0b8480; font-size: 14px; font-weight: bold;")
         layout.addWidget(lbl_price)
@@ -269,121 +269,289 @@ class RoomFormDialog(QDialog):
 
 
 class RoomDetailDialog(QDialog):
-    """Dialog xem chi tiết phòng."""
+    """Dialog xem chi tiết phòng — thiết kế dạng hồ sơ."""
     delete_requested = pyqtSignal(int)
 
-    def __init__(self, room: Room, parent=None):
+    def __init__(self, room: Room, tenant_info: dict = None, iot_service=None, parent=None):
         super().__init__(parent)
         self.room = room
+        self.tenant_info = tenant_info or {}
+        self.iot_service = iot_service
         self.setWindowTitle(f"Chi tiết phòng {room.room_number}")
-        self.setMinimumSize(500, 600)
-        self.setStyleSheet("QDialog { background-color: white; } QLabel { color: #2d3748; }")
+        self.setFixedSize(500, 720)
+        self.setStyleSheet("QDialog { background-color: white; }")
+        self.setWindowFlags(self.windowFlags() & ~Qt.WindowType.WindowContextHelpButtonHint)
         self._build_ui()
+        self._start_iot_refresh()
+
+    def _box(self, label: str, value: str, color: str = None) -> QFrame:
+        """Tạo info box nhỏ."""
+        box = QFrame()
+        box.setObjectName("detailBox")
+        box.setStyleSheet(
+            "QFrame#detailBox { background: #f7fafc; border: 1px solid #e2e8f0;"
+            " border-radius: 8px; padding: 10px; }"
+            " QFrame#detailBox QLabel { border: none; background: transparent; }")
+        lay = QVBoxLayout(box)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(3)
+        lbl = QLabel(label)
+        lbl.setStyleSheet("color: #a0aec0; font-size: 10px; font-weight: bold;")
+        lay.addWidget(lbl)
+        if color:
+            val = QLabel(f"● {value}")
+            val.setStyleSheet(f"color: {color}; font-size: 13px; font-weight: bold;")
+        else:
+            val = QLabel(str(value) if value else "—")
+            val.setStyleSheet("color: #2d3748; font-size: 13px; font-weight: bold;")
+        val.setWordWrap(True)
+        lay.addWidget(val)
+        return box
+
+    def _section(self, text: str) -> QLabel:
+        lbl = QLabel(text)
+        lbl.setStyleSheet("color: #718096; font-size: 11px; font-weight: bold; letter-spacing: 1px;")
+        return lbl
 
     def _build_ui(self):
-        layout = QVBoxLayout(self)
-        layout.setSpacing(15)
-        layout.setContentsMargins(25, 25, 25, 25)
+        outer = QVBoxLayout(self)
+        outer.setContentsMargins(0, 0, 0, 0)
+        outer.setSpacing(0)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("QScrollArea { border: none; background: white; }")
+
+        container = QWidget()
+        layout = QVBoxLayout(container)
+        layout.setSpacing(10)
+        layout.setContentsMargins(25, 20, 25, 20)
+
+        # ── Header ──
+        h = QHBoxLayout()
+        t = QLabel(f"🏠 Phòng {self.room.room_number}")
+        t.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
+        t.setStyleSheet("color: #2d3748;")
+        h.addWidget(t)
+        h.addStretch()
+        layout.addLayout(h)
+
+        # ── Status badge ──
+        status_map = {
+            'available': ('Trống', '#38a169', '#e6fffa'),
+            'occupied': ('Đang thuê', '#3182ce', '#ebf8ff'),
+            'maintenance': ('Bảo trì', '#e53e3e', '#fff5f5'),
+        }
+        st_text, st_color, st_bg = status_map.get(self.room.status, ('?', '#718096', '#f7fafc'))
+        badge = QLabel(f"  ● {st_text}  ")
+        badge.setStyleSheet(
+            f"color: {st_color}; background-color: {st_bg}; font-size: 12px;"
+            f" font-weight: bold; border-radius: 10px; padding: 4px 12px;")
+        badge.setFixedHeight(28)
+        layout.addWidget(badge)
 
         # ── Image area ──
         if self.room.images:
-            img_scroll = QScrollArea()
-            img_scroll.setFixedHeight(200)
-            img_scroll.setWidgetResizable(True)
-            img_scroll.setStyleSheet("QScrollArea { border: 1px solid #e2e8f0; border-radius: 8px; background: #f7fafc; }")
-            img_container = QWidget()
-            img_layout = QHBoxLayout(img_container)
-            img_layout.setSpacing(10)
-            img_layout.setContentsMargins(10, 10, 10, 10)
+            img_frame = QFrame()
+            img_frame.setObjectName("imgFrame")
+            img_frame.setFixedHeight(180)
+            img_frame.setStyleSheet(
+                "QFrame#imgFrame { background: #f7fafc; border: 1px solid #e2e8f0;"
+                " border-radius: 10px; }"
+                " QFrame#imgFrame QLabel { border: none; }")
+            img_layout = QHBoxLayout(img_frame)
             img_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-            for img_rel in self.room.images:
+            img_layout.setContentsMargins(10, 10, 10, 10)
+            for img_rel in self.room.images[:3]:
                 img_path = str(BASE_DIR / 'data' / img_rel)
                 if os.path.exists(img_path):
                     pixmap = QPixmap(img_path)
                     if not pixmap.isNull():
-                        scaled = pixmap.scaled(QSize(250, 180),
+                        scaled = pixmap.scaled(QSize(220, 160),
                                                Qt.AspectRatioMode.KeepAspectRatio,
                                                Qt.TransformationMode.SmoothTransformation)
                         lbl_img = QLabel()
                         lbl_img.setPixmap(scaled)
                         lbl_img.setAlignment(Qt.AlignmentFlag.AlignCenter)
-                        lbl_img.setStyleSheet("border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px; background: white;")
+                        lbl_img.setStyleSheet("border-radius: 6px;")
                         img_layout.addWidget(lbl_img)
+            layout.addWidget(img_frame)
 
-            img_scroll.setWidget(img_container)
-            layout.addWidget(img_scroll)
-        else:
-            no_img = QLabel("📷 Chưa có ảnh phòng")
-            no_img.setFixedHeight(80)
-            no_img.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            no_img.setStyleSheet("color: #a0aec0; font-size: 14px; background: #f7fafc; "
-                                  "border: 2px dashed #cbd5e0; border-radius: 8px;")
-            layout.addWidget(no_img)
+        # ── Section: Thông tin phòng ──
+        layout.addWidget(self._section("THÔNG TIN PHÒNG"))
 
-        # Title
-        title = QLabel(f"🏠 Phòng {self.room.room_number}")
-        title.setFont(QFont("Segoe UI", 20, QFont.Weight.Bold))
-        title.setStyleSheet("color: #2d3748;")
-        layout.addWidget(title)
+        r1 = QHBoxLayout(); r1.setSpacing(8)
+        r1.addWidget(self._box("GIÁ PHÒNG", f"{self.room.price:,.0f} VNĐ/tháng"))
+        r1.addWidget(self._box("TIỀN CỌC", f"{self.room.deposit:,.0f} VNĐ"))
+        layout.addLayout(r1)
 
-        # Status
-        status_map = {
-            'available': ('● Trống', '#38a169'),
-            'occupied': ('● Đang thuê', '#3182ce'),
-            'maintenance': ('● Bảo trì', '#e53e3e'),
-        }
-        st, sc = status_map.get(self.room.status, ('?', '#718096'))
-        lbl_st = QLabel(st)
-        lbl_st.setStyleSheet(f"color: {sc}; font-size: 14px; font-weight: bold;")
-        layout.addWidget(lbl_st)
+        r2 = QHBoxLayout(); r2.setSpacing(8)
+        r2.addWidget(self._box("TẦNG", f"Tầng {self.room.floor}"))
+        r2.addWidget(self._box("DIỆN TÍCH", f"{self.room.area} m²"))
+        layout.addLayout(r2)
 
-        # Info
-        info_items = [
-            ("Giá phòng", f"{self.room.price:,.0f} VNĐ/tháng"),
-            ("Tiền cọc", f"{self.room.deposit:,.0f} VNĐ"),
-            ("Tầng", f"Tầng {self.room.floor}"),
-            ("Diện tích", f"{self.room.area} m²"),
-            ("Loại phòng", getattr(self.room, 'room_type', 'Phòng đơn') or 'Phòng đơn'),
-            ("Tiện nghi", ", ".join(self.room.amenities) if self.room.amenities else "—"),
-            ("Mô tả", self.room.description or "—"),
-        ]
-        for label, value in info_items:
-            row = QHBoxLayout()
-            lbl = QLabel(f"{label}:")
-            lbl.setFixedWidth(100)
-            lbl.setStyleSheet("color: #718096; font-weight: bold;")
-            val = QLabel(value)
-            val.setWordWrap(True)
-            val.setStyleSheet("color: #2d3748;")
-            row.addWidget(lbl)
-            row.addWidget(val, 1)
-            layout.addLayout(row)
+        r3 = QHBoxLayout(); r3.setSpacing(8)
+        room_type = getattr(self.room, 'room_type', 'Phòng đơn') or 'Phòng đơn'
+        r3.addWidget(self._box("LOẠI PHÒNG", room_type))
+        amenities = ", ".join(self.room.amenities) if self.room.amenities else "—"
+        r3.addWidget(self._box("TIỆN NGHI", amenities))
+        layout.addLayout(r3)
+
+        if self.room.description:
+            layout.addWidget(self._box("MÔ TẢ", self.room.description))
+
+        # ── Section: Người thuê (chỉ hiện khi occupied) ──
+        if self.tenant_info.get('guest_name'):
+            layout.addWidget(self._section("NGƯỜI ĐANG THUÊ"))
+
+            t1 = QHBoxLayout(); t1.setSpacing(8)
+            t1.addWidget(self._box("HỌ TÊN", self.tenant_info.get('guest_name', '—')))
+            t1.addWidget(self._box("SỐ ĐIỆN THOẠI", self.tenant_info.get('phone', '—')))
+            layout.addLayout(t1)
+
+            t2 = QHBoxLayout(); t2.setSpacing(8)
+            t2.addWidget(self._box("NGÀY BẮT ĐẦU", self.tenant_info.get('start_date', '—')))
+            t2.addWidget(self._box("NGÀY KẾT THÚC", self.tenant_info.get('end_date', '—')))
+            layout.addLayout(t2)
+
+            contract_status = self.tenant_info.get('contract_status', '—')
+            cs_color_map = {'Đang thuê': '#38a169', 'Sắp hết hạn': '#dd6b20', 'Đã chấm dứt': '#e53e3e'}
+            cs_color = cs_color_map.get(contract_status, '#718096')
+            layout.addWidget(self._box("TRẠNG THÁI HĐ", contract_status, color=cs_color))
+        elif self.room.status == 'available':
+            layout.addWidget(self._section("NGƯỜI ĐANG THUÊ"))
+            empty_lbl = QLabel("🏠 Phòng hiện đang trống")
+            empty_lbl.setStyleSheet(
+                "color: #a0aec0; font-size: 13px; font-style: italic;"
+                " padding: 12px; background: #f7fafc; border: 1px dashed #cbd5e0;"
+                " border-radius: 8px;")
+            empty_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            layout.addWidget(empty_lbl)
+
+        # ── Section: IoT Điện Nước ──
+        layout.addWidget(self._section("⚡ IOT ĐIỆN NƯỚC"))
+        self._iot_container = QFrame()
+        self._iot_container.setObjectName("iotSection")
+        self._iot_container.setStyleSheet(
+            "QFrame#iotSection { background: #fffbeb; border: 1px solid #fbbf24;"
+            " border-radius: 10px; padding: 12px; }"
+            " QFrame#iotSection QLabel { border: none; background: transparent; }")
+        iot_lay = QVBoxLayout(self._iot_container)
+        iot_lay.setSpacing(8)
+
+        # Status indicator
+        self._iot_status = QLabel("🔴 Đang kết nối...")
+        self._iot_status.setStyleSheet("font-size: 11px; color: #92400e; font-weight: bold;")
+        iot_lay.addWidget(self._iot_status)
+
+        # Electric & Water readings
+        meters = QHBoxLayout()
+        meters.setSpacing(10)
+
+        self._elec_box = QFrame()
+        self._elec_box.setStyleSheet("background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px;")
+        el = QVBoxLayout(self._elec_box)
+        el.setSpacing(2)
+        el_icon = QLabel("⚡ ĐIỆN")
+        el_icon.setStyleSheet("color: #d97706; font-size: 10px; font-weight: bold;")
+        el.addWidget(el_icon)
+        self._elec_val = QLabel("--- kWh")
+        self._elec_val.setStyleSheet("color: #1f2937; font-size: 16px; font-weight: bold;")
+        el.addWidget(self._elec_val)
+        self._elec_time = QLabel("")
+        self._elec_time.setStyleSheet("color: #9ca3af; font-size: 9px;")
+        el.addWidget(self._elec_time)
+        meters.addWidget(self._elec_box)
+
+        self._water_box = QFrame()
+        self._water_box.setStyleSheet("background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px;")
+        wl = QVBoxLayout(self._water_box)
+        wl.setSpacing(2)
+        wl_icon = QLabel("💧 NƯỚC")
+        wl_icon.setStyleSheet("color: #2563eb; font-size: 10px; font-weight: bold;")
+        wl.addWidget(wl_icon)
+        self._water_val = QLabel("--- m³")
+        self._water_val.setStyleSheet("color: #1f2937; font-size: 16px; font-weight: bold;")
+        wl.addWidget(self._water_val)
+        self._water_time = QLabel("")
+        self._water_time.setStyleSheet("color: #9ca3af; font-size: 9px;")
+        wl.addWidget(self._water_time)
+        meters.addWidget(self._water_box)
+
+        iot_lay.addLayout(meters)
+        layout.addWidget(self._iot_container)
 
         layout.addStretch()
 
-        # Buttons
-        btn_row = QHBoxLayout()
-        btn_row.addStretch()
+        # ── Buttons ──
+        br = QHBoxLayout()
+        br.setSpacing(10)
 
         btn_del = QPushButton("🗑️ Xóa phòng")
         btn_del.setStyleSheet(
-            "QPushButton { background-color: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; "
-            "border-radius: 6px; padding: 8px 16px; font-weight: bold; }"
-            "QPushButton:hover { background-color: #fed7d7; }")
+            "QPushButton { background: white; color: #e53e3e; border: 1px solid #fed7d7;"
+            " border-radius: 8px; padding: 10px 16px; font-weight: bold; font-size: 12px; }"
+            "QPushButton:hover { background: #fff5f5; }")
         btn_del.setCursor(Qt.CursorShape.PointingHandCursor)
         btn_del.clicked.connect(self._on_delete)
+        br.addWidget(btn_del)
 
         btn_close = QPushButton("Đóng")
         btn_close.setStyleSheet(
-            "QPushButton { background-color: #f7fafc; border: 1px solid #cbd5e0; "
-            "border-radius: 6px; padding: 8px 16px; font-weight: bold; color: #4a5568; }"
-            "QPushButton:hover { background-color: #edf2f7; }")
+            "QPushButton { background: #f7fafc; color: #4a5568; border: 1px solid #cbd5e0;"
+            " border-radius: 8px; padding: 10px 16px; font-weight: bold; font-size: 12px; }"
+            "QPushButton:hover { background: #edf2f7; }")
         btn_close.clicked.connect(self.accept)
+        br.addWidget(btn_close)
+        layout.addLayout(br)
 
-        btn_row.addWidget(btn_del)
-        btn_row.addWidget(btn_close)
-        layout.addLayout(btn_row)
+        scroll.setWidget(container)
+        outer.addWidget(scroll)
+
+    def _start_iot_refresh(self):
+        """Bắt đầu auto-refresh IoT readings."""
+        from PyQt6.QtCore import QTimer
+        self._refresh_iot()  # Initial load
+        self._iot_timer = QTimer(self)
+        self._iot_timer.timeout.connect(self._refresh_iot)
+        self._iot_timer.start(3000)  # Refresh mỗi 3 giây
+
+    def _refresh_iot(self):
+        """Cập nhật hiển thị IoT."""
+        if not self.iot_service:
+            self._iot_status.setText("🔴 IoT chưa kết nối")
+            return
+
+        data = self.iot_service.get_latest(self.room.room_number)
+        if not data:
+            self._iot_status.setText("🔴 Chưa có dữ liệu")
+            return
+
+        self._iot_status.setText("🟢 Đang nhận dữ liệu realtime")
+
+        elec = data.get('electric', {})
+        if elec:
+            self._elec_val.setText(f"{elec.get('value', 0):,.1f} {elec.get('unit', 'kWh')}")
+            ts = elec.get('timestamp', '')
+            if ts:
+                try:
+                    from datetime import datetime
+                    dt = datetime.fromisoformat(ts)
+                    self._elec_time.setText(f"Cập nhật: {dt.strftime('%H:%M:%S %d/%m')}")
+                except Exception:
+                    self._elec_time.setText(f"Cập nhật: {ts[:19]}")
+
+        water = data.get('water', {})
+        if water:
+            self._water_val.setText(f"{water.get('value', 0):,.2f} {water.get('unit', 'm³')}")
+            ts = water.get('timestamp', '')
+            if ts:
+                try:
+                    from datetime import datetime
+                    dt = datetime.fromisoformat(ts)
+                    self._water_time.setText(f"Cập nhật: {dt.strftime('%H:%M:%S %d/%m')}")
+                except Exception:
+                    self._water_time.setText(f"Cập nhật: {ts[:19]}")
 
     def _on_delete(self):
         if ask_danger(self, "Xác nhận xóa",
@@ -557,7 +725,45 @@ class RoomManagementView(QWidget):
                 show_warning(self, "Lỗi", msg)
 
     def _on_detail(self, room: Room):
-        dlg = RoomDetailDialog(room, parent=self)
+        # Look up tenant info for this room
+        tenant_info = {}
+        try:
+            # Get services from parent AdminWindow's container
+            parent_window = self.window()
+            container = getattr(parent_window, 'container', None)
+            if container and room.status == 'occupied':
+                contract_service = getattr(container, 'contract_service', None)
+                guest_service = getattr(container, 'guest_service', None)
+                if contract_service and guest_service:
+                    for c in contract_service.get_all():
+                        if c.room_id == room.id and c.is_active():
+                            guest = guest_service.get_guest_by_id(c.guest_id)
+                            if guest:
+                                status_map = {
+                                    'active': 'Đang thuê',
+                                    'expired': 'Sắp hết hạn',
+                                    'terminated': 'Đã chấm dứt',
+                                }
+                                tenant_info = {
+                                    'guest_name': guest.full_name,
+                                    'phone': str(guest.phone),
+                                    'start_date': str(c.start_date),
+                                    'end_date': str(c.end_date),
+                                    'contract_status': status_map.get(c.status, c.status),
+                                }
+                            break
+        except Exception:
+            pass
+
+        # Get IoT service
+        iot_svc = None
+        try:
+            parent_window = self.window()
+            container = getattr(parent_window, 'container', None)
+            iot_svc = getattr(container, 'iot_service', None)
+        except Exception:
+            pass
+        dlg = RoomDetailDialog(room, tenant_info=tenant_info, iot_service=iot_svc, parent=self)
         dlg.delete_requested.connect(self._on_delete_room)
         dlg.exec()
 

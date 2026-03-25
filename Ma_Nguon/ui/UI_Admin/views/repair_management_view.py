@@ -16,18 +16,26 @@ from ui.UI_Common.custom_popup import show_success, show_error, show_warning, sh
 
 
 # ── Stat Card ────────────────────────────────────────────
+_repair_stat_counter = 0
+
 class RepairStatCard(QFrame):
     def __init__(self, icon, value, label, bg, val_color="#2d3748", parent=None):
         super().__init__(parent)
-        self.setStyleSheet("QFrame{background:white;border:1px solid #e2e8f0;border-radius:10px;padding:12px;}")
+        global _repair_stat_counter
+        _repair_stat_counter += 1
+        obj_name = f"repairStatCard_{_repair_stat_counter}"
+        self.setObjectName(obj_name)
+        self.setStyleSheet(
+            f"QFrame#{obj_name}{{background:white;border:1px solid #e2e8f0;border-radius:10px;padding:12px;}}"
+            f" QFrame#{obj_name} QLabel{{border:none;}}")
         lo = QHBoxLayout(self); lo.setSpacing(10)
         ic = QLabel(icon); ic.setFixedSize(44, 44); ic.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        ic.setStyleSheet(f"font-size:24px;background:{bg};border-radius:8px;padding:8px;"); lo.addWidget(ic)
+        ic.setStyleSheet(f"font-size:24px;background:{bg};border-radius:8px;padding:8px;border:none;"); lo.addWidget(ic)
         info = QVBoxLayout(); info.setSpacing(2)
         self.val_lbl = QLabel(value)
         self.val_lbl.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
-        self.val_lbl.setStyleSheet(f"color:{val_color};"); info.addWidget(self.val_lbl)
-        d = QLabel(label); d.setStyleSheet("color:#718096;font-size:11px;"); info.addWidget(d)
+        self.val_lbl.setStyleSheet(f"color:{val_color};border:none;"); info.addWidget(self.val_lbl)
+        d = QLabel(label); d.setStyleSheet("color:#718096;font-size:11px;border:none;"); info.addWidget(d)
         lo.addLayout(info)
 
 

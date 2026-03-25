@@ -43,6 +43,9 @@ class AdminWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        # Hide global search bar (each page has its own search)
+        self.ui.searchBar.hide()
+
         # Load sub-pages into stack
         self._pages = []
         self._load_pages()

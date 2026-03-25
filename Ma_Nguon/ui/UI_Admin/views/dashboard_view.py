@@ -8,12 +8,16 @@ from PyQt6.QtWidgets import (
     QScrollArea, QSizePolicy, QGraphicsDropShadowEffect
 )
 from PyQt6.QtCore import Qt, QSize
-from PyQt6.QtGui import QFont, QCursor, QColor, QPainter, QPen, QBrush
+from PyQt6.QtGui import QFont, QCursor, QColor
 from datetime import datetime, date
 import traceback
 
-# QtCharts removed — causes segfault on some systems.
-# Using QPainter-based chart for maximum compatibility.
+import matplotlib
+matplotlib.use('QtAgg')
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+import seaborn as sns
+import numpy as np
 
 MONTH_NAMES = ['', 'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
                'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
@@ -121,6 +125,43 @@ class DashboardView(QWidget):
         mid_row.addWidget(self.unpaidFrame, 4)
         root.addLayout(mid_row)
 
+        # ── Stats row: Pie chart + Revenue stats ──
+        stats_row = QHBoxLayout(); stats_row.setSpacing(20)
+
+        # Pie chart frame (phân bố phòng)
+        self.pieFrame = self._make_frame()
+        self.pieFrame.setMinimumSize(QSize(340, 300))
+        pie_lay = QVBoxLayout(self.pieFrame)
+        pie_lay.setContentsMargins(20, 20, 20, 15)
+        lbl_pie_title = QLabel('Phân bố trạng thái phòng')
+        lbl_pie_title.setStyleSheet('font-size: 16px; font-weight: bold; color: #2d3748;')
+        pie_lay.addWidget(lbl_pie_title)
+        self.pieContainer = QWidget()
+        self.pieContainer.setStyleSheet('background-color: transparent;')
+        self.pieContainerLayout = QVBoxLayout(self.pieContainer)
+        self.pieContainerLayout.setContentsMargins(0, 0, 0, 0)
+        pie_lay.addWidget(self.pieContainer, 1)
+        stats_row.addWidget(self.pieFrame, 4)
+
+        # Revenue stats frame (thống kê Numpy)
+        self.statsFrame = self._make_frame()
+        self.statsFrame.setMinimumSize(QSize(580, 300))
+        stats_lay = QVBoxLayout(self.statsFrame)
+        stats_lay.setContentsMargins(20, 20, 20, 15)
+        stats_lay.setSpacing(8)
+        lbl_stats_title = QLabel('📊 Thống kê doanh thu')
+        lbl_stats_title.setStyleSheet('font-size: 16px; font-weight: bold; color: #2d3748;')
+        stats_lay.addWidget(lbl_stats_title)
+        lbl_stats_sub = QLabel('Phân tích doanh thu 6 tháng gần nhất')
+        lbl_stats_sub.setStyleSheet('color: #718096; font-size: 12px;')
+        stats_lay.addWidget(lbl_stats_sub)
+        self.statsContainer = QVBoxLayout()
+        self.statsContainer.setSpacing(8)
+        stats_lay.addLayout(self.statsContainer)
+        stats_lay.addStretch()
+        stats_row.addWidget(self.statsFrame, 6)
+        root.addLayout(stats_row)
+
         # ── Activities ──
         self.activitiesFrame = self._make_frame()
         act_lay = QVBoxLayout(self.activitiesFrame)
@@ -151,6 +192,8 @@ class DashboardView(QWidget):
         for loader_name, loader in [
             ('stat_cards', self._load_stat_cards),
             ('chart', self._load_chart),
+            ('pie_chart', self._load_pie_chart),
+            ('revenue_stats', self._load_revenue_stats),
             ('unpaid_rooms', self._load_unpaid_rooms),
             ('activities', self._load_activities),
         ]:
@@ -237,12 +280,85 @@ class DashboardView(QWidget):
             w = item.widget()
             if w: w.deleteLater()
 
-        self._build_painter_chart(months_data)
+        self._build_matplotlib_chart(months_data)
 
-    def _build_painter_chart(self, months_data):
-        """Fallback: simple QPainter bar chart widget."""
-        chart_widget = _PainterBarChart(months_data)
+    def _build_matplotlib_chart(self, months_data):
+        """Vẽ biểu đồ doanh thu bằng Matplotlib + Seaborn."""
+        chart_widget = _MatplotlibBarChart(months_data)
         self.chartContainerLayout.addWidget(chart_widget)
+
+    # ── Pie Chart (Seaborn) ──────────────────────────────────
+    def _load_pie_chart(self):
+        while self.pieContainerLayout.count():
+            item = self.pieContainerLayout.takeAt(0)
+            w = item.widget()
+            if w: w.deleteLater()
+
+        report_svc = self.container.report_service
+        dist = report_svc.room_status_distribution()
+        labels = dist['labels']
+        counts = dist['counts']
+        colors = dist['colors']
+
+        fig = Figure(figsize=(3.5, 2.8), dpi=100)
+        fig.patch.set_facecolor('white')
+        fig.patch.set_alpha(0)
+        ax = fig.add_subplot(111)
+
+        palette = sns.color_palette([colors[i] for i in range(len(colors))])
+        non_zero = [(l, c, palette[i]) for i, (l, c) in enumerate(zip(labels, counts)) if c > 0]
+        if non_zero:
+            pie_labels, pie_counts, pie_colors = zip(*non_zero)
+            wedges, texts, autotexts = ax.pie(
+                pie_counts, labels=pie_labels, colors=pie_colors,
+                autopct='%1.0f%%', startangle=90, textprops={'fontsize': 9})
+            for t in autotexts:
+                t.set_fontweight('bold')
+                t.set_color('white')
+        else:
+            ax.text(0.5, 0.5, 'Không có dữ liệu', ha='center', va='center',
+                    fontsize=11, color='#a0aec0', transform=ax.transAxes)
+
+        ax.set_aspect('equal')
+        fig.tight_layout(pad=0.5)
+        canvas = FigureCanvas(fig)
+        canvas.setStyleSheet('background-color: transparent;')
+        self.pieContainerLayout.addWidget(canvas)
+
+    # ── Revenue Stats (Numpy) ────────────────────────────────
+    def _load_revenue_stats(self):
+        while self.statsContainer.count():
+            item = self.statsContainer.takeAt(0)
+            w = item.widget()
+            if w: w.deleteLater()
+
+        report_svc = self.container.report_service
+        stats = report_svc.revenue_statistics(6)
+
+        stat_items = [
+            ('Tổng doanh thu', f"{stats['total']:,.0f} đ".replace(',', '.'), '#0b8480'),
+            ('Trung bình/tháng', f"{stats['mean']:,.0f} đ".replace(',', '.'), '#3182ce'),
+            ('Cao nhất', f"{stats['max']:,.0f} đ".replace(',', '.'), '#38a169'),
+            ('Thấp nhất', f"{stats['min']:,.0f} đ".replace(',', '.'), '#e53e3e'),
+        ]
+
+        for i in range(0, len(stat_items), 2):
+            row = QHBoxLayout()
+            row.setSpacing(10)
+            for label, value, color in stat_items[i:i+2]:
+                box = QFrame()
+                box.setStyleSheet('QFrame{background:#f7fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px;}')
+                box_lay = QVBoxLayout(box)
+                box_lay.setContentsMargins(10, 8, 10, 8)
+                box_lay.setSpacing(3)
+                lbl = QLabel(label)
+                lbl.setStyleSheet('color:#a0aec0;font-size:10px;font-weight:bold;border:none;background:transparent;')
+                box_lay.addWidget(lbl)
+                val = QLabel(value)
+                val.setStyleSheet(f'color:{color};font-size:15px;font-weight:bold;border:none;background:transparent;')
+                box_lay.addWidget(val)
+                row.addWidget(box)
+            self.statsContainer.addLayout(row)
 
     # ── Unpaid Rooms ─────────────────────────────────────────
     def _load_unpaid_rooms(self):
@@ -563,21 +679,21 @@ class DashboardView(QWidget):
 
         top = QHBoxLayout()
         lbl_title = QLabel(title)
-        lbl_title.setStyleSheet("color: #718096; font-size: 13px; font-weight: bold;")
+        lbl_title.setStyleSheet("color: #718096; font-size: 13px; font-weight: bold; border: none;")
         top.addWidget(lbl_title); top.addStretch()
         icon = QLabel(icon_text)
         icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
         icon.setFixedSize(40, 40)
-        icon.setStyleSheet(f"background-color: {icon_bg}; color: {icon_color}; border-radius: 8px; font-weight: bold; font-size: 18px; padding: 0px;")
+        icon.setStyleSheet(f"background-color: {icon_bg}; color: {icon_color}; border-radius: 8px; font-weight: bold; font-size: 18px; padding: 0px; border: none;")
         top.addWidget(icon)
         lay.addLayout(top)
 
         lbl_value = QLabel("—")
-        lbl_value.setStyleSheet("color: #2d3748; font-size: 24px; font-weight: bold;")
+        lbl_value.setStyleSheet("color: #2d3748; font-size: 24px; font-weight: bold; border: none;")
         lay.addWidget(lbl_value)
 
         lbl_sub = QLabel("")
-        lbl_sub.setStyleSheet("color: #a0aec0; font-size: 11px;")
+        lbl_sub.setStyleSheet("color: #a0aec0; font-size: 11px; border: none;")
         lay.addWidget(lbl_sub)
         lay.addStretch()
         return (frame, {'value_label': lbl_value, 'sub_label': lbl_sub})
@@ -586,13 +702,20 @@ class DashboardView(QWidget):
         _, refs = card_tuple
         refs['value_label'].setText(value_text)
         if is_teal:
-            refs['value_label'].setStyleSheet("color: #0b8480; font-size: 24px; font-weight: bold;")
+            refs['value_label'].setStyleSheet("color: #0b8480; font-size: 24px; font-weight: bold; border: none;")
         refs['sub_label'].setText(sub_text)
 
+    _frame_counter = 0
+
     def _make_frame(self):
+        DashboardView._frame_counter += 1
+        obj_name = f"dashFrame_{DashboardView._frame_counter}"
         frame = QFrame()
+        frame.setObjectName(obj_name)
         frame.setStyleSheet(
-            "QFrame { background-color: white; border-radius: 12px; border: 1px solid #e2e8f0; }")
+            f"QFrame#{obj_name} {{ background-color: white; border-radius: 12px; border: 1px solid #e2e8f0; }}"
+            f" QFrame#{obj_name} QLabel {{ border: none; }}"
+            f" QFrame#{obj_name} QFrame {{ border: none; }}")
         return frame
 
     def _parse_dt(self, val):
@@ -626,81 +749,59 @@ class DashboardView(QWidget):
 
 
 # ══════════════════════════════════════════════════════════════
-#  QPainter Fallback Chart
+#  Matplotlib Bar Chart
 # ══════════════════════════════════════════════════════════════
-class _PainterBarChart(QWidget):
-    """Simple bar chart drawn with QPainter when QtCharts is not available."""
+class _MatplotlibBarChart(FigureCanvas):
+    """Biểu đồ cột doanh thu vẽ bằng Matplotlib + Seaborn."""
     def __init__(self, data, parent=None):
-        super().__init__(parent)
-        self.data = data
+        sns.set_theme(style='whitegrid', palette='muted')
+        fig = Figure(figsize=(6, 3), dpi=100)
+        fig.patch.set_facecolor('white')
+        fig.patch.set_alpha(0)
+        super().__init__(fig)
         self.setMinimumHeight(200)
+        self.setStyleSheet('background-color: transparent;')
+        self._draw(data)
 
-    def paintEvent(self, event):
-        if not self.data:
+    def _draw(self, data):
+        if not data:
             return
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+        ax = self.figure.add_subplot(111)
 
-        w, h = self.width(), self.height()
-        margin_left, margin_bottom, margin_top = 50, 30, 10
-        chart_w = w - margin_left - 20
-        chart_h = h - margin_bottom - margin_top
+        labels = [d['label'] for d in data]
+        rent_vals = np.array([d['rent'] for d in data])
+        utility_vals = np.array([d['utility'] for d in data])
+        x = np.arange(len(labels))
 
-        max_val = max((d['rent'] + d['utility']) for d in self.data) or 1
-        max_val *= 1.2
+        # Stacked bar: tiền phòng + điện nước (Seaborn palette)
+        colors = sns.color_palette(['#0b8480', '#63d9d2'])
+        bars_rent = ax.bar(x, rent_vals, width=0.5,
+                           label='Tiền phòng', color=colors[0], zorder=3)
+        bars_util = ax.bar(x, utility_vals, width=0.5,
+                           bottom=rent_vals, label='Điện nước',
+                           color=colors[1], zorder=3)
 
-        # Y axis lines
-        painter.setPen(QPen(QColor("#e2e8f0"), 1))
-        for i in range(5):
-            y = margin_top + int(chart_h * i / 4)
-            painter.drawLine(margin_left, y, w - 20, y)
-            val = max_val * (1 - i / 4)
-            painter.setPen(QPen(QColor("#a0aec0"), 1))
-            painter.setFont(QFont("Segoe UI", 8))
-            painter.drawText(0, y - 8, margin_left - 8, 16, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter, f"{val:.0f}")
-            painter.setPen(QPen(QColor("#e2e8f0"), 1))
+        # Style
+        ax.set_xticks(list(x))
+        ax.set_xticklabels(labels, fontsize=8, color='#4a5568')
+        ax.tick_params(axis='y', labelsize=8, colors='#a0aec0')
+        ax.set_facecolor('white')
+        sns.despine(ax=ax, left=False, bottom=False)
+        ax.spines['left'].set_color('#e2e8f0')
+        ax.spines['bottom'].set_color('#e2e8f0')
+        ax.yaxis.grid(True, color='#e2e8f0', linestyle='-', linewidth=0.5, zorder=0)
+        ax.set_axisbelow(True)
 
-        bar_count = len(self.data)
-        bar_group_w = chart_w / bar_count
-        bar_w = int(bar_group_w * 0.5)
+        # Hiện giá trị trên mỗi cột
+        for i in range(len(data)):
+            total = rent_vals[i] + utility_vals[i]
+            if total > 0:
+                ax.text(i, total + 0.02 * (ax.get_ylim()[1] or 1),
+                        f'{total:.1f}', ha='center', va='bottom',
+                        fontsize=7, color='#2d3748', fontweight='bold')
 
-        for idx, d in enumerate(self.data):
-            x = margin_left + int(idx * bar_group_w + (bar_group_w - bar_w) / 2)
-
-            # Rent bar
-            rent_h = int((d['rent'] / max_val) * chart_h) if max_val > 0 else 0
-            utility_h = int((d['utility'] / max_val) * chart_h) if max_val > 0 else 0
-
-            # Draw utility on top of rent
-            total_h = rent_h + utility_h
-            bar_y = margin_top + chart_h - total_h
-
-            painter.setBrush(QBrush(QColor("#0b8480")))
-            painter.setPen(Qt.PenStyle.NoPen)
-            painter.drawRoundedRect(x, margin_top + chart_h - rent_h, bar_w, rent_h, 4, 4)
-
-            if utility_h > 0:
-                painter.setBrush(QBrush(QColor("#63d9d2")))
-                painter.drawRoundedRect(x, bar_y, bar_w, utility_h, 4, 4)
-
-            # Label
-            painter.setPen(QPen(QColor("#4a5568"), 1))
-            painter.setFont(QFont("Segoe UI", 8))
-            lbl_x = margin_left + int(idx * bar_group_w)
-            painter.drawText(lbl_x, h - margin_bottom + 2, int(bar_group_w), 20,
-                           Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop, d['label'])
-
-        # Legend
-        legend_y = margin_top
-        painter.setBrush(QBrush(QColor("#0b8480")))
-        painter.drawRoundedRect(w - 180, legend_y, 10, 10, 2, 2)
-        painter.setPen(QPen(QColor("#4a5568")))
-        painter.drawText(w - 165, legend_y - 1, 60, 14, Qt.AlignmentFlag.AlignLeft, "Tiền phòng")
-
-        painter.setBrush(QBrush(QColor("#63d9d2")))
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(w - 95, legend_y, 10, 10, 2, 2)
-        painter.setPen(QPen(QColor("#4a5568")))
-        painter.drawText(w - 80, legend_y - 1, 70, 14, Qt.AlignmentFlag.AlignLeft, "Điện nước")
-
-        painter.end()
+        ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.12),
+                  ncol=2, fontsize=9, frameon=False)
+        self.figure.subplots_adjust(bottom=0.22)
+        self.figure.tight_layout(rect=[0, 0.08, 1, 1])
+        self.draw()

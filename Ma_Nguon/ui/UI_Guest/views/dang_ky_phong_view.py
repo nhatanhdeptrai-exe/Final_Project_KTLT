@@ -15,7 +15,7 @@ from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel,
     QPushButton, QFrame, QLineEdit, QComboBox, QMessageBox,
     QScrollArea, QDialog, QSizePolicy, QSpacerItem, QStackedWidget,
-    QCheckBox, QTextEdit
+    QCheckBox, QTextEdit, QRadioButton, QButtonGroup
 )
 from PyQt6.QtCore import Qt, pyqtSignal, QSize
 from PyQt6.QtGui import QFont, QPixmap
@@ -42,7 +42,7 @@ class BookingWizard(QDialog):
         self.personal_info = {}
         self._guest = None
         self.setWindowTitle(f"Đăng ký phòng {room.room_number}")
-        self.setFixedSize(620, 650)
+        self.setFixedSize(620, 780)
         self.setStyleSheet("QDialog { background-color: #f0f4f7; }")
         self._build_ui()
         self._prefill_guest_data()
@@ -86,8 +86,8 @@ class BookingWizard(QDialog):
         card.setStyleSheet(
             "QFrame { background-color: white; border: 1px solid #e2e8f0; border-radius: 12px; }")
         form = QVBoxLayout(card)
-        form.setContentsMargins(40, 30, 40, 30)
-        form.setSpacing(14)
+        form.setContentsMargins(40, 25, 40, 25)
+        form.setSpacing(8)
 
         title = QLabel("Thông tin đặt phòng")
         title.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
@@ -118,13 +118,22 @@ class BookingWizard(QDialog):
 
         # Field: Giới tính
         form.addWidget(self._field_label("Giới tính *"))
-        self.cmb_gender = QComboBox()
-        self.cmb_gender.addItems(["Chọn giới tính", "Nam", "Nữ", "Khác"])
-        self.cmb_gender.setStyleSheet(
-            "QComboBox { background-color: #f7fafc; border: 1px solid #e2e8f0; "
-            "border-radius: 6px; padding: 10px 12px; font-size: 14px; color: #4a5568; }")
-        self.cmb_gender.setMinimumHeight(42)
-        form.addWidget(self.cmb_gender)
+        gender_row = QHBoxLayout()
+        gender_row.setSpacing(20)
+        self.gender_group = QButtonGroup(self)
+        radio_style = (
+            "QRadioButton { color: #4a5568; font-size: 14px; spacing: 6px; border: none; }"
+            "QRadioButton::indicator { width: 18px; height: 18px; }"
+            "QRadioButton::indicator:checked { background-color: #0b8480; border: 2px solid #0b8480; border-radius: 9px; }"
+            "QRadioButton::indicator:unchecked { background-color: white; border: 2px solid #cbd5e0; border-radius: 9px; }")
+        for text in ["Nam", "Nữ"]:
+            rb = QRadioButton(text)
+            rb.setStyleSheet(radio_style)
+            rb.setMinimumHeight(36)
+            self.gender_group.addButton(rb)
+            gender_row.addWidget(rb)
+        gender_row.addStretch()
+        form.addLayout(gender_row)
 
         # Field: CCCD
         form.addWidget(self._field_label("Số CCCD/CMND *"))
@@ -132,6 +141,24 @@ class BookingWizard(QDialog):
         self.inp_cccd.setPlaceholderText("Nhập số CCCD/CMND")
         self._style_input(self.inp_cccd)
         form.addWidget(self.inp_cccd)
+
+        # Field: Số điện thoại
+        form.addWidget(self._field_label("Số điện thoại *"))
+        self.inp_phone = QLineEdit()
+        self.inp_phone.setPlaceholderText("Nhập số điện thoại")
+        if self.user and hasattr(self.user, 'phone'):
+            self.inp_phone.setText(str(self.user.phone))
+        self._style_input(self.inp_phone)
+        form.addWidget(self.inp_phone)
+
+        # Field: Email
+        form.addWidget(self._field_label("Email *"))
+        self.inp_email = QLineEdit()
+        self.inp_email.setPlaceholderText("Nhập địa chỉ email")
+        if self.user and hasattr(self.user, 'email'):
+            self.inp_email.setText(str(self.user.email))
+        self._style_input(self.inp_email)
+        form.addWidget(self.inp_email)
 
         form.addStretch()
 
@@ -172,28 +199,43 @@ class BookingWizard(QDialog):
             self.inp_cccd.setText(cccd)
         gender = getattr(self._guest, 'gender', '') or ''
         if gender:
-            idx = self.cmb_gender.findText(gender)
-            if idx >= 0:
-                self.cmb_gender.setCurrentIndex(idx)
+            for btn in self.gender_group.buttons():
+                if btn.text() == gender:
+                    btn.setChecked(True)
+                    break
+        phone = getattr(self._guest, 'phone', '') or ''
+        if phone:
+            self.inp_phone.setText(str(phone))
+        email = getattr(self._guest, 'email', '') or ''
+        if email:
+            self.inp_email.setText(str(email))
 
     def _on_step1_next(self):
         name = self.inp_name.text().strip()
         dob = self.inp_dob.text().strip()
-        gender = self.cmb_gender.currentText()
+        checked_btn = self.gender_group.checkedButton()
+        gender = checked_btn.text() if checked_btn else ""
         cccd = self.inp_cccd.text().strip()
+        phone = self.inp_phone.text().strip()
+        email = self.inp_email.text().strip()
 
         if not name:
             return show_warning(self, "Lỗi", "Vui lòng nhập họ và tên")
         if not dob:
             return show_warning(self, "Lỗi", "Vui lòng nhập năm sinh")
-        if gender == "Chọn giới tính":
+        if not gender:
             return show_warning(self, "Lỗi", "Vui lòng chọn giới tính")
         if not cccd or not cccd.isdigit() or len(cccd) != 12:
             return show_warning(self, "Lỗi", "Số CCCD/CMND phải đủ 12 chữ số")
+        if not phone:
+            return show_warning(self, "Lỗi", "Vui lòng nhập số điện thoại")
+        if not email:
+            return show_warning(self, "Lỗi", "Vui lòng nhập email")
 
         self.personal_info = {
             'full_name': name, 'dob': dob,
             'gender': gender, 'id_card': cccd,
+            'phone': phone, 'email': email,
         }
 
         # Save guest info to system
@@ -204,6 +246,8 @@ class BookingWizard(QDialog):
                     self._guest.dob = dob
                     self._guest.gender = gender
                     self._guest.id_card = cccd
+                    self._guest.phone = phone
+                    self._guest.email = email
                     self.guest_service.update_guest(self._guest)
                 else:
                     from models.guest import Guest
@@ -211,14 +255,32 @@ class BookingWizard(QDialog):
                         user_id=getattr(self.user, 'id', 0),
                         full_name=name, dob=dob, gender=gender,
                         id_card=cccd,
-                        phone=getattr(self.user, 'phone', ''),
-                        email=getattr(self.user, 'email', ''),
+                        phone=phone,
+                        email=email,
                     )
                     self.guest_service.create_guest(new_g)
                     self._guest = self.guest_service.get_guest_by_user_id(
                         getattr(self.user, 'id', 0))
             except Exception as e:
                 print(f'[BookingWizard] save guest error: {e}')
+
+        # Also update user account if phone/email changed
+        if self.user:
+            try:
+                changed = False
+                if phone and str(getattr(self.user, 'phone', '')) != phone:
+                    self.user.phone = phone
+                    changed = True
+                if email and str(getattr(self.user, 'email', '')) != email:
+                    self.user.email = email
+                    changed = True
+                if changed:
+                    parent_window = self.window()
+                    container = getattr(parent_window, 'container', None)
+                    if container and hasattr(container, 'auth_service'):
+                        container.auth_service.user_repo.update(self.user)
+            except Exception as e:
+                print(f'[BookingWizard] update user error: {e}')
 
         # Fill contract preview with info
         self._fill_contract_preview()
@@ -318,15 +380,17 @@ class BookingWizard(QDialog):
         </div>
         <br>
         <b>ĐIỀU 1: BÊN CHO THUÊ (Bên A)</b><br>
-        Ông/Bà: ..........................................<br>
-        CCCD: ..........................................<br>
-        Địa chỉ: ........................................<br><br>
+        Ông/Bà: <b>Tạ Nhật Anh</b><br>
+        SĐT: <b>0364216007</b><br>
+        Địa chỉ: <b>2 đường số 10, P. Tam Bình, Thủ Đức, TP.HCM</b><br><br>
 
         <b>ĐIỀU 2: BÊN THUÊ (Bên B)</b><br>
         Ông/Bà: <b>{info.get('full_name', '')}</b><br>
         Năm sinh: <b>{info.get('dob', '')}</b><br>
         Giới tính: <b>{info.get('gender', '')}</b><br>
-        CCCD/CMND: <b>{info.get('id_card', '')}</b><br><br>
+        CCCD/CMND: <b>{info.get('id_card', '')}</b><br>
+        Số điện thoại: <b>{info.get('phone', '')}</b><br>
+        Email: <b>{info.get('email', '')}</b><br><br>
 
         <b>ĐIỀU 3: NỘI DUNG HỢP ĐỒNG</b><br>
         Phòng: <b>{room.room_number}</b> — Tầng {room.floor}<br>

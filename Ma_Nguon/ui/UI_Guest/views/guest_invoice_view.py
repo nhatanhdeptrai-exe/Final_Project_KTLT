@@ -31,8 +31,11 @@ class PaymentDialog(QDialog):
         layout.setContentsMargins(0, 0, 0, 0)
 
         card = QFrame()
+        card.setObjectName("paymentCard")
         card.setStyleSheet(
-            "QFrame { background-color: white; border: 1px solid #e2e8f0; border-radius: 12px; }")
+            "QFrame#paymentCard { background-color: white; border: 1px solid #e2e8f0; border-radius: 12px; }"
+            " QFrame#paymentCard QLabel { border: none; }"
+            " QFrame#paymentCard QFrame { border: none; }")
         card_lay = QVBoxLayout(card)
         card_lay.setContentsMargins(40, 30, 40, 25)
         card_lay.setSpacing(12)
@@ -286,9 +289,12 @@ class GuestInvoiceView(QWidget):
             self.invoice_card.deleteLater()
 
         card = QFrame()
+        card.setObjectName("guestInvoiceCard")
         card.setStyleSheet(
-            "QFrame { background-color: white; border: 1px solid #e2e8f0; "
-            "border-radius: 12px; } QLabel { color: #2d3748; }")
+            "QFrame#guestInvoiceCard { background-color: white; border: 1px solid #e2e8f0; "
+            "border-radius: 12px; }"
+            " QFrame#guestInvoiceCard QLabel { color: #2d3748; border: none; }"
+            " QFrame#guestInvoiceCard QFrame { border: none; }")
         card_lay = QVBoxLayout(card)
         card_lay.setContentsMargins(25, 25, 25, 25)
         card_lay.setSpacing(10)

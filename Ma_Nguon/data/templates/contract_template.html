@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+    * { font-family: Arial, sans-serif; }
+    body { font-family: Arial, sans-serif; margin: 40px; color: #333; line-height: 1.6; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .header h2 { margin: 0; font-size: 14px; }
+    .header h1 { margin: 10px 0; font-size: 20px; color: #1a202c; }
+    .header .date { color: #718096; font-style: italic; }
+    .divider { text-align: center; color: #cbd5e0; margin: 5px 0; }
+    .section { margin: 15px 0; }
+    .section h3 { color: #1a4a49; font-size: 14px; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+    .info-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    .info-table td { padding: 6px 10px; font-size: 13px; }
+    .info-table td:first-child { width: 160px; color: #718096; font-weight: bold; }
+    .info-table td:last-child { color: #2d3748; }
+    .terms { font-size: 13px; }
+    .terms li { margin-bottom: 5px; }
+    .signature-area { margin-top: 40px; display: flex; justify-content: space-between; }
+    .sig-box { width: 45%; text-align: center; }
+    .sig-box p { margin: 5px 0; font-size: 13px; }
+    .sig-box .name { font-weight: bold; margin-top: 60px; }
+    .footer { text-align: center; margin-top: 30px; color: #a0aec0; font-size: 11px; border-top: 1px solid #e2e8f0; padding-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h2>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h2>
+    <h2>Độc lập - Tự do - Hạnh phúc</h2>
+    <div class="divider">———————</div>
+    <h1>HỢP ĐỒNG THUÊ PHÒNG TRỌ</h1>
+    <p class="date">Số: {{contract_number}}</p>
+    <p class="date">Ngày ký: {{sign_date}}</p>
+</div>
+
+<div class="section">
+    <h3>ĐIỀU 1: BÊN CHO THUÊ (Bên A)</h3>
+    <table class="info-table">
+        <tr><td>Ông/Bà:</td><td>{{landlord_name}}</td></tr>
+        <tr><td>Số điện thoại:</td><td>{{landlord_phone}}</td></tr>
+        <tr><td>Địa chỉ:</td><td>{{landlord_address}}</td></tr>
+    </table>
+</div>
+
+<div class="section">
+    <h3>ĐIỀU 2: BÊN THUÊ (Bên B)</h3>
+    <table class="info-table">
+        <tr><td>Ông/Bà:</td><td>{{guest_name}}</td></tr>
+        <tr><td>Năm sinh:</td><td>{{guest_dob}}</td></tr>
+        <tr><td>Giới tính:</td><td>{{guest_gender}}</td></tr>
+        <tr><td>CCCD/CMND:</td><td>{{guest_cccd}}</td></tr>
+        <tr><td>Số điện thoại:</td><td>{{guest_phone}}</td></tr>
+        <tr><td>Email:</td><td>{{guest_email}}</td></tr>
+    </table>
+</div>
+
+<div class="section">
+    <h3>ĐIỀU 3: NỘI DUNG HỢP ĐỒNG</h3>
+    <table class="info-table">
+        <tr><td>Phòng:</td><td>{{room_number}} — Tầng {{room_floor}}</td></tr>
+        <tr><td>Diện tích:</td><td>{{room_area}} m²</td></tr>
+        <tr><td>Giá thuê:</td><td>{{monthly_rent}} VNĐ/tháng</td></tr>
+        <tr><td>Tiền cọc:</td><td>{{deposit}} VNĐ</td></tr>
+        <tr><td>Thời hạn thuê:</td><td>Từ {{start_date}} đến {{end_date}}</td></tr>
+    </table>
+</div>
+
+<div class="section">
+    <h3>ĐIỀU 4: TRÁCH NHIỆM CÁC BÊN</h3>
+    <div class="terms">
+        <p><b>Trách nhiệm Bên A:</b></p>
+        <ul>
+            <li>Giao phòng và trang thiết bị cho Bên B đúng thời hạn</li>
+            <li>Đảm bảo các điều kiện sinh hoạt cơ bản (điện, nước, vệ sinh)</li>
+            <li>Thông báo trước ít nhất 7 ngày khi muốn vào phòng kiểm tra</li>
+        </ul>
+        <p><b>Trách nhiệm Bên B:</b></p>
+        <ul>
+            <li>Thanh toán đầy đủ và đúng hạn các khoản phí theo thỏa thuận</li>
+            <li>Giữ gìn vệ sinh, bảo quản tài sản trong phòng</li>
+            <li>Không được tự ý sửa chữa, cải tạo phòng trọ khi chưa có sự đồng ý của Bên A</li>
+            <li>Tuân thủ nội quy chung của khu trọ</li>
+            <li>Thông báo trước ít nhất 30 ngày khi muốn chấm dứt hợp đồng</li>
+        </ul>
+    </div>
+</div>
+
+<div class="section">
+    <h3>ĐIỀU 5: ĐIỀU KHOẢN CHUNG</h3>
+    <div class="terms">
+        <ul>
+            <li>Hợp đồng được lập thành 02 bản có giá trị pháp lý như nhau, mỗi bên giữ 01 bản</li>
+            <li>Mọi tranh chấp phát sinh sẽ được giải quyết thông qua thương lượng, hòa giải</li>
+            <li>Nếu không thỏa thuận được, sẽ đưa ra Tòa án nhân dân có thẩm quyền giải quyết</li>
+        </ul>
+    </div>
+</div>
+
+<table border="0" cellpadding="10" cellspacing="0" style="width:100%; margin-top: 40px;">
+    <tr>
+        <td style="width:50%; text-align:center; vertical-align:top; padding: 10px 20px;">
+            <p style="font-weight:bold; font-size:14px;">BÊN CHO THUÊ</p>
+            <p style="color:#718096; font-size:12px;">(Ký và ghi rõ họ tên)</p>
+            <br/><br/><br/><br/>
+            <p style="font-weight:bold;">{{landlord_name}}</p>
+        </td>
+        <td style="width:50%; text-align:center; vertical-align:top; padding: 10px 20px;">
+            <p style="font-weight:bold; font-size:14px;">BÊN THUÊ</p>
+            <p style="color:#718096; font-size:12px;">(Ký và ghi rõ họ tên)</p>
+            <br/><br/><br/><br/>
+            <p style="font-weight:bold;">{{guest_name}}</p>
+        </td>
+    </tr>
+</table>
+
+<div class="footer">
+    Hợp đồng được tạo tự động bởi Hệ thống Quản lý Phòng trọ
+</div>
+
+</body>
+</html>

@@ -126,6 +126,7 @@ class AuthWindow(QWidget, Ui_AuthWindow):
         # Thêm icon + placeholder vào input fields
         self._setup_icons()
         self._setup_placeholders()
+        self._setup_password_toggles()
 
         # Kết nối signals
         if hasattr(self, 'btnLoginsubmit'): self.btnLoginsubmit.clicked.connect(self.login)
@@ -159,6 +160,27 @@ class AuthWindow(QWidget, Ui_AuthWindow):
             widget = getattr(self, name, None)
             if widget and isinstance(widget, QLineEdit):
                 widget.setPlaceholderText(text)
+
+    def _setup_password_toggles(self):
+        """Thêm nút con mắt để ẩn/hiện mật khẩu."""
+        pwd_fields = ['inputPassword', 'inpRegPass', 'inpRegPassConfirm']
+        for field_name in pwd_fields:
+            field = getattr(self, field_name, None)
+            if not field or not isinstance(field, QLineEdit):
+                continue
+            field.setEchoMode(QLineEdit.EchoMode.Password)
+            eye_action = field.addAction(
+                _make_icon('👁', '#aaaaaa', 22),
+                QLineEdit.ActionPosition.TrailingPosition
+            )
+            eye_action.setToolTip('Hiện/ẩn mật khẩu')
+            eye_action.triggered.connect(
+                lambda _, f=field: f.setEchoMode(
+                    QLineEdit.EchoMode.Normal
+                    if f.echoMode() == QLineEdit.EchoMode.Password
+                    else QLineEdit.EchoMode.Password
+                )
+            )
 
     # === Login ===
     def login(self):
@@ -214,17 +236,44 @@ class AuthWindow(QWidget, Ui_AuthWindow):
 
     # === Register ===
     def register(self):
+        from utils.validators import validate_name, validate_phone, validate_email, validate_password
+
         name = self.inpRegName.text().strip()
         phone = self.inpRegPhone.text().strip()
         email = self.inpRegEmail.text().strip()
         pwd = self.inpRegPass.text()
         confirm = self.inpRegPassConfirm.text()
 
+        # === Validate tất cả TRƯỚC khi gửi OTP ===
         if not (name and phone and email and pwd):
             return show_warning(self, "Lỗi", "Nhập đủ thông tin")
+
+        ok, msg = validate_name(name)
+        if not ok:
+            return show_warning(self, "Lỗi", msg)
+
+        ok, msg = validate_phone(phone)
+        if not ok:
+            return show_warning(self, "Lỗi", msg)
+
+        ok, msg = validate_email(email)
+        if not ok:
+            return show_warning(self, "Lỗi", msg)
+
+        ok, msg = validate_password(pwd)
+        if not ok:
+            return show_warning(self, "Lỗi", msg)
+
         if pwd != confirm:
             return show_warning(self, "Lỗi", "Mật khẩu không khớp")
 
+        # Check email/phone đã tồn tại chưa
+        if self.auth_service.user_repo.get_by_email(email):
+            return show_warning(self, "Lỗi", "Email đã được đăng ký")
+        if self.auth_service.user_repo.get_by_phone(phone):
+            return show_warning(self, "Lỗi", "SĐT đã được đăng ký")
+
+        # === Tất cả hợp lệ → gửi OTP ===
         if self.auth_service.email_service and self.auth_service.email_service.is_configured():
             dlg = OTPDialog(email, self)
             self._worker = OTPWorker(self.auth_service.send_registration_otp, email)

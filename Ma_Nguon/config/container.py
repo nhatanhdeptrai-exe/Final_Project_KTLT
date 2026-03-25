@@ -49,6 +49,7 @@ class ServiceContainer:
         self.invoice_service = InvoiceService(self.invoice_repo, self.contract_repo)
         self.application_service = ApplicationService(self.application_repo)
         self.repair_request_service = RepairRequestService(self.repair_request_repo)
-        self.iot_service = IoTService(self.room_repo)
+        self.iot_service = IoTService()
+        self.iot_service.start()  # Start MQTT listener
         self.backup_service = BackupService()
         self.report_service = ReportService(self.invoice_repo, self.room_repo, self.contract_repo, self.guest_repo)

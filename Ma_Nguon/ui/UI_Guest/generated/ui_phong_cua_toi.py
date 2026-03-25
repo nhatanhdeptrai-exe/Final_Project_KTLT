@@ -245,7 +245,7 @@ class Ui_GuestMainWindow(object):
         self.ContractPanel.setStyleSheet(_translate("GuestMainWindow", "background-color: white; border-radius: 8px;"))
         self.label11.setText(_translate("GuestMainWindow", "HỢP ĐỒNG THUÊ NHÀ"))
         self.label12.setText(_translate("GuestMainWindow", "Số: Phòng 101/2024"))
-        self.txtContractContent.setPlainText(_translate("GuestMainWindow", "BÊN CHO THUÊ (Bên A): Nguyễn Văn A\n"
+        self.txtContractContent.setPlainText(_translate("GuestMainWindow", "BÊN CHO THUÊ (Bên A): Tạ Nhật Anh\n"
 "\n"
 "BÊN THUÊ (Bên B): Trần Thị B..."))
         self.txtContractContent.setStyleSheet(_translate("GuestMainWindow", "background: transparent; color: #2d3748; font-size: 14px; line-height: 1.5;"))

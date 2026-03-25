@@ -17,17 +17,23 @@ from ui.UI_Common.custom_popup import show_success, show_error, show_warning, sh
 
 
 # ── Stat Card ────────────────────────────────────────────
+_inv_stat_counter = 0
+
 class InvoiceStatCard(QFrame):
     def __init__(self, icon: str, value: str, label: str, bg_color: str, val_color: str = "#2d3748", parent=None):
         super().__init__(parent)
-        self.setStyleSheet(f"""
-            QFrame {{ background-color: white; border: 1px solid #e2e8f0;
-                      border-radius: 10px; padding: 12px; }}
-        """)
+        global _inv_stat_counter
+        _inv_stat_counter += 1
+        obj_name = f"invStatCard_{_inv_stat_counter}"
+        self.setObjectName(obj_name)
+        self.setStyleSheet(
+            f"QFrame#{obj_name} {{ background-color: white; border: 1px solid #e2e8f0;"
+            f" border-radius: 10px; padding: 12px; }}"
+            f" QFrame#{obj_name} QLabel {{ border: none; }}")
         layout = QHBoxLayout(self)
         layout.setSpacing(10)
         icon_lbl = QLabel(icon)
-        icon_lbl.setStyleSheet(f"font-size: 24px; background: {bg_color}; border-radius: 8px; padding: 8px;")
+        icon_lbl.setStyleSheet(f"font-size: 24px; background: {bg_color}; border-radius: 8px; padding: 8px; border: none;")
         icon_lbl.setFixedSize(44, 44)
         icon_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(icon_lbl)
@@ -35,10 +41,10 @@ class InvoiceStatCard(QFrame):
         info.setSpacing(2)
         self.val_lbl = QLabel(value)
         self.val_lbl.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
-        self.val_lbl.setStyleSheet(f"color: {val_color};")
+        self.val_lbl.setStyleSheet(f"color: {val_color}; border: none;")
         info.addWidget(self.val_lbl)
         desc_lbl = QLabel(label)
-        desc_lbl.setStyleSheet("color: #718096; font-size: 11px;")
+        desc_lbl.setStyleSheet("color: #718096; font-size: 11px; border: none;")
         info.addWidget(desc_lbl)
         layout.addLayout(info)
 
@@ -378,6 +384,15 @@ class InvoiceManagementView(QWidget):
 
         bar.addStretch()
 
+        btn_export = QPushButton("📊 Xuất Excel doanh thu")
+        btn_export.setStyleSheet(
+            "QPushButton { background-color: #2b6cb0; color: white; border: none; "
+            "border-radius: 8px; padding: 10px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #2c5282; }")
+        btn_export.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_export.clicked.connect(self._on_export_revenue_excel)
+        bar.addWidget(btn_export)
+
         btn_add = QPushButton("+ Tạo hóa đơn")
         btn_add.setStyleSheet(
             "QPushButton { background-color: #0b8480; color: white; border: none; "
@@ -615,3 +630,186 @@ class InvoiceManagementView(QWidget):
             self.refresh_data()
         else:
             show_warning(self, "Lỗi", "Không thể xóa hóa đơn")
+
+    def _on_export_revenue_excel(self):
+        """Xuất báo cáo doanh thu ra Excel — chọn theo tháng."""
+        from PyQt6.QtWidgets import QFileDialog, QFormLayout, QSpinBox
+        from datetime import datetime
+        from collections import defaultdict
+
+        now = datetime.now()
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Chọn khoảng thời gian xuất")
+        dlg.setFixedSize(400, 240)
+        dlg.setStyleSheet("QDialog { background: white; } QLabel { font-size: 13px; }")
+        lay = QVBoxLayout(dlg)
+        lay.setSpacing(12)
+        lay.setContentsMargins(20, 20, 20, 20)
+        title_lbl = QLabel("💰 Xuất báo cáo doanh thu")
+        title_lbl.setStyleSheet("font-size: 15px; font-weight: bold; color: #2d3748;")
+        lay.addWidget(title_lbl)
+        cs = "QComboBox, QSpinBox { padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 13px; }"
+        form = QFormLayout()
+        form.setSpacing(10)
+        rf = QHBoxLayout()
+        month_from = QComboBox()
+        month_from.addItems([f"Tháng {i}" for i in range(1, 13)])
+        month_from.setCurrentIndex(0)
+        month_from.setStyleSheet(cs)
+        year_from = QSpinBox()
+        year_from.setRange(2020, 2030)
+        year_from.setValue(now.year)
+        year_from.setStyleSheet(cs)
+        rf.addWidget(month_from); rf.addWidget(year_from)
+        form.addRow("Từ:", rf)
+        rt = QHBoxLayout()
+        month_to = QComboBox()
+        month_to.addItems([f"Tháng {i}" for i in range(1, 13)])
+        month_to.setCurrentIndex(now.month - 1)
+        month_to.setStyleSheet(cs)
+        year_to = QSpinBox()
+        year_to.setRange(2020, 2030)
+        year_to.setValue(now.year)
+        year_to.setStyleSheet(cs)
+        rt.addWidget(month_to); rt.addWidget(year_to)
+        form.addRow("Đến:", rt)
+        lay.addLayout(form)
+        btn_row = QHBoxLayout()
+        btn_row.addStretch()
+        bc = QPushButton("Hủy")
+        bc.setStyleSheet("QPushButton{background:#f7fafc;color:#4a5568;border:1px solid #cbd5e0;border-radius:8px;padding:8px 20px;font-weight:bold;}QPushButton:hover{background:#edf2f7;}")
+        bc.clicked.connect(dlg.reject)
+        btn_row.addWidget(bc)
+        bo = QPushButton("Xuất Excel")
+        bo.setStyleSheet("QPushButton{background-color:#2b6cb0;color:white;border:none;border-radius:8px;padding:8px 20px;font-weight:bold;}QPushButton:hover{background-color:#2c5282;}")
+        bo.clicked.connect(dlg.accept)
+        btn_row.addWidget(bo)
+        lay.addLayout(btn_row)
+
+        if dlg.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        m1, y1 = month_from.currentIndex() + 1, year_from.value()
+        m2, y2 = month_to.currentIndex() + 1, year_to.value()
+
+        # Không cho chọn tháng tương lai
+        if (y2, m2) > (now.year, now.month):
+            show_warning(self, "Lỗi", f"Chỉ được xuất tối đa đến tháng {now.month:02d}/{now.year}!")
+            return
+        if (y1, m1) > (y2, m2):
+            show_warning(self, "Lỗi", "Tháng bắt đầu phải nhỏ hơn hoặc bằng tháng kết thúc!")
+            return
+
+        fp, _ = QFileDialog.getSaveFileName(self, "Lưu báo cáo doanh thu",
+            f"DoanhThu_T{m1:02d}{y1}_T{m2:02d}{y2}.xlsx", "Excel Files (*.xlsx);;All Files (*)")
+        if not fp:
+            return
+
+        try:
+            from openpyxl import Workbook
+            from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+
+            wb = Workbook()
+            ws = wb.active
+            ws.title = "Doanh thu"
+            bd = Border(left=Side(style='thin'), right=Side(style='thin'),
+                        top=Side(style='thin'), bottom=Side(style='thin'))
+            hf = Font(name='Arial', bold=True, color='FFFFFF', size=11)
+            hfl = PatternFill(start_color='0B8480', end_color='0B8480', fill_type='solid')
+            ha = Alignment(horizontal='center', vertical='center')
+            df = Font(name='Arial', size=10)
+            da = Alignment(vertical='center')
+            ma = Alignment(horizontal='right', vertical='center')
+            sub_f = Font(name='Arial', bold=True, size=10, color='2B6CB0')
+            sub_fl = PatternFill(start_color='EBF8FF', end_color='EBF8FF', fill_type='solid')
+            mhf = Font(name='Arial', bold=True, size=12, color='FFFFFF')
+            mhfl = PatternFill(start_color='2B6CB0', end_color='2B6CB0', fill_type='solid')
+
+            ws.merge_cells('A1:I1')
+            tc = ws.cell(row=1, column=1, value=f"BÁO CÁO DOANH THU (T{m1:02d}/{y1} — T{m2:02d}/{y2})")
+            tc.font = Font(name='Arial', bold=True, size=14, color='0B8480')
+            tc.alignment = Alignment(horizontal='center')
+
+            invoices = self.invoice_service.get_all() if self.invoice_service else []
+            gmap, rmap, cmap = {}, {}, {}
+            if self.guest_service:
+                for g in self.guest_service.get_all_guests(): gmap[g.id] = g.full_name
+            if self.room_service:
+                for r in self.room_service.get_all_rooms(): rmap[r.id] = r.room_number
+            if self.contract_service:
+                for c in self.contract_service.get_all(): cmap[c.id] = c
+
+            by_month = defaultdict(list)
+            for inv in invoices:
+                k = (inv.year, inv.month)
+                if (y1, m1) <= k <= (y2, m2):
+                    by_month[k].append(inv)
+
+            sm = {'paid': 'Đã TT', 'unpaid': 'Chưa TT', 'overdue': 'Quá hạn'}
+            hdrs = ['STT', 'Mã HĐ', 'Khách thuê', 'Phòng', 'Tiền phòng', 'Tiền điện', 'Tiền nước', 'Tổng tiền', 'Trạng thái']
+            row = 3
+            grand = 0
+
+            for key in sorted(by_month.keys()):
+                yr, mo = key
+                mi = by_month[key]
+                ws.merge_cells(f'A{row}:I{row}')
+                mh = ws.cell(row=row, column=1, value=f"THÁNG {mo:02d}/{yr}")
+                mh.font = mhf; mh.fill = mhfl; mh.alignment = ha; mh.border = bd
+                row += 1
+                for col, h in enumerate(hdrs, 1):
+                    c = ws.cell(row=row, column=col, value=h)
+                    c.font = hf; c.fill = hfl; c.alignment = ha; c.border = bd
+                row += 1
+
+                mtot = 0
+                for idx, inv in enumerate(mi, 1):
+                    ct = cmap.get(inv.contract_id)
+                    gn = gmap.get(inv.guest_id, '—') if hasattr(inv, 'guest_id') else '—'
+                    rn = '—'
+                    if ct:
+                        gn = gmap.get(ct.guest_id, gn)
+                        rn = rmap.get(ct.room_id, '—')
+                    vals = [(idx, da), (inv.invoice_number, da), (gn, da), (rn, da),
+                            (f"{inv.room_rent:,.0f}", ma), (f"{inv.electricity_cost:,.0f}", ma),
+                            (f"{inv.water_cost:,.0f}", ma), (f"{inv.total_amount:,.0f}", ma),
+                            (sm.get(inv.status, inv.status), da)]
+                    for col, (v, a) in enumerate(vals, 1):
+                        c = ws.cell(row=row, column=col, value=v)
+                        c.font = df; c.alignment = a; c.border = bd
+                    row += 1
+                    if inv.status == 'paid':
+                        mtot += inv.total_amount
+
+                ws.merge_cells(f'A{row}:G{row}')
+                st = ws.cell(row=row, column=1, value=f"Tổng tháng {mo:02d}/{yr}")
+                st.font = sub_f; st.fill = sub_fl; st.alignment = Alignment(horizontal='right'); st.border = bd
+                sv = ws.cell(row=row, column=8, value=f"{mtot:,.0f} VNĐ")
+                sv.font = sub_f; sv.fill = sub_fl; sv.alignment = ma; sv.border = bd
+                row += 2
+                grand += mtot
+
+            ws.merge_cells(f'A{row}:G{row}')
+            gt = ws.cell(row=row, column=1, value='TỔNG DOANH THU ĐÃ THU')
+            gt.font = Font(name='Arial', bold=True, size=13, color='0B8480')
+            gt.alignment = Alignment(horizontal='right'); gt.border = bd
+            gv = ws.cell(row=row, column=8, value=f"{grand:,.0f} VNĐ")
+            gv.font = Font(name='Arial', bold=True, size=13, color='E53E3E')
+            gv.alignment = ma; gv.border = bd
+
+            from openpyxl.utils import get_column_letter
+            for col_idx in range(1, ws.max_column + 1):
+                ml = 0
+                for row_idx in range(1, ws.max_row + 1):
+                    cell = ws.cell(row=row_idx, column=col_idx)
+                    if cell.value and not isinstance(cell, type(None)):
+                        ml = max(ml, len(str(cell.value)))
+                ws.column_dimensions[get_column_letter(col_idx)].width = min(ml + 4, 30)
+
+            wb.save(fp)
+            show_success(self, "Xuất thành công", f"Đã lưu tại:\n{fp}")
+            import os
+            os.startfile(fp)
+        except Exception as e:
+            show_error(self, "Lỗi", f"Không thể xuất Excel:\n{e}")

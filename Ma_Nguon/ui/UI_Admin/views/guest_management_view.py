@@ -17,17 +17,23 @@ from ui.UI_Admin.generated.ui_dialog_them_khach_thue import Ui_DialogFormKhachTh
 
 
 # ── Stat Card ──────────────────────────────────────────────
+_stat_card_counter = 0
+
 class StatCard(QFrame):
     def __init__(self, icon: str, value: str, label: str, color: str, parent=None):
         super().__init__(parent)
-        self.setStyleSheet(f"""
-            QFrame {{ background-color: white; border: 1px solid #e2e8f0;
-                      border-radius: 10px; padding: 12px; }}
-        """)
+        global _stat_card_counter
+        _stat_card_counter += 1
+        obj_name = f"guestStatCard_{_stat_card_counter}"
+        self.setObjectName(obj_name)
+        self.setStyleSheet(
+            f"QFrame#{obj_name} {{ background-color: white; border: 1px solid #e2e8f0;"
+            f" border-radius: 10px; padding: 12px; }}"
+            f" QFrame#{obj_name} QLabel {{ border: none; }}")
         layout = QHBoxLayout(self)
         layout.setSpacing(10)
         icon_lbl = QLabel(icon)
-        icon_lbl.setStyleSheet(f"font-size: 24px; background: {color}; border-radius: 8px; padding: 8px;")
+        icon_lbl.setStyleSheet(f"font-size: 24px; background: {color}; border-radius: 8px; padding: 8px; border: none;")
         icon_lbl.setFixedSize(44, 44)
         icon_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(icon_lbl)
@@ -35,10 +41,10 @@ class StatCard(QFrame):
         info.setSpacing(2)
         val_lbl = QLabel(value)
         val_lbl.setFont(QFont("Segoe UI", 18, QFont.Weight.Bold))
-        val_lbl.setStyleSheet("color: #2d3748;")
+        val_lbl.setStyleSheet("color: #2d3748; border: none;")
         info.addWidget(val_lbl)
         desc_lbl = QLabel(label)
-        desc_lbl.setStyleSheet("color: #718096; font-size: 11px;")
+        desc_lbl.setStyleSheet("color: #718096; font-size: 11px; border: none;")
         info.addWidget(desc_lbl)
         layout.addLayout(info)
         self.val_lbl = val_lbl
@@ -273,12 +279,13 @@ class GuestDetailDialog(QDialog):
         # Buttons
         br = QHBoxLayout()
         br.setSpacing(10)
-        btn_contract = QPushButton("📋 Quản lý HĐ")
+        btn_contract = QPushButton("📋 Xem hợp đồng")
         btn_contract.setStyleSheet(
             "QPushButton{background:#ebf8ff;color:#3182ce;border:1px solid #bee3f8;"
             "border-radius:8px;padding:10px 16px;font-weight:bold;font-size:12px;}"
             "QPushButton:hover{background:#bee3f8;}")
         btn_contract.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_contract.clicked.connect(self._on_view_contract)
         br.addWidget(btn_contract)
 
         btn_edit = QPushButton("✏️ Chỉnh sửa")
@@ -309,6 +316,92 @@ class GuestDetailDialog(QDialog):
             yes_text="Xóa", no_text="Hủy bỏ"):
             self.delete_requested.emit(self.guest.id)
             self.accept()
+
+    def _on_view_contract(self):
+        """Mở dialog xem hợp đồng."""
+        from PyQt6.QtWidgets import QTextBrowser, QFileDialog
+        from datetime import datetime
+
+        rent = self.contract_info.get('monthly_rent', 0)
+        dep = self.contract_info.get('deposit', 0)
+
+        contract_data = {
+            'contract_number': self.contract_info.get('contract_number', '—'),
+            'sign_date': datetime.now().strftime('%d/%m/%Y'),
+            'landlord_name': 'Tạ Nhật Anh',
+            'landlord_phone': '0364216007',
+            'landlord_address': '2 đường số 10, P. Tam Bình, Thủ Đức, TP.HCM',
+            'guest_name': self.guest.full_name,
+            'guest_dob': getattr(self.guest, 'dob', '—') or '—',
+            'guest_gender': getattr(self.guest, 'gender', '—') or '—',
+            'guest_cccd': str(self.guest.id_card) if self.guest.id_card else '—',
+            'guest_phone': str(self.guest.phone) if self.guest.phone else '—',
+            'guest_email': getattr(self.guest, 'email', '—') or '—',
+            'room_number': self.contract_info.get('room_number', '—'),
+            'room_floor': '—',
+            'room_area': '—',
+            'monthly_rent': f'{int(rent):,}' if rent else '—',
+            'deposit': f'{int(dep):,}' if dep else '—',
+            'start_date': self.contract_info.get('start_date', '—'),
+            'end_date': self.contract_info.get('end_date', '—'),
+        }
+
+        from utils.pdf_generator import PDFGenerator
+        html = PDFGenerator._build_contract_html(contract_data)
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle(f"Hợp đồng — {self.guest.full_name}")
+        dlg.setFixedSize(650, 700)
+        dlg.setStyleSheet("QDialog { background-color: white; }")
+
+        lay = QVBoxLayout(dlg)
+        lay.setContentsMargins(0, 0, 0, 0)
+        lay.setSpacing(0)
+
+        browser = QTextBrowser()
+        browser.setHtml(html)
+        browser.setStyleSheet("QTextBrowser { border: none; padding: 10px; }")
+        lay.addWidget(browser)
+
+        btn_row = QHBoxLayout()
+        btn_row.setContentsMargins(20, 10, 20, 15)
+        btn_row.setSpacing(10)
+        btn_row.addStretch()
+
+        def _export():
+            default_name = f"HopDong_{self.guest.full_name}.pdf"
+            file_path, _ = QFileDialog.getSaveFileName(
+                dlg, "Lưu hợp đồng", default_name,
+                "PDF Files (*.pdf);;All Files (*)")
+            if not file_path:
+                return
+            try:
+                result = PDFGenerator.export_contract_pdf(contract_data, file_path)
+                show_success(dlg, "Xuất thành công", f"Đã lưu tại:\n{result}")
+                import os
+                os.startfile(result)
+            except Exception as e:
+                show_error(dlg, "Lỗi", f"Không thể xuất PDF:\n{e}")
+
+        btn_export = QPushButton("📄 Xuất PDF")
+        btn_export.setStyleSheet(
+            "QPushButton { background-color: #0b8480; color: white; border: none; "
+            "border-radius: 8px; padding: 10px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #096c69; }")
+        btn_export.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_export.clicked.connect(_export)
+        btn_row.addWidget(btn_export)
+
+        btn_close = QPushButton("Đóng")
+        btn_close.setStyleSheet(
+            "QPushButton { background: #f7fafc; color: #4a5568; border: 1px solid #cbd5e0; "
+            "border-radius: 8px; padding: 10px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background: #edf2f7; }")
+        btn_close.clicked.connect(dlg.close)
+        btn_row.addWidget(btn_close)
+        lay.addLayout(btn_row)
+
+        dlg.exec()
 
 
 # ── Main View ─────────────────────────────────────────────
@@ -369,6 +462,15 @@ class GuestManagementView(QWidget):
 
         bar.addStretch()
 
+        btn_export_excel = QPushButton("📊 Xuất Excel")
+        btn_export_excel.setStyleSheet(
+            "QPushButton { background-color: #2b6cb0; color: white; border: none; "
+            "border-radius: 8px; padding: 10px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #2c5282; }")
+        btn_export_excel.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_export_excel.clicked.connect(self._on_export_excel)
+        bar.addWidget(btn_export_excel)
+
         btn_add = QPushButton("+ Thêm khách thuê")
         btn_add.setStyleSheet(
             "QPushButton { background-color: #0b8480; color: white; border: none; "
@@ -389,7 +491,7 @@ class GuestManagementView(QWidget):
         header.setSectionResizeMode(0, QHeaderView.ResizeMode.Fixed)
         self.table.setColumnWidth(0, 60)
         header.setSectionResizeMode(7, QHeaderView.ResizeMode.Fixed)
-        self.table.setColumnWidth(7, 80)
+        self.table.setColumnWidth(7, 150)
         for col in range(1, 7):
             header.setSectionResizeMode(col, QHeaderView.ResizeMode.Stretch)
         self.table.verticalHeader().setVisible(False)
@@ -528,6 +630,7 @@ class GuestManagementView(QWidget):
             actions_layout.setSpacing(4)
             for text, color, bg, callback in [
                 ("Chi tiết", "#3182ce", "#ebf8ff", lambda _, g=g, rd=row_data: self._on_detail(g, rd)),
+                ("Xuất HĐ", "#0b8480", "#e6fffa", lambda _, g=g, rd=row_data: self._on_export_contract(g, rd)),
             ]:
                 btn = QPushButton(text)
                 btn.setStyleSheet(
@@ -581,6 +684,7 @@ class GuestManagementView(QWidget):
     def _on_detail(self, guest: Guest, row_data: dict):
         contract = row_data.get('contract')
         contract_info = {
+            'contract_number': contract.contract_number if contract else '—',
             'room_number': row_data['room_number'],
             'start_date': row_data['start_date'],
             'end_date': row_data['end_date'],
@@ -606,3 +710,137 @@ class GuestManagementView(QWidget):
             self.refresh_data()
         else:
             show_warning(self, "Lỗi", "Không thể xóa khách")
+
+    def _on_export_contract(self, guest: Guest, row_data: dict):
+        """Xuất hợp đồng PDF cho khách thuê."""
+        from PyQt6.QtWidgets import QFileDialog
+        from datetime import datetime
+
+        contract = row_data.get('contract')
+        if not contract:
+            show_warning(self, "Lỗi", "Khách này chưa có hợp đồng.")
+            return
+
+        room = None
+        if self.room_service:
+            room = self.room_service.get_room_by_id(contract.room_id)
+
+        price = contract.monthly_rent or (room.price if room else 0)
+        deposit = contract.deposit or (room.deposit if room else 0)
+
+        contract_data = {
+            'contract_number': contract.contract_number or f'HD{contract.id}',
+            'sign_date': datetime.now().strftime('%d/%m/%Y'),
+            'landlord_name': 'Tạ Nhật Anh',
+            'landlord_phone': '0364216007',
+            'landlord_address': '2 đường số 10, P. Tam Bình, Thủ Đức, TP.HCM',
+            'guest_name': guest.full_name,
+            'guest_dob': getattr(guest, 'dob', '—') or '—',
+            'guest_gender': getattr(guest, 'gender', '—') or '—',
+            'guest_cccd': str(guest.id_card) if guest.id_card else '—',
+            'guest_phone': str(guest.phone) if guest.phone else '—',
+            'guest_email': getattr(guest, 'email', '—') or '—',
+            'room_number': room.room_number if room else '—',
+            'room_floor': room.floor if room else '—',
+            'room_area': room.area if room else '—',
+            'monthly_rent': f'{int(price):,}',
+            'deposit': f'{int(deposit):,}',
+            'start_date': contract.start_date or '—',
+            'end_date': contract.end_date or '—',
+        }
+
+        default_name = f"HopDong_{contract_data['contract_number']}_{guest.full_name}.pdf"
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Lưu hợp đồng", default_name,
+            "PDF Files (*.pdf);;All Files (*)")
+        if not file_path:
+            return
+
+        try:
+            from utils.pdf_generator import PDFGenerator
+            result = PDFGenerator.export_contract_pdf(contract_data, file_path)
+            show_success(self, "Xuất thành công",
+                         f"Hợp đồng đã được lưu tại:\n{result}")
+            import os as _os
+            _os.startfile(result)
+        except Exception as e:
+            show_error(self, "Lỗi", f"Không thể xuất PDF:\n{e}")
+
+    def _on_export_excel(self):
+        """Xuất danh sách khách thuê ra Excel (tất cả)."""
+        from PyQt6.QtWidgets import QFileDialog
+        from datetime import datetime
+
+        default_name = f"DanhSachKhachThue_{datetime.now().strftime('%Y%m%d')}.xlsx"
+        file_path, _ = QFileDialog.getSaveFileName(
+            self, "Lưu danh sách khách thuê", default_name,
+            "Excel Files (*.xlsx);;All Files (*)")
+        if not file_path:
+            return
+        try:
+            from openpyxl import Workbook
+            from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+
+            wb = Workbook()
+            ws = wb.active
+            ws.title = "Danh sách khách thuê"
+
+            ws.merge_cells('A1:I1')
+            t = ws.cell(row=1, column=1, value="DANH SÁCH KHÁCH THUÊ")
+            t.font = Font(name='Arial', bold=True, size=13, color='0B8480')
+            t.alignment = Alignment(horizontal='center')
+
+            hf = Font(name='Arial', bold=True, color='FFFFFF', size=11)
+            hfill = PatternFill(start_color='0B8480', end_color='0B8480', fill_type='solid')
+            ha = Alignment(horizontal='center', vertical='center')
+            border = Border(left=Side(style='thin'), right=Side(style='thin'),
+                            top=Side(style='thin'), bottom=Side(style='thin'))
+
+            for col, h in enumerate(['STT', 'Họ tên', 'SĐT', 'CCCD/CMND', 'Email',
+                                     'Phòng', 'Ngày bắt đầu', 'Ngày kết thúc', 'Trạng thái HĐ'], 1):
+                c = ws.cell(row=3, column=col, value=h)
+                c.font = hf; c.fill = hfill; c.alignment = ha; c.border = border
+
+            guests = self.guest_service.get_all_guests() if self.guest_service else []
+            contracts_by_guest = {}
+            rooms_by_id = {}
+            if self.contract_service:
+                for c in self.contract_service.get_all():
+                    contracts_by_guest[c.guest_id] = c
+            if self.room_service:
+                for r in self.room_service.get_all_rooms():
+                    rooms_by_id[r.id] = r
+
+            sm = {'active': 'Đang thuê', 'expired': 'Sắp hết hạn', 'terminated': 'Đã chấm dứt'}
+            df = Font(name='Arial', size=10)
+            da = Alignment(vertical='center')
+
+            for i, g in enumerate(guests, 1):
+                ct = contracts_by_guest.get(g.id)
+                room = rooms_by_id.get(ct.room_id) if ct else None
+                vals = [i, g.full_name, str(g.phone) if g.phone else '—',
+                        str(g.id_card) if g.id_card else '—',
+                        getattr(g, 'email', '—') or '—',
+                        room.room_number if room else '—',
+                        ct.start_date if ct else '—', ct.end_date if ct else '—',
+                        sm.get(ct.status, ct.status) if ct else '—']
+                for col, val in enumerate(vals, 1):
+                    c = ws.cell(row=i + 3, column=col, value=val)
+                    c.font = df; c.alignment = da; c.border = border
+
+            from openpyxl.utils import get_column_letter
+            for col_idx in range(1, ws.max_column + 1):
+                ml = 0
+                for row_idx in range(1, ws.max_row + 1):
+                    cell = ws.cell(row=row_idx, column=col_idx)
+                    if cell.value:
+                        ml = max(ml, len(str(cell.value)))
+                ws.column_dimensions[get_column_letter(col_idx)].width = min(ml + 4, 30)
+
+            wb.save(file_path)
+            show_success(self, "Xuất thành công", f"Đã xuất {len(guests)} khách thuê.\nLưu tại: {file_path}")
+            import os
+            os.startfile(file_path)
+        except Exception as e:
+            show_error(self, "Lỗi", f"Không thể xuất Excel:\n{e}")
+

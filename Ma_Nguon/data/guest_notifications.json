@@ -10,13 +10,53 @@
     "user_id": 6
   },
   {
+    "id": "g_inv_unpaid_10",
+    "icon": "💰",
+    "icon_bg": "#fefcbf",
+    "icon_color": "#d69e2e",
+    "text": "Hóa đơn tháng 3/2026 phòng P204 chưa thanh toán",
+    "time": "2026-03-22T04:04:42.103301",
+    "read": true,
+    "user_id": 8
+  },
+  {
+    "id": "g_approved_11",
+    "icon": "✅",
+    "icon_bg": "#e6fffa",
+    "icon_color": "#38a169",
+    "text": "Hợp đồng phòng P204 đã được duyệt",
+    "time": "2026-03-22T04:03:10.751663",
+    "read": true,
+    "user_id": 8
+  },
+  {
+    "id": "g_approved_12",
+    "icon": "✅",
+    "icon_bg": "#e6fffa",
+    "icon_color": "#38a169",
+    "text": "Hợp đồng phòng P204 đã được duyệt",
+    "time": "2026-03-24T22:55:51.281908",
+    "read": true,
+    "user_id": 10
+  },
+  {
+    "id": "g_approved_9",
+    "icon": "✅",
+    "icon_bg": "#e6fffa",
+    "icon_color": "#38a169",
+    "text": "Hợp đồng phòng P202 đã được duyệt",
+    "time": "2026-03-21T17:50:53.743249",
+    "read": true,
+    "user_id": 4
+  },
+  {
     "id": "g_repair_done_10",
     "icon": "✅",
     "icon_bg": "#c6f6d5",
     "icon_color": "#276749",
     "text": "Sửa chữa \"uhgujbuj\" phòng #0 đã hoàn thành",
     "time": "2026-03-22T02:51:26.820934",
-    "read": false,
+    "read": true,
     "user_id": 5
   },
   {
@@ -26,7 +66,7 @@
     "icon_color": "#276749",
     "text": "Sửa chữa \"adw\" phòng #0 đã hoàn thành",
     "time": "2026-03-22T02:51:24.129515",
-    "read": false,
+    "read": true,
     "user_id": 5
   },
   {
@@ -36,7 +76,7 @@
     "icon_color": "#276749",
     "text": "Sửa chữa \"cawc\" phòng #0 đã hoàn thành",
     "time": "2026-03-22T02:51:21.447164",
-    "read": false,
+    "read": true,
     "user_id": 5
   },
   {
@@ -88,25 +128,5 @@
     "time": "2026-03-21",
     "read": true,
     "user_id": 5
-  },
-  {
-    "id": "g_inv_unpaid_10",
-    "icon": "💰",
-    "icon_bg": "#fefcbf",
-    "icon_color": "#d69e2e",
-    "text": "Hóa đơn tháng 3/2026 phòng P204 chưa thanh toán",
-    "time": "2026-03-22T04:04:42.103301",
-    "read": true,
-    "user_id": 8
-  },
-  {
-    "id": "g_approved_11",
-    "icon": "✅",
-    "icon_bg": "#e6fffa",
-    "icon_color": "#38a169",
-    "text": "Hợp đồng phòng P204 đã được duyệt",
-    "time": "2026-03-22T04:03:10.751663",
-    "read": true,
-    "user_id": 8
   }
 ]
