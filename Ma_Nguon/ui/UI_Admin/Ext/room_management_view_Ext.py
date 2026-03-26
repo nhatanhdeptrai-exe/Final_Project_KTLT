@@ -16,7 +16,7 @@ from PyQt6.QtGui import QFont, QPixmap, QIcon
 
 from config.constants import BASE_DIR
 from models.room import Room
-from ui.UI_Admin.generated.ui_dialog_them_phong import Ui_DialogFormPhong
+from ui.UI_Admin.generated.ui_dialog_them_phong_UI import Ui_DialogFormPhong
 from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 # Thư mục lưu ảnh phòng

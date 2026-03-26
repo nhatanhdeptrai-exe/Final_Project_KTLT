@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QMainWindow, QButtonGroup, QWidget, QVBoxLayout, QLabel
 from PyQt6.QtCore import Qt
-from ui.UI_Guest.generated.ui_guest_main_window_register import Ui_GuestMainWindowRegister
+from ui.UI_Guest.generated.ui_guest_main_window_register_UI import Ui_GuestMainWindowRegister
 
 class GuestRegisterWindow(QMainWindow):
     """Cửa sổ cho Khách thuê chưa có phòng (để đăng ký)."""
@@ -36,10 +36,10 @@ class GuestRegisterWindow(QMainWindow):
 
         for btn_name, title, builder in self.PAGE_DEFS:
             if builder == "dang_ky_phong":
-                from ui.UI_Guest.views.dang_ky_phong_view import DangKyPhongView
+                from ui.UI_Guest.Ext.dang_ky_phong_view_Ext import DangKyPhongView
                 page_widget = DangKyPhongView(user=self.user, container=self.container)
             elif builder == "guest_account":
-                from ui.UI_Guest.views.guest_account_view import GuestAccountView
+                from ui.UI_Guest.Ext.guest_account_view_Ext import GuestAccountView
                 page_widget = GuestAccountView(
                     user=self.user,
                     auth_service=self.container.auth_service if self.container else None,
@@ -91,7 +91,7 @@ class GuestRegisterWindow(QMainWindow):
 
     def _do_logout(self):
         """Đăng xuất → quay lại trang đăng nhập."""
-        from ui.UI_Common.views.auth_window import AuthWindow
+        from ui.UI_Common.Ext.auth_window_Ext import AuthWindow
         self._auth = AuthWindow(self.container)
         self._auth.show()
         self.close()

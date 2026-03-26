@@ -226,6 +226,70 @@ class PendingRepairRow(QFrame):
         lo.addWidget(btn_reject)
 
 
+# ── Pending Cancel Row (yêu cầu đổi phòng) ────────────────
+class PendingCancelRow(QFrame):
+    """Hiển thị 1 yêu cầu đổi phòng chờ duyệt."""
+    approved = pyqtSignal(object)   # contract
+    rejected = pyqtSignal(object)   # contract
+
+    def __init__(self, contract, room_number: str, guest_name: str, parent=None):
+        super().__init__(parent)
+        self.contract = contract
+        self.setMinimumHeight(90)
+        self.setStyleSheet(
+            "QFrame { border-bottom: 1px solid #edf2f7; background-color: #fff7ed; }"
+            "QFrame:hover { background-color: #ffedd5; }")
+
+        lo = QHBoxLayout(self)
+        lo.setContentsMargins(30, 10, 30, 10)
+        lo.setSpacing(15)
+
+        icon = QLabel("🔄")
+        icon.setFixedSize(40, 40)
+        icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        icon.setStyleSheet(
+            "background-color: #fef3c7; border-radius: 20px; font-size: 18px; border: none;")
+        lo.addWidget(icon)
+
+        info = QVBoxLayout()
+        info.setSpacing(2)
+        title = QLabel(f"Yêu cầu đổi phòng — {guest_name}")
+        title.setStyleSheet("font-size: 14px; font-weight: bold; color: #9a3412; border: none;")
+        info.addWidget(title)
+
+        detail = QLabel(f"Phòng hiện tại: {room_number}  •  HĐ: {contract.contract_number}  •  "
+                        f"Khách muốn bỏ phòng này để đăng ký phòng mới")
+        detail.setStyleSheet("font-size: 12px; color: #78716c; border: none;")
+        detail.setWordWrap(True)
+        info.addWidget(detail)
+
+        time_text = _time_ago(contract.created_at) if contract.created_at else ""
+        time_lbl = QLabel(time_text)
+        time_lbl.setStyleSheet("font-size: 11px; color: #a8a29e; border: none;")
+        info.addWidget(time_lbl)
+        lo.addLayout(info, 1)
+
+        btn_approve = QPushButton("✅ Duyệt hủy")
+        btn_approve.setMinimumHeight(36)
+        btn_approve.setStyleSheet(
+            "QPushButton { background-color: #059669; color: white; border: none; "
+            "border-radius: 6px; padding: 6px 16px; font-weight: bold; font-size: 12px; }"
+            "QPushButton:hover { background-color: #047857; }")
+        btn_approve.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_approve.clicked.connect(lambda: self.approved.emit(self.contract))
+        lo.addWidget(btn_approve)
+
+        btn_reject = QPushButton("❌ Từ chối")
+        btn_reject.setMinimumHeight(36)
+        btn_reject.setStyleSheet(
+            "QPushButton { background-color: #f7fafc; color: #e53e3e; border: 1px solid #fecaca; "
+            "border-radius: 6px; padding: 6px 16px; font-weight: bold; font-size: 12px; }"
+            "QPushButton:hover { background-color: #fef2f2; }")
+        btn_reject.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_reject.clicked.connect(lambda: self.rejected.emit(self.contract))
+        lo.addWidget(btn_reject)
+
+
 # ── Main View ────────────────────────────────────────────
 class NotificationView(QWidget):
     """Widget thông báo — nhúng AdminWindow."""
@@ -458,6 +522,31 @@ class NotificationView(QWidget):
                 row = PendingContractRow(contract, room_num, guest_name)
                 row.approved.connect(self._on_approve)
                 row.rejected.connect(self._on_reject)
+                self.list_layout.addWidget(row)
+
+        # ── Pending cancel (room change) section ──
+        pending_cancels = []
+        if self.contract_service:
+            try:
+                all_contracts = self.contract_service.get_all()
+                pending_cancels = [c for c in all_contracts if c.status == 'pending_cancel']
+            except Exception:
+                pass
+
+        if self._active_tab in ('all', 'pending') and pending_cancels:
+            sec_header = QLabel(f"  🔄  Yêu cầu đổi phòng ({len(pending_cancels)})")
+            sec_header.setFixedHeight(40)
+            sec_header.setStyleSheet(
+                "background-color: #ffedd5; color: #9a3412; font-weight: bold; "
+                "font-size: 13px; padding-left: 20px; border: none;")
+            self.list_layout.addWidget(sec_header)
+
+            for contract in pending_cancels:
+                room_num = self._get_room_number(contract.room_id)
+                guest_name = self._get_guest_name(contract.guest_id)
+                row = PendingCancelRow(contract, room_num, guest_name)
+                row.approved.connect(self._on_approve_cancel)
+                row.rejected.connect(self._on_reject_cancel)
                 self.list_layout.addWidget(row)
 
         # ── Pending repairs section ──
@@ -859,6 +948,205 @@ class NotificationView(QWidget):
         )
         self._refresh()
 
+    # ── Approve / Reject Room Change ──
+    def _on_approve_cancel(self, contract):
+        """Duyệt yêu cầu đổi phòng — terminate contract + free room."""
+        room_num = self._get_room_number(contract.room_id)
+        guest_name = self._get_guest_name(contract.guest_id)
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Duyệt yêu cầu đổi phòng")
+        dlg.setFixedSize(420, 280)
+        dlg.setStyleSheet("QDialog { background-color: white; }")
+        lay = QVBoxLayout(dlg)
+        lay.setSpacing(12)
+        lay.setContentsMargins(30, 25, 30, 25)
+
+        icon = QLabel("🔄")
+        icon.setStyleSheet("font-size: 40px;")
+        icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(icon)
+
+        title = QLabel("Duyệt yêu cầu đổi phòng?")
+        title.setFont(QFont("Segoe UI", 15, QFont.Weight.Bold))
+        title.setStyleSheet("color: #1a202c;")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(title)
+
+        info = QLabel(
+            f"Khách: <b>{guest_name}</b><br>"
+            f"Phòng hiện tại: <b>{room_num}</b><br>"
+            f"HĐ: <b>{contract.contract_number}</b><br><br>"
+            f"Hợp đồng sẽ được <b>chấm dứt</b> và phòng {room_num} sẽ <b>trở thành trống</b>."
+        )
+        info.setStyleSheet("color: #4a5568; font-size: 13px;")
+        info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        info.setWordWrap(True)
+        lay.addWidget(info)
+        lay.addStretch()
+
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(12)
+        btn_cancel = QPushButton("Hủy bỏ")
+        btn_cancel.setMinimumHeight(40)
+        btn_cancel.setStyleSheet(
+            "QPushButton { background-color: #f7fafc; color: #4a5568; border: 1px solid #cbd5e0; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #edf2f7; }")
+        btn_cancel.clicked.connect(dlg.reject)
+
+        btn_ok = QPushButton("✅  Duyệt hủy phòng")
+        btn_ok.setMinimumHeight(40)
+        btn_ok.setStyleSheet(
+            "QPushButton { background-color: #059669; color: white; border: none; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #047857; }")
+        btn_ok.clicked.connect(dlg.accept)
+        btn_row.addWidget(btn_cancel)
+        btn_row.addWidget(btn_ok)
+        lay.addLayout(btn_row)
+
+        if dlg.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        # Terminate contract + free room
+        self.contract_service.terminate_contract(contract.id)
+
+        # Add admin notification
+        self._notifications.insert(0, {
+            'id': f'cancel_approved_{contract.id}', 'icon': '✅', 'icon_bg': '#e6fffa', 'icon_color': '#38a169',
+            'text': f'Đã duyệt đổi phòng — {guest_name} rời phòng {room_num}',
+            'time': datetime.now().isoformat(), 'read': False, 'target': '',
+        })
+        self._save_notifications()
+
+        # Add guest notification
+        self._add_guest_notification(contract.guest_id, {
+            'id': f'g_cancel_approved_{contract.id}',
+            'icon': '✅', 'icon_bg': '#e6fffa', 'icon_color': '#38a169',
+            'text': f'Yêu cầu đổi phòng đã được duyệt. Phòng {room_num} đã được trả. Bạn có thể đăng ký phòng mới.',
+            'time': datetime.now().isoformat(), 'read': False,
+        })
+
+        self._show_result_dialog(
+            "✅", "#059669", "Duyệt thành công!",
+            f"Hợp đồng <b>{contract.contract_number}</b> đã chấm dứt.<br>"
+            f"Phòng <b>{room_num}</b> đã trở thành trống.<br>"
+            f"Khách <b>{guest_name}</b> có thể đăng ký phòng mới."
+        )
+        self._refresh()
+
+    def _on_reject_cancel(self, contract):
+        """Từ chối yêu cầu đổi phòng — revert contract to active."""
+        room_num = self._get_room_number(contract.room_id)
+        guest_name = self._get_guest_name(contract.guest_id)
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("Từ chối yêu cầu đổi phòng")
+        dlg.setFixedSize(420, 250)
+        dlg.setStyleSheet("QDialog { background-color: white; }")
+        lay = QVBoxLayout(dlg)
+        lay.setSpacing(12)
+        lay.setContentsMargins(30, 25, 30, 25)
+
+        icon = QLabel("⚠️")
+        icon.setStyleSheet("font-size: 40px;")
+        icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(icon)
+
+        title = QLabel("Từ chối yêu cầu đổi phòng?")
+        title.setFont(QFont("Segoe UI", 15, QFont.Weight.Bold))
+        title.setStyleSheet("color: #1a202c;")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(title)
+
+        info = QLabel(
+            f"Khách: <b>{guest_name}</b>  •  Phòng: <b>{room_num}</b><br>"
+            f"Hợp đồng sẽ được giữ nguyên."
+        )
+        info.setStyleSheet("color: #4a5568; font-size: 13px;")
+        info.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        info.setWordWrap(True)
+        lay.addWidget(info)
+        lay.addStretch()
+
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(12)
+        btn_cancel_btn = QPushButton("Hủy bỏ")
+        btn_cancel_btn.setMinimumHeight(40)
+        btn_cancel_btn.setStyleSheet(
+            "QPushButton { background-color: #f7fafc; color: #4a5568; border: 1px solid #cbd5e0; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #edf2f7; }")
+        btn_cancel_btn.clicked.connect(dlg.reject)
+
+        btn_ok = QPushButton("❌  Từ chối")
+        btn_ok.setMinimumHeight(40)
+        btn_ok.setStyleSheet(
+            "QPushButton { background-color: #dc2626; color: white; border: none; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #b91c1c; }")
+        btn_ok.clicked.connect(dlg.accept)
+        btn_row.addWidget(btn_cancel_btn)
+        btn_row.addWidget(btn_ok)
+        lay.addLayout(btn_row)
+
+        if dlg.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        # Revert contract back to active
+        contract.status = 'active'
+        self.contract_service.contract_repo.update(contract)
+
+        self._notifications.insert(0, {
+            'id': f'cancel_rejected_{contract.id}', 'icon': '❌', 'icon_bg': '#fff5f5', 'icon_color': '#e53e3e',
+            'text': f'Đã từ chối yêu cầu đổi phòng — {guest_name} (phòng {room_num})',
+            'time': datetime.now().isoformat(), 'read': False, 'target': '',
+        })
+        self._save_notifications()
+
+        # Add guest notification
+        self._add_guest_notification(contract.guest_id, {
+            'id': f'g_cancel_rejected_{contract.id}',
+            'icon': '❌', 'icon_bg': '#fff5f5', 'icon_color': '#e53e3e',
+            'text': f'Yêu cầu đổi phòng đã bị từ chối. Hợp đồng phòng {room_num} vẫn được giữ nguyên.',
+            'time': datetime.now().isoformat(), 'read': False,
+        })
+
+        self._show_result_dialog(
+            "❌", "#dc2626", "Đã từ chối",
+            f"Yêu cầu đổi phòng của <b>{guest_name}</b> đã bị từ chối.<br>"
+            f"Hợp đồng phòng <b>{room_num}</b> vẫn giữ nguyên."
+        )
+        self._refresh()
+
+    def _add_guest_notification(self, guest_id, notif_data):
+        """Thêm thông báo vào guest_notifications.json."""
+        guest_notif_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                        '..', '..', '..', 'data', 'guest_notifications.json')
+        guest_notif_file = os.path.normpath(guest_notif_file)
+        try:
+            with open(guest_notif_file, 'r', encoding='utf-8') as f:
+                guest_notifs = json.load(f)
+        except Exception:
+            guest_notifs = []
+
+        # Find user_id for this guest
+        user_id = 0
+        if self.guest_service:
+            guest = self.guest_service.get_guest_by_id(guest_id)
+            if guest:
+                user_id = getattr(guest, 'user_id', 0)
+
+        notif_data['user_id'] = user_id
+        guest_notifs.insert(0, notif_data)
+
+        try:
+            with open(guest_notif_file, 'w', encoding='utf-8') as f:
+                json.dump(guest_notifs, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
+
     def _mark_all_read(self):
         for n in self._notifications:
             n['read'] = True
@@ -876,7 +1164,7 @@ class NotificationView(QWidget):
         # Count pending contracts
         if self.contract_service:
             try:
-                pending = [c for c in self.contract_service.get_all() if c.status == 'pending']
+                pending = [c for c in self.contract_service.get_all() if c.status in ('pending', 'pending_cancel')]
                 count += len(pending)
             except Exception:
                 pass

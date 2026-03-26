@@ -3,6 +3,5 @@
   "water_rate": 25000,
   "default_contract_duration": 12,
   "invoice_due_days": 5,
-  "backup_retention_days": 30,
-  "session_timeout_minutes": 30
+  "backup_retention_days": 30
 }

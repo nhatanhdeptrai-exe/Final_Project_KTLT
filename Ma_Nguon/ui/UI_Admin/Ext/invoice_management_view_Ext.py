@@ -12,7 +12,7 @@ from PyQt6.QtCore import Qt, pyqtSignal, QDate
 from PyQt6.QtGui import QFont, QColor
 
 from models.invoice import Invoice
-from ui.UI_Admin.generated.ui_dialog_them_hoa_don import Ui_DialogFormInvoice
+from ui.UI_Admin.generated.ui_dialog_them_hoa_don_UI import Ui_DialogFormInvoice
 from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 

@@ -251,7 +251,7 @@ class RepairManagementView(QWidget):
         'low': ('Thấp', '#38a169'), 'medium': ('Bình thường', '#3182ce'),
         'high': ('Cao', '#dd6b20'), 'urgent': ('Khẩn cấp', '#e53e3e'),
     }
-    CATEGORIES = ["Tất cả", "Điện", "Nước", "Khóa cửa", "Điều hòa", "Tường/Trần"]
+    CATEGORIES = ["Tất cả", "Điện", "Nước", "Khóa cửa", "Điều hòa", "Tường/Trần", "Khác"]
 
     def __init__(self, repair_service=None, guest_service=None, room_service=None,
                  contract_service=None, parent=None):

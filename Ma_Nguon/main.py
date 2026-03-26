@@ -9,7 +9,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from PyQt6.QtWidgets import QApplication
 from config.container import ServiceContainer
-from ui.UI_Common.views.auth_window import AuthWindow
+from ui.UI_Common.Ext.auth_window_Ext import AuthWindow
 
 def main():
     """Khởi động ứng dụng."""

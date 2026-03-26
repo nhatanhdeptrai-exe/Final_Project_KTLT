@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, QPoint, QTimer
 from PyQt6.QtGui import QFont, QCursor
-from ui.UI_Guest.generated.ui_guest_main_window import Ui_GuestMainWindow
+from ui.UI_Guest.generated.ui_guest_main_window_UI import Ui_GuestMainWindow
 from config.constants import BASE_DIR
 
 
@@ -65,7 +65,7 @@ class GuestWindow(QMainWindow):
 
     def _create_custom_page(self, builder: str, title: str) -> QWidget:
         if builder == "my_room":
-            from ui.UI_Guest.views.my_room_view import MyRoomView
+            from ui.UI_Guest.Ext.my_room_view_Ext import MyRoomView
             return MyRoomView(
                 user=self.user,
                 contract_service=self.container.contract_service if self.container else None,
@@ -74,7 +74,7 @@ class GuestWindow(QMainWindow):
                 guest_service=self.container.guest_service if self.container else None,
             )
         if builder == "guest_account":
-            from ui.UI_Guest.views.guest_account_view import GuestAccountView
+            from ui.UI_Guest.Ext.guest_account_view_Ext import GuestAccountView
             view = GuestAccountView(
                 user=self.user,
                 auth_service=self.container.auth_service if self.container else None,
@@ -83,7 +83,7 @@ class GuestWindow(QMainWindow):
             view.logout_requested.connect(self._do_logout)
             return view
         if builder == "guest_invoice":
-            from ui.UI_Guest.views.guest_invoice_view import GuestInvoiceView
+            from ui.UI_Guest.Ext.guest_invoice_view_Ext import GuestInvoiceView
             return GuestInvoiceView(
                 user=self.user,
                 invoice_service=self.container.invoice_service if self.container else None,
@@ -92,7 +92,7 @@ class GuestWindow(QMainWindow):
                 guest_service=self.container.guest_service if self.container else None,
             )
         if builder == "guest_notif":
-            from ui.UI_Guest.views.guest_notif_view import GuestNotifView
+            from ui.UI_Guest.Ext.guest_notif_view_Ext import GuestNotifView
             return GuestNotifView(
                 user=self.user,
                 contract_service=self.container.contract_service if self.container else None,
@@ -369,7 +369,7 @@ class GuestWindow(QMainWindow):
 
     def _do_logout(self):
         """Đăng xuất → quay lại trang đăng nhập."""
-        from ui.UI_Common.views.auth_window import AuthWindow
+        from ui.UI_Common.Ext.auth_window_Ext import AuthWindow
         self._auth = AuthWindow(self.container)
         self._auth.show()
         self.close()

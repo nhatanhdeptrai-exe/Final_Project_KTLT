@@ -13,7 +13,7 @@ from PyQt6.QtGui import QFont, QColor
 
 from models.guest import Guest
 from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
-from ui.UI_Admin.generated.ui_dialog_them_khach_thue import Ui_DialogFormKhachThue
+from ui.UI_Admin.generated.ui_dialog_them_khach_thue_UI import Ui_DialogFormKhachThue
 
 
 # ── Stat Card ──────────────────────────────────────────────
@@ -471,14 +471,8 @@ class GuestManagementView(QWidget):
         btn_export_excel.clicked.connect(self._on_export_excel)
         bar.addWidget(btn_export_excel)
 
-        btn_add = QPushButton("+ Thêm khách thuê")
-        btn_add.setStyleSheet(
-            "QPushButton { background-color: #0b8480; color: white; border: none; "
-            "border-radius: 8px; padding: 10px 20px; font-weight: bold; font-size: 13px; }"
-            "QPushButton:hover { background-color: #096c69; }")
-        btn_add.setCursor(Qt.CursorShape.PointingHandCursor)
-        btn_add.clicked.connect(self._on_add)
-        bar.addWidget(btn_add)
+
+
         main_layout.addLayout(bar)
 
         # ── Table ──
@@ -649,22 +643,6 @@ class GuestManagementView(QWidget):
         self.refresh_data()
 
     # ── CRUD ──
-    def _on_add(self):
-        rooms = self.room_service.get_all_rooms() if self.room_service else []
-        dlg = GuestFormDialog(rooms=rooms, parent=self)
-        if dlg.exec() == QDialog.DialogCode.Accepted:
-            data = dlg.result_data
-            guest = Guest(
-                full_name=data['full_name'], phone=data['phone'],
-                id_card=data['id_card'], address=data['address'],
-            )
-            ok, msg = self.guest_service.create_guest(guest)
-            if ok:
-                show_success(self, "Thành công", msg)
-                self.refresh_data()
-            else:
-                show_warning(self, "Lỗi", msg)
-
     def _on_edit(self, guest: Guest):
         rooms = self.room_service.get_all_rooms() if self.room_service else []
         dlg = GuestFormDialog(guest=guest, rooms=rooms, parent=self)

@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, QPoint
 from PyQt6.QtGui import QFont, QCursor
-from ui.UI_Admin.generated.ui_admin_main_window import Ui_MainWindow
+from ui.UI_Admin.generated.ui_admin_main_window_UI import Ui_MainWindow
 
 
 class AdminWindow(QMainWindow):
@@ -82,25 +82,25 @@ class AdminWindow(QMainWindow):
         """Tạo trang tùy chỉnh (có logic CRUD)."""
         if btn_name == "navTrangChu":
             try:
-                from ui.UI_Admin.views.dashboard_view import DashboardView
+                from ui.UI_Admin.Ext.dashboard_view_Ext import DashboardView
                 return DashboardView(container=self.container)
             except Exception as e:
                 print(f"[AdminWindow] DashboardView error: {e}")
                 import traceback; traceback.print_exc()
                 return self._create_placeholder(title, str(e))
         if btn_name == "navQuanLyPhong":
-            from ui.UI_Admin.views.room_management_view import RoomManagementView
+            from ui.UI_Admin.Ext.room_management_view_Ext import RoomManagementView
             room_service = self.container.room_service if self.container else None
             return RoomManagementView(room_service=room_service)
         if btn_name == "navQuanLyKhachThu":
-            from ui.UI_Admin.views.guest_management_view import GuestManagementView
+            from ui.UI_Admin.Ext.guest_management_view_Ext import GuestManagementView
             return GuestManagementView(
                 guest_service=self.container.guest_service if self.container else None,
                 contract_service=self.container.contract_service if self.container else None,
                 room_service=self.container.room_service if self.container else None,
             )
         if btn_name == "navHoaDon":
-            from ui.UI_Admin.views.invoice_management_view import InvoiceManagementView
+            from ui.UI_Admin.Ext.invoice_management_view_Ext import InvoiceManagementView
             return InvoiceManagementView(
                 invoice_service=self.container.invoice_service if self.container else None,
                 contract_service=self.container.contract_service if self.container else None,
@@ -108,7 +108,7 @@ class AdminWindow(QMainWindow):
                 room_service=self.container.room_service if self.container else None,
             )
         if btn_name == "navSuaChua":
-            from ui.UI_Admin.views.repair_management_view import RepairManagementView
+            from ui.UI_Admin.Ext.repair_management_view_Ext import RepairManagementView
             return RepairManagementView(
                 repair_service=self.container.repair_request_service if self.container else None,
                 guest_service=self.container.guest_service if self.container else None,
@@ -116,7 +116,7 @@ class AdminWindow(QMainWindow):
                 contract_service=self.container.contract_service if self.container else None,
             )
         if btn_name == "navThongBao":
-            from ui.UI_Admin.views.notification_view import NotificationView
+            from ui.UI_Admin.Ext.notification_view_Ext import NotificationView
             self._notif_view = NotificationView(
                 contract_service=self.container.contract_service if self.container else None,
                 room_service=self.container.room_service if self.container else None,
@@ -126,7 +126,7 @@ class AdminWindow(QMainWindow):
             self._notif_view.navigate_requested.connect(self._on_notif_navigate)
             return self._notif_view
         if btn_name == "navTaiKhoan":
-            from ui.UI_Admin.views.account_management_view import AccountManagementView
+            from ui.UI_Admin.Ext.account_management_view_Ext import AccountManagementView
             view = AccountManagementView(
                 user=self.user,
                 auth_service=self.container.auth_service if self.container else None,
@@ -178,7 +178,7 @@ class AdminWindow(QMainWindow):
     def _on_bell_clicked(self):
         """Show notification popup below bell button."""
         import time
-        from ui.UI_Admin.views.notification_view import _time_ago
+        from ui.UI_Admin.Ext.notification_view_Ext import _time_ago
 
         # Toggle: if popup just closed (within 300ms), don't reopen
         now = time.time()
@@ -488,14 +488,14 @@ class AdminWindow(QMainWindow):
         if dlg.exec() != QDialog.DialogCode.Accepted:
             return
 
-        from ui.UI_Common.views.auth_window import AuthWindow
+        from ui.UI_Common.Ext.auth_window_Ext import AuthWindow
         self._auth = AuthWindow(self.container)
         self._auth.show()
         self.close()
 
     def _do_logout(self):
         """Đăng xuất trực tiếp (đã xác nhận từ account view)."""
-        from ui.UI_Common.views.auth_window import AuthWindow
+        from ui.UI_Common.Ext.auth_window_Ext import AuthWindow
         self._auth = AuthWindow(self.container)
         self._auth.show()
         self.close()

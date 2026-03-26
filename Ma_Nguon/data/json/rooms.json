@@ -187,7 +187,7 @@
       "area": 0.0,
       "price": 12313,
       "deposit": 12313,
-      "status": "occupied",
+      "status": "available",
       "description": "qưe",
       "amenities": [
         "qưe"
@@ -196,7 +196,7 @@
         "room_images/qưe/AS.png"
       ],
       "created_at": "2026-03-21T01:36:33.690970",
-      "updated_at": "2026-03-21T05:57:49.809500",
+      "updated_at": "2026-03-27T01:57:07.527594",
       "id": 12
     },
     {

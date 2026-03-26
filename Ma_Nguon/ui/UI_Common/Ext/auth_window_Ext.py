@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (QWidget, QMessageBox, QDialog, QVBoxLayout,
                               QLabel, QLineEdit, QPushButton, QInputDialog)
 from PyQt6.QtCore import Qt, QThread, pyqtSignal, pyqtSlot
 from PyQt6.QtGui import QIcon, QPixmap, QPainter, QColor, QFont
-from ui.UI_Common.generated.auth_main_ui import Ui_AuthWindow  # File tự sinh từ .ui — KHÔNG CHỈNH SỬA
+from ui.UI_Common.generated.auth_main_ui_UI import Ui_AuthWindow  # File tự sinh từ .ui — KHÔNG CHỈNH SỬA
 from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 
@@ -120,6 +120,9 @@ class AuthWindow(QWidget, Ui_AuthWindow):
         # Force refresh style
         self.setStyleSheet(self.styleSheet())
 
+        # Cho phép phóng to / toàn màn hình (generated UI khóa kích thước)
+        self.setMaximumSize(16777215, 16777215)
+
         # Màn hình mặc định = Đăng nhập (index 0)
         self.stackAuth.setCurrentIndex(0)
 
@@ -196,7 +199,7 @@ class AuthWindow(QWidget, Ui_AuthWindow):
         try:
             self.hide()
             if user.role == 'admin':
-                from ui.UI_Admin.views.admin_window import AdminWindow
+                from ui.UI_Admin.Ext.admin_window_Ext import AdminWindow
                 self._main_window = AdminWindow(user, self.container)
             else:
                 has_room = False
@@ -224,10 +227,10 @@ class AuthWindow(QWidget, Ui_AuthWindow):
                                 break
                 
                 if has_room:
-                    from ui.UI_Guest.views.guest_window import GuestWindow
+                    from ui.UI_Guest.Ext.guest_window_Ext import GuestWindow
                     self._main_window = GuestWindow(user, self.container)
                 else:
-                    from ui.UI_Guest.views.guest_register_window import GuestRegisterWindow
+                    from ui.UI_Guest.Ext.guest_register_window_Ext import GuestRegisterWindow
                     self._main_window = GuestRegisterWindow(user, self.container)
             self._main_window.show()
         except Exception as e:
@@ -325,7 +328,7 @@ class AuthWindow(QWidget, Ui_AuthWindow):
 # ForgotPasswordDialog — Kế thừa Ui_DialogForgotPass
 # File UI tự sinh: dialog_quen_mat_khau_ui.py (KHÔNG SỬA)
 # =============================================
-from ui.UI_Common.generated.dialog_quen_mat_khau_ui import Ui_DialogForgotPass
+from ui.UI_Common.generated.dialog_quen_mat_khau_ui_UI import Ui_DialogForgotPass
 from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 
@@ -351,7 +354,23 @@ class ForgotPasswordDialog(QDialog, Ui_DialogForgotPass):
         if hasattr(self, 'btnBackToLogin1'): self.btnBackToLogin1.clicked.connect(self.reject)
         if hasattr(self, 'btnBackToLogin2'): self.btnBackToLogin2.clicked.connect(self.reject)
         if hasattr(self, 'btnBackToLogin3'): self.btnBackToLogin3.clicked.connect(self.reject)
+        if hasattr(self, 'btnBackToLogin4'): self.btnBackToLogin4.clicked.connect(self.accept)
         if hasattr(self, 'btnGoToLogin'): self.btnGoToLogin.clicked.connect(self.accept)
+
+        # Thêm icon con mắt cho ô mật khẩu mới
+        for field_name in ['inpNewPass', 'inpNewPassConfirm']:
+            field = getattr(self, field_name, None)
+            if field and isinstance(field, QLineEdit):
+                field.setEchoMode(QLineEdit.EchoMode.Password)
+                eye_action = field.addAction(
+                    _make_icon('\U0001f441', '#aaaaaa', 22),
+                    QLineEdit.ActionPosition.TrailingPosition)
+                eye_action.setToolTip('Hiện/ẩn mật khẩu')
+                eye_action.triggered.connect(
+                    lambda _, f=field: f.setEchoMode(
+                        QLineEdit.EchoMode.Normal
+                        if f.echoMode() == QLineEdit.EchoMode.Password
+                        else QLineEdit.EchoMode.Password))
 
     def _send_otp(self):
         """Bước 1: Gửi OTP đến email (chạy ngầm)."""
@@ -398,6 +417,12 @@ class ForgotPasswordDialog(QDialog, Ui_DialogForgotPass):
             return show_warning(self, "Lỗi", "Mật khẩu không khớp")
 
         email = self.inpForgotEmail.text().strip()
+
+        # Kiểm tra mật khẩu mới không trùng mật khẩu cũ
+        user = self.auth_service.user_repo.get_by_email(email)
+        if user and user.check_password(pwd):
+            return show_warning(self, "Lỗi", "Mật khẩu mới không được trùng với mật khẩu cũ")
+
         ok, msg = self.auth_service.reset_password(email, pwd)
         if ok:
             self.stackForgotPass.setCurrentIndex(3)  # Chuyển sang trang thành công

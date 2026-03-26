@@ -211,9 +211,14 @@ class GuestAccountView(QWidget):
         gender_row = QHBoxLayout()
         self.rb_male = QRadioButton("Nam")
         self.rb_male.setChecked(True)
-        self.rb_male.setStyleSheet("font-weight: bold; color: #4a5568; font-size: 14px;")
+        RADIO_STYLE = (
+            "QRadioButton { font-weight: bold; color: #4a5568; font-size: 14px; spacing: 8px; }"
+            "QRadioButton::indicator { width: 18px; height: 18px; border: 2px solid #a0aec0; border-radius: 11px; background: white; }"
+            "QRadioButton::indicator:checked { background: #0b8480; border-color: #0b8480; }"
+        )
+        self.rb_male.setStyleSheet(RADIO_STYLE)
         self.rb_female = QRadioButton("Nữ")
-        self.rb_female.setStyleSheet("font-weight: bold; color: #4a5568; font-size: 14px;")
+        self.rb_female.setStyleSheet(RADIO_STYLE)
         gender_row.addWidget(self.rb_male)
         gender_row.addWidget(self.rb_female)
         gender_row.addStretch()
@@ -388,6 +393,17 @@ class GuestAccountView(QWidget):
             return show_warning(self, "Lỗi", "Email phải có dạng abc@gmail.com")
         if cccd and (not cccd.isdigit() or len(cccd) != 12):
             return show_warning(self, "Lỗi", "Số CCCD/CMND phải đủ 12 chữ số")
+
+        # ── Kiểm tra trùng email / SĐT ──
+        if email and email != (self.user.email or ''):
+            existing = self.auth_service.user_repo.get_by_email(email)
+            if existing and existing.id != self.user.id:
+                return show_warning(self, "Lỗi", "Email này đã được sử dụng bởi tài khoản khác")
+
+        if phone and phone != str(self.user.phone or ''):
+            existing = self.auth_service.user_repo.get_by_phone(phone)
+            if existing and existing.id != self.user.id:
+                return show_warning(self, "Lỗi", "Số điện thoại này đã được sử dụng bởi tài khoản khác")
 
         # Build DOB string from comboboxes
         day = self.cmb_day.currentText()

@@ -5,7 +5,8 @@ Profile card + tabbed settings (personal info / security).
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QFrame, QLineEdit, QMessageBox, QScrollArea, QStackedWidget,
-    QRadioButton, QSizePolicy, QComboBox, QFileDialog
+    QRadioButton, QSizePolicy, QComboBox, QFileDialog, QDialog,
+    QSpinBox, QDoubleSpinBox
 )
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QFont, QPixmap
@@ -13,6 +14,7 @@ from PyQt6.QtGui import QFont, QPixmap
 from models.user import User
 from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 from ui.UI_Common.bank_utils import load_bank_info, save_bank_info, get_qr_path
+import os
 
 INPUT_STYLE = (
     "QLineEdit { background-color: white; border: none; border-radius: 8px; "
@@ -84,6 +86,18 @@ class AccountManagementView(QWidget):
         pill.setAlignment(Qt.AlignmentFlag.AlignCenter)
         pill.setFixedWidth(100)
         pc_lay.addWidget(pill, alignment=Qt.AlignmentFlag.AlignHCenter)
+
+        pc_lay.addSpacing(5)
+
+        btn_settings = QPushButton("⚙️ Cài đặt hệ thống")
+        btn_settings.setMinimumSize(160, 40)
+        btn_settings.setStyleSheet(
+            "QPushButton { background-color: #edf2f7; border: 1px solid #cbd5e0; border-radius: 15px; "
+            "padding: 8px 20px; color: #4a5568; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #e2e8f0; }")
+        btn_settings.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_settings.clicked.connect(self._open_system_settings)
+        pc_lay.addWidget(btn_settings, alignment=Qt.AlignmentFlag.AlignHCenter)
 
         pc_lay.addSpacing(5)
 
@@ -556,3 +570,113 @@ class AccountManagementView(QWidget):
 
         if dlg.exec() == QDialog.DialogCode.Accepted:
             self.logout_requested.emit()
+
+    # ── System Settings Dialog ──
+    SETTINGS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                  '..', '..', '..', 'data', 'json', 'system_settings.json')
+
+    def _open_system_settings(self):
+        """Mở dialog chỉnh sửa cài đặt hệ thống."""
+        import json, os
+
+        # Load current settings
+        sf = os.path.normpath(self.SETTINGS_FILE)
+        settings = {}
+        try:
+            with open(sf, 'r', encoding='utf-8') as f:
+                settings = json.load(f)
+        except Exception:
+            settings = {
+                'electricity_rate': 3500, 'water_rate': 25000,
+                'default_contract_duration': 12, 'invoice_due_days': 5,
+                'backup_retention_days': 30,
+            }
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("⚙️ Cài đặt hệ thống")
+        dlg.setFixedSize(500, 680)
+        dlg.setStyleSheet("QDialog { background-color: white; }")
+
+        lay = QVBoxLayout(dlg)
+        lay.setSpacing(6)
+        lay.setContentsMargins(30, 25, 30, 25)
+
+        # Header
+        header = QLabel("⚙️ Cài đặt hệ thống")
+        header.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
+        header.setStyleSheet("color: #2d3748;")
+        lay.addWidget(header)
+
+        sub = QLabel("Chỉnh sửa các thông số hệ thống")
+        sub.setStyleSheet("color: #718096; font-size: 13px; margin-bottom: 8px;")
+        lay.addWidget(sub)
+
+        FIELD_LABEL = "font-weight: bold; color: #4a5568; font-size: 13px; margin-top: 6px;"
+        LINE_STYLE = ("QLineEdit { background: white; border: 1px solid #e2e8f0; "
+                      "border-radius: 8px; padding: 10px 15px; font-size: 14px; color: #2d3748; }"
+                      "QLineEdit:focus { border: 1px solid #0b8480; }")
+
+        fields = {}
+        ITEMS = [
+            ('electricity_rate',          '⚡ Giá điện (VNĐ/kWh)',                  3500),
+            ('water_rate',                '💧 Giá nước (VNĐ/m³)',                   25000),
+            ('default_contract_duration', '📅 Thời hạn hợp đồng mặc định (tháng)', 12),
+            ('invoice_due_days',          '💰 Hạn thanh toán hóa đơn (ngày)',       5),
+            ('backup_retention_days',     '📦 Thời gian giữ backup (ngày)',         30),
+        ]
+
+        for key, label_text, default in ITEMS:
+            lb = QLabel(label_text)
+            lb.setStyleSheet(FIELD_LABEL)
+            lay.addWidget(lb)
+            inp = QLineEdit()
+            inp.setText(str(settings.get(key, default)))
+            inp.setMinimumHeight(44)
+            inp.setStyleSheet(LINE_STYLE)
+            inp.setPlaceholderText(f"Nhập giá trị (mặc định: {default})")
+            lay.addWidget(inp)
+            fields[key] = inp
+
+        lay.addStretch()
+
+        # Buttons
+        btn_row = QHBoxLayout(); btn_row.setSpacing(12)
+        btn_cancel = QPushButton("Hủy")
+        btn_cancel.setMinimumHeight(42)
+        btn_cancel.setStyleSheet(
+            "QPushButton { background: #f7fafc; color: #4a5568; border: 1px solid #cbd5e0; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background: #edf2f7; }")
+        btn_cancel.clicked.connect(dlg.reject)
+        btn_row.addWidget(btn_cancel)
+
+        btn_save = QPushButton("💾 Lưu cài đặt")
+        btn_save.setMinimumHeight(42)
+        btn_save.setStyleSheet(
+            "QPushButton { background: #0b8480; color: white; border: none; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background: #096c69; }")
+        btn_save.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_row.addWidget(btn_save)
+        lay.addLayout(btn_row)
+
+        def _save():
+            new_settings = {}
+            for key, inp in fields.items():
+                val = inp.text().strip()
+                if not val or not val.isdigit():
+                    show_warning(self, "Lỗi", f"Giá trị không hợp lệ cho mục: {key}")
+                    inp.setFocus()
+                    return
+                new_settings[key] = int(val)
+            try:
+                os.makedirs(os.path.dirname(sf), exist_ok=True)
+                with open(sf, 'w', encoding='utf-8') as f:
+                    json.dump(new_settings, f, ensure_ascii=False, indent=2)
+                show_success(self, "Thành công", "Cài đặt hệ thống đã được lưu.")
+                dlg.accept()
+            except Exception as e:
+                show_error(self, "Lỗi", f"Không thể lưu: {e}")
+
+        btn_save.clicked.connect(_save)
+        dlg.exec()

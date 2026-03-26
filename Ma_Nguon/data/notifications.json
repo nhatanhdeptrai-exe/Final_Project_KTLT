@@ -1,5 +1,45 @@
 [
   {
+    "id": "cancel_approved_8",
+    "icon": "✅",
+    "icon_bg": "#e6fffa",
+    "icon_color": "#38a169",
+    "text": "Đã duyệt đổi phòng — Guest Test 22 rời phòng qưe",
+    "time": "2026-03-27T01:57:07.528333",
+    "read": true,
+    "target": ""
+  },
+  {
+    "id": "repair_accepted_11",
+    "icon": "🔧",
+    "icon_bg": "#ebf8ff",
+    "icon_color": "#2b6cb0",
+    "text": "Đã tiếp nhận yêu cầu sửa chữa: Khác (Phòng #0)",
+    "time": "2026-03-27T01:57:02.052348",
+    "read": true,
+    "target": "repair"
+  },
+  {
+    "id": "repair_11",
+    "icon": "🔧",
+    "icon_bg": "#c6f6d5",
+    "icon_color": "#22543d",
+    "text": "Yêu cầu sửa chữa: Khác (Phòng #0 — Guest Test 22)",
+    "time": "2026-03-27T01:40:19.298667",
+    "read": true,
+    "target": "repair"
+  },
+  {
+    "id": "room_change_8",
+    "icon": "🔄",
+    "icon_bg": "#fef3c7",
+    "icon_color": "#92400e",
+    "text": "Khách Guest Test 22 yêu cầu đổi phòng (hiện tại: qưe)",
+    "time": "2026-03-27T01:55:58.854629",
+    "read": true,
+    "target": "room_change"
+  },
+  {
     "id": "approved_13",
     "icon": "✅",
     "icon_bg": "#e6fffa",

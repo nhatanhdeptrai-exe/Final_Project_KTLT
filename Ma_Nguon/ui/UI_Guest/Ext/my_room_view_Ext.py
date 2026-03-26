@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import (
     QLineEdit, QTextEdit, QComboBox, QMessageBox
 )
 from PyQt6.QtCore import Qt
+import os
 
 """
 MyRoomView — Trang "Phòng của tôi" cho Guest.
@@ -17,7 +18,7 @@ Hiển thị thông tin phòng, hợp đồng, và form gửi yêu cầu sửa c
 import os
 from PyQt6.QtWidgets import QWidget, QMessageBox
 from PyQt6.QtCore import Qt
-from ui.UI_Guest.generated.ui_phong_cua_toi import Ui_GuestMainWindow
+from ui.UI_Guest.generated.ui_phong_cua_toi_UI import Ui_GuestMainWindow
 from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 class MyRoomView(QWidget):
@@ -36,7 +37,29 @@ class MyRoomView(QWidget):
         self.ui.setupUi(self)
         
         self._setup_connections()
+        self._replace_title_with_combobox()
         self._load_data()
+
+    def _replace_title_with_combobox(self):
+        """Thay QLineEdit inpMntTitle bằng QComboBox danh mục sửa chữa."""
+        from PyQt6.QtWidgets import QComboBox
+        old = self.ui.inpMntTitle
+        cb = QComboBox(old.parentWidget())
+        cb.setObjectName("inpMntTitle")
+        cb.addItems(["Điện", "Nước", "Khóa cửa", "Điều hòa", "Tường/Trần", "Khác"])
+        cb.setMinimumHeight(old.minimumHeight() if old.minimumHeight() > 0 else 40)
+        cb.setStyleSheet(
+            "QComboBox { background-color: white; border: 1px solid #e2e8f0; "
+            "border-radius: 8px; padding: 8px 15px; font-size: 14px; color: #4a5568; }"
+            "QComboBox:focus { border: 1px solid #0b8480; }")
+        # Replace in layout
+        layout = self.ui.vboxlayout5
+        idx = layout.indexOf(old)
+        if idx >= 0:
+            layout.replaceWidget(old, cb)
+            old.hide()
+            old.deleteLater()
+        self.ui.inpMntTitle = cb
 
     def _setup_connections(self):
         # Default view is pageMyRoom (index 0)
@@ -90,7 +113,7 @@ class MyRoomView(QWidget):
                 for g in matching_guests:
                     for c in contracts:
                         if str(getattr(c, 'guest_id', '')) == str(getattr(g, 'id', '')):
-                            if getattr(c, 'status', '') in ('active', 'Đang thuê', 'Còn hiệu lực'):
+                            if getattr(c, 'status', '') in ('active', 'pending_cancel', 'Đang thuê', 'Còn hiệu lực'):
                                 guest = g
                                 active_contract = c
                                 break
@@ -173,6 +196,12 @@ class MyRoomView(QWidget):
             f"- Tiền cọc: {int(deposit):,} VNĐ\n"
         )
         self.ui.txtContractContent.setPlainText(contract_text)
+
+        # Nếu đang chờ duyệt đổi phòng → disable nút + hiển thị trạng thái
+        if active_contract and getattr(active_contract, 'status', '') == 'pending_cancel':
+            if hasattr(self.ui, 'btnRegNewRoom'):
+                self.ui.btnRegNewRoom.setEnabled(False)
+                self.ui.btnRegNewRoom.setText("⏳ Đang chờ duyệt đổi phòng...")
 
         # Load ảnh phòng nếu có
         images = getattr(room, 'images', [])
@@ -301,12 +330,12 @@ class MyRoomView(QWidget):
 
     # ── Actions ──
     def _submit_repair(self):
-        title = self.ui.inpMntTitle.text().strip()
+        title = self.ui.inpMntTitle.currentText().strip()
         desc = self.ui.inpMntDesc.toPlainText().strip()
         priority = self.ui.inpMntPriority.currentText().strip() if hasattr(self.ui, 'inpMntPriority') else "medium"
 
         if not title:
-            show_warning(self, "Lỗi", "Vui lòng nhập mục cần sửa chữa")
+            show_warning(self, "Lỗi", "Vui lòng chọn mục cần sửa chữa")
             return
         if not desc:
             show_warning(self, "Lỗi", "Vui lòng mô tả chi tiết")
@@ -344,7 +373,7 @@ class MyRoomView(QWidget):
                     priority=priority_en,
                 )
                 show_success(self, "Thành công", msg)
-                self.ui.inpMntTitle.clear()
+                self.ui.inpMntTitle.setCurrentIndex(0)
                 self.ui.inpMntDesc.clear()
                 if hasattr(self.ui, 'inpMntPriority'):
                     self.ui.inpMntPriority.setCurrentIndex(1)
@@ -353,7 +382,7 @@ class MyRoomView(QWidget):
                 show_warning(self, "Lỗi", f"Không thể gửi: {e}")
         else:
             show_success(self, "Thành công", "Gửi yêu cầu sửa chữa thành công (Demo)!")
-            self.ui.inpMntTitle.clear()
+            self.ui.inpMntTitle.setCurrentIndex(0)
             self.ui.inpMntDesc.clear()
             if hasattr(self.ui, 'inpMntPriority'):
                 self.ui.inpMntPriority.setCurrentIndex(1)
@@ -500,4 +529,101 @@ class MyRoomView(QWidget):
         }
 
     def _register_new_room(self):
-        show_info(self, "Đăng ký", "Để đăng ký phòng mới vui lòng liên hệ Ban quản lý tòa nhà.")
+        """Yêu cầu đổi phòng: xác nhận → gửi thông báo admin → chờ duyệt."""
+        import json
+        from datetime import datetime
+
+        # 1. Tìm guest + active contract hiện tại
+        guest, active_contract, room = self._find_current_booking()
+        if not guest or not active_contract:
+            show_warning(self, "Lỗi", "Không tìm thấy hợp đồng đang hiệu lực.")
+            return
+
+        # 2. Kiểm tra đã có yêu cầu pending_cancel chưa
+        if active_contract.status == 'pending_cancel':
+            show_info(self, "Thông báo", "Yêu cầu đổi phòng đã được gửi.\nVui lòng chờ admin duyệt.")
+            return
+
+        room_name = room.room_number if room else "—"
+
+        # 3. Hỏi xác nhận
+        if not ask_danger(self, "Xác nhận đổi phòng",
+                          f"Bạn có chắc muốn bỏ phòng {room_name} hiện tại "
+                          f"để đăng ký phòng mới?\n\n"
+                          f"Yêu cầu sẽ được gửi đến Admin để duyệt.\n"
+                          f"Sau khi duyệt, hợp đồng hiện tại sẽ chấm dứt "
+                          f"và phòng {room_name} sẽ trở thành trống.",
+                          yes_text="Đồng ý đổi phòng", no_text="Hủy bỏ"):
+            return
+
+        # 4. Đặt contract sang trạng thái chờ duyệt hủy
+        active_contract.status = 'pending_cancel'
+        self.contract_service.contract_repo.update(active_contract)
+
+        # 5. Gửi thông báo cho Admin
+        notif_file = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                  '..', '..', '..', 'data', 'notifications.json')
+        notif_file = os.path.normpath(notif_file)
+        try:
+            with open(notif_file, 'r', encoding='utf-8') as f:
+                notifs = json.load(f)
+        except Exception:
+            notifs = []
+
+        notifs.insert(0, {
+            'id': f'room_change_{active_contract.id}',
+            'icon': '🔄',
+            'icon_bg': '#fef3c7',
+            'icon_color': '#92400e',
+            'text': f'Khách {guest.full_name} yêu cầu đổi phòng (hiện tại: {room_name})',
+            'time': datetime.now().isoformat(),
+            'read': False,
+            'target': 'room_change',
+        })
+        try:
+            with open(notif_file, 'w', encoding='utf-8') as f:
+                json.dump(notifs, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass
+
+        # 6. Thông báo cho guest
+        show_success(self, "Đã gửi yêu cầu",
+                     f"Yêu cầu đổi phòng đã được gửi đến Admin.\n"
+                     f"Vui lòng chờ Admin duyệt.\n\n"
+                     f"Sau khi duyệt, bạn sẽ có thể đăng ký phòng mới.")
+
+        # 7. Disable nút để tránh gửi trùng
+        if hasattr(self.ui, 'btnRegNewRoom'):
+            self.ui.btnRegNewRoom.setEnabled(False)
+            self.ui.btnRegNewRoom.setText("⏳ Đang chờ duyệt...")
+
+    def _find_current_booking(self):
+        """Tìm guest, active contract và room hiện tại."""
+        if not self.user or not self.guest_service or not self.contract_service:
+            return None, None, None
+
+        guest = None
+        active_contract = None
+        all_guests = self.guest_service.get_all_guests()
+        matching_guests = [g for g in all_guests
+                           if getattr(g, 'user_id', 0) == getattr(self.user, 'id', -1)
+                           or getattr(g, 'email', None) == getattr(self.user, 'email', None)
+                           or getattr(g, 'phone', None) == getattr(self.user, 'phone', None)]
+
+        if matching_guests and self.contract_service:
+            for g in matching_guests:
+                for c in self.contract_service.get_all():
+                    if str(getattr(c, 'guest_id', '')) == str(getattr(g, 'id', '')):
+                        if getattr(c, 'status', '') in ('active', 'pending_cancel'):
+                            guest = g
+                            active_contract = c
+                            break
+                if active_contract:
+                    break
+
+        room = None
+        if active_contract and self.room_service:
+            room = self.room_service.get_room_by_id(getattr(active_contract, 'room_id', 0))
+
+        return guest, active_contract, room
+

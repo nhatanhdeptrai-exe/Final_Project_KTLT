@@ -229,8 +229,24 @@ class BookingWizard(QDialog):
             return show_warning(self, "Lỗi", "Số CCCD/CMND phải đủ 12 chữ số")
         if not phone:
             return show_warning(self, "Lỗi", "Vui lòng nhập số điện thoại")
+        if not phone.isdigit() or len(phone) != 10:
+            return show_warning(self, "Lỗi", "SĐT phải đúng 10 chữ số")
         if not email:
             return show_warning(self, "Lỗi", "Vui lòng nhập email")
+        if '@gmail.com' not in email:
+            return show_warning(self, "Lỗi", "Email phải có dạng abc@gmail.com")
+
+        # Kiểm tra trùng email / SĐT với khách thuê khác
+        if self.guest_service:
+            current_user_id = getattr(self.user, 'id', -1)
+            all_guests = self.guest_service.get_all_guests()
+            for g in all_guests:
+                if getattr(g, 'user_id', 0) == current_user_id:
+                    continue
+                if email and getattr(g, 'email', '') == email:
+                    return show_warning(self, "Lỗi", "Email này đã được sử dụng bởi tài khoản khác")
+                if phone and str(getattr(g, 'phone', '')) == phone:
+                    return show_warning(self, "Lỗi", "SĐT này đã được sử dụng bởi tài khoản khác")
 
         self.personal_info = {
             'full_name': name, 'dob': dob,
@@ -347,15 +363,19 @@ class BookingWizard(QDialog):
         card_lay.addWidget(self.chk_agree)
 
         # Button: Xác nhận và thanh toán
-        btn_pay = QPushButton("Xác nhận và thanh toán tiền cọc")
-        btn_pay.setMinimumHeight(48)
-        btn_pay.setStyleSheet(
+        self.btn_pay = QPushButton("Xác nhận và thanh toán tiền cọc")
+        self.btn_pay.setMinimumHeight(48)
+        self.btn_pay.setEnabled(False)
+        self.btn_pay.setStyleSheet(
             "QPushButton { background-color: #1a4a49; color: white; border: none; "
             "border-radius: 8px; font-weight: bold; font-size: 14px; }"
-            "QPushButton:hover { background-color: #0b3d42; }")
-        btn_pay.setCursor(Qt.CursorShape.PointingHandCursor)
-        btn_pay.clicked.connect(self._on_step2_next)
-        card_lay.addWidget(btn_pay)
+            "QPushButton:hover { background-color: #0b3d42; }"
+            "QPushButton:disabled { background-color: #a0aec0; color: #e2e8f0; }")
+        self.btn_pay.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_pay.clicked.connect(self._on_step2_next)
+        self.chk_agree.stateChanged.connect(
+            lambda state: self.btn_pay.setEnabled(state == 2))
+        card_lay.addWidget(self.btn_pay)
 
         note = QLabel("Vui lòng đọc kỹ hợp đồng và đồng ý điều khoản để hoàn tất")
         note.setStyleSheet("color: #a0aec0; font-size: 11px; border: none;")
@@ -369,6 +389,8 @@ class BookingWizard(QDialog):
         info = self.personal_info
         room = self.room
         today = datetime.now().strftime("%d/%m/%Y")
+        end_dt = datetime.now().replace(year=datetime.now().year + 1)
+        end_day = end_dt.strftime("%d/%m/%Y")
 
         contract_html = f"""
         <div style="text-align: center; margin-bottom: 10px;">
@@ -396,7 +418,8 @@ class BookingWizard(QDialog):
         Phòng: <b>{room.room_number}</b> — Tầng {room.floor}<br>
         Diện tích: {room.area} m²<br>
         Giá thuê: <b>{room.price:,.0f} VNĐ/tháng</b><br>
-        Tiền cọc: <b>{room.deposit:,.0f} VNĐ</b><br><br>
+        Tiền cọc: <b>{room.deposit:,.0f} VNĐ</b><br>
+        Thời hạn thuê: <b>Từ {today} đến {end_day}</b><br><br>
 
         <b>ĐIỀU 4: TRÁCH NHIỆM CÁC BÊN</b><br>
         <b>Trách nhiệm Bên A:</b><br>
@@ -929,13 +952,14 @@ class DangKyPhongView(QWidget):
 
         # Tạo hợp đồng pending
         now = datetime.now()
+        end_date = now.replace(year=now.year + 1)
         number = f"HD{now.strftime('%Y%m')}{len(self.contract_service.get_all()) + 1:03d}"
         contract = Contract(
             contract_number=number,
             room_id=room.id,
             guest_id=guest.id,
             start_date=now.strftime("%Y-%m-%d"),
-            end_date="",
+            end_date=end_date.strftime("%Y-%m-%d"),
             monthly_rent=room.price,
             deposit=room.deposit,
             status='pending',
