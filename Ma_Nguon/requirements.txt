@@ -9,3 +9,6 @@ paho-mqtt>=2.0.0
 matplotlib>=3.8.0
 numpy>=1.26.0
 seaborn>=0.13.0
+
+# Dùng lightmode để giao diện có thể hiện thị đẹp nhẩt
+# Trước khi mở hãy chạy iot_simulator.py trước để mqtt có thể kết nối đến điện nước

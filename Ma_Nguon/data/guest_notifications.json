@@ -1,142 +1,62 @@
 [
   {
-    "id": "g_cancel_approved_8",
-    "icon": "✅",
-    "icon_bg": "#e6fffa",
-    "icon_color": "#38a169",
-    "text": "Yêu cầu đổi phòng đã được duyệt. Phòng qưe đã được trả. Bạn có thể đăng ký phòng mới.",
-    "time": "2026-03-27T01:57:07.528739",
-    "read": false,
-    "user_id": 5
-  },
-  {
-    "id": "g_approved_10",
-    "icon": "✅",
-    "icon_bg": "#e6fffa",
-    "icon_color": "#38a169",
-    "text": "Hợp đồng phòng P111 đã được duyệt",
-    "time": "2026-03-21T20:21:35.696068",
-    "read": false,
-    "user_id": 6
-  },
-  {
-    "id": "g_inv_unpaid_10",
-    "icon": "💰",
-    "icon_bg": "#fefcbf",
-    "icon_color": "#d69e2e",
-    "text": "Hóa đơn tháng 3/2026 phòng P204 chưa thanh toán",
-    "time": "2026-03-22T04:04:42.103301",
-    "read": true,
-    "user_id": 8
-  },
-  {
-    "id": "g_approved_11",
-    "icon": "✅",
-    "icon_bg": "#e6fffa",
-    "icon_color": "#38a169",
-    "text": "Hợp đồng phòng P204 đã được duyệt",
-    "time": "2026-03-22T04:03:10.751663",
-    "read": true,
-    "user_id": 8
-  },
-  {
-    "id": "g_approved_12",
-    "icon": "✅",
-    "icon_bg": "#e6fffa",
-    "icon_color": "#38a169",
-    "text": "Hợp đồng phòng P204 đã được duyệt",
-    "time": "2026-03-24T22:55:51.281908",
+    "id": "g_inv_overdue_12",
+    "icon": "⚠️",
+    "icon_bg": "#fed7d7",
+    "icon_color": "#c53030",
+    "text": "Hóa đơn tháng 3/2026 phòng P102 đã quá hạn!",
+    "time": "2026-03-27T15:32:36.632585",
     "read": true,
     "user_id": 10
   },
   {
-    "id": "g_approved_9",
+    "id": "g_inv_unpaid_12",
+    "icon": "💰",
+    "icon_bg": "#fefcbf",
+    "icon_color": "#d69e2e",
+    "text": "Hóa đơn tháng 3/2026 phòng P102 chưa thanh toán",
+    "time": "2026-03-27T15:32:36.632585",
+    "read": true,
+    "user_id": 10
+  },
+  {
+    "id": "admin_remind_12_1774600326",
+    "user_id": 10,
+    "icon": "⚠️",
+    "icon_bg": "#fed7d7",
+    "icon_color": "#c53030",
+    "text": "Nhắc nhở: Hóa đơn tháng 3/2026 phòng P102 (4.088.000 đ) đã quá hạn. Vui lòng thanh toán sớm!",
+    "time": "2026-03-27T15:32:06.905289",
+    "read": true
+  },
+  {
+    "id": "g_approved_2",
     "icon": "✅",
     "icon_bg": "#e6fffa",
     "icon_color": "#38a169",
-    "text": "Hợp đồng phòng P202 đã được duyệt",
-    "time": "2026-03-21T17:50:53.743249",
-    "read": true,
-    "user_id": 4
+    "text": "Hợp đồng phòng P102 đã được duyệt",
+    "time": "2026-03-27T15:22:01.198871",
+    "read": false,
+    "user_id": 10
   },
   {
-    "id": "g_repair_done_10",
-    "icon": "✅",
-    "icon_bg": "#c6f6d5",
-    "icon_color": "#276749",
-    "text": "Sửa chữa \"uhgujbuj\" phòng #0 đã hoàn thành",
-    "time": "2026-03-22T02:51:26.820934",
-    "read": true,
-    "user_id": 5
-  },
-  {
-    "id": "g_repair_done_9",
-    "icon": "✅",
-    "icon_bg": "#c6f6d5",
-    "icon_color": "#276749",
-    "text": "Sửa chữa \"adw\" phòng #0 đã hoàn thành",
-    "time": "2026-03-22T02:51:24.129515",
-    "read": true,
-    "user_id": 5
-  },
-  {
-    "id": "g_repair_done_8",
-    "icon": "✅",
-    "icon_bg": "#c6f6d5",
-    "icon_color": "#276749",
-    "text": "Sửa chữa \"cawc\" phòng #0 đã hoàn thành",
-    "time": "2026-03-22T02:51:21.447164",
-    "read": true,
-    "user_id": 5
-  },
-  {
-    "id": "g_repair_accept_10",
-    "icon": "🔧",
-    "icon_bg": "#ebf8ff",
-    "icon_color": "#2b6cb0",
-    "text": "Yêu cầu sửa chữa \"uhgujbuj\" đã được tiếp nhận",
-    "time": "2026-03-21T20:19:34.920954",
-    "read": true,
-    "user_id": 5
-  },
-  {
-    "id": "g_repair_accept_9",
-    "icon": "🔧",
-    "icon_bg": "#ebf8ff",
-    "icon_color": "#2b6cb0",
-    "text": "Yêu cầu sửa chữa \"adw\" đã được tiếp nhận",
-    "time": "2026-03-21T20:13:15.254626",
-    "read": true,
-    "user_id": 5
-  },
-  {
-    "id": "g_repair_accept_8",
-    "icon": "🔧",
-    "icon_bg": "#ebf8ff",
-    "icon_color": "#2b6cb0",
-    "text": "Yêu cầu sửa chữa \"cawc\" đã được tiếp nhận",
-    "time": "2026-03-21T20:13:11.572129",
-    "read": true,
-    "user_id": 5
-  },
-  {
-    "id": "g_approved_8",
-    "icon": "✅",
-    "icon_bg": "#e6fffa",
-    "icon_color": "#38a169",
-    "text": "Hợp đồng phòng qưe đã được duyệt",
-    "time": "2026-03-21T05:57:49.812785",
-    "read": true,
-    "user_id": 5
-  },
-  {
-    "id": "g_inv_paid_8",
+    "id": "g_inv_paid_12",
     "icon": "💳",
     "icon_bg": "#c6f6d5",
     "icon_color": "#276749",
     "text": "Phòng của bạn đã thanh toán tiền tháng 3/2026",
-    "time": "2026-03-21",
-    "read": true,
-    "user_id": 5
+    "time": "2026-03-27",
+    "read": false,
+    "user_id": 10
+  },
+  {
+    "id": "g_approved_1",
+    "icon": "✅",
+    "icon_bg": "#e6fffa",
+    "icon_color": "#38a169",
+    "text": "Hợp đồng phòng P101 đã được duyệt",
+    "time": "2026-03-27T15:04:06.466388",
+    "read": false,
+    "user_id": 9
   }
 ]

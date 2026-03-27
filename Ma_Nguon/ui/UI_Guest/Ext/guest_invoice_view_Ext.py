@@ -1,7 +1,4 @@
-"""
-GuestInvoiceView — Trang Hóa đơn / Thanh toán cho Guest.
-Hiển thị danh sách hóa đơn theo hợp đồng của khách, cho phép thanh toán qua QR.
-"""
+
 from datetime import datetime
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
@@ -120,12 +117,13 @@ class PaymentDialog(QDialog):
 # ═══════════════════════════════════════════════════════════════
 class GuestInvoiceView(QWidget):
     def __init__(self, user=None, invoice_service=None, contract_service=None,
-                 room_service=None, guest_service=None, parent=None):
+                 room_service=None, guest_service=None, email_service=None, parent=None):
         super().__init__(parent)
         self.user = user
         self.invoice_service = invoice_service
         self.contract_service = contract_service
         self.room_service = room_service
+        self.email_service = email_service
         self.guest_service = guest_service
 
         self._invoices = []
@@ -208,15 +206,18 @@ class GuestInvoiceView(QWidget):
             return
         user_id = int(getattr(self.user, 'id', 0) or 0)
 
-        # 1. Find ALL guest records for this user (may be duplicates)
+        # 1. Find ALL guest records for this user
         my_guest_ids = set()
         self._guest = None
+        user_email = getattr(self.user, 'email', '') or ''
         if self.guest_service:
             try:
                 all_guests = self.guest_service.get_all_guests()
                 for g in all_guests:
                     gid = int(getattr(g, 'user_id', 0) or 0)
-                    if gid == user_id:
+                    g_email = getattr(g, 'email', '') or ''
+                    # Match by user_id OR by email
+                    if gid == user_id or (user_email and g_email and g_email.lower() == user_email.lower()):
                         my_guest_ids.add(int(g.id))
                         if self._guest is None:
                             self._guest = g
@@ -539,8 +540,50 @@ class GuestInvoiceView(QWidget):
                 ok, msg = self.invoice_service.mark_paid(invoice.id, method='transfer')
                 if ok:
                     show_success(self, "Thành công", "Thanh toán hóa đơn thành công!")
+                    # Gửi hóa đơn qua email cho khách
+                    self._send_invoice_email(invoice, room_num, guest_name)
                     self._load_data()  # Reload
                 else:
                     show_warning(self, "Lỗi", msg)
             except Exception as e:
                 show_warning(self, "Lỗi", f"Lỗi thanh toán: {e}")
+
+    def _send_invoice_email(self, invoice, room_number, guest_name):
+        """Gửi email hóa đơn cho khách thuê sau khi thanh toán."""
+        if not self.email_service or not self.email_service.is_configured():
+            return
+
+        # Lấy email khách thuê
+        guest_email = None
+        if self._guest:
+            guest_email = getattr(self._guest, 'email', None)
+        if not guest_email and self.user:
+            guest_email = getattr(self.user, 'email', None)
+        if not guest_email:
+            return
+
+        invoice_data = {
+            'invoice_number': invoice.invoice_number,
+            'month': invoice.month,
+            'year': invoice.year,
+            'room_number': room_number,
+            'guest_name': guest_name,
+            'room_rent': invoice.room_rent,
+            'electricity_cost': invoice.electricity_cost,
+            'water_cost': invoice.water_cost,
+            'other_fees': invoice.other_fees,
+            'total_amount': invoice.total_amount,
+            'payment_date': datetime.now().strftime('%d/%m/%Y'),
+        }
+
+        import threading
+        def _send():
+            try:
+                ok, msg = self.email_service.send_invoice_email(guest_email, invoice_data)
+                if ok:
+                    from PyQt6.QtCore import QMetaObject, Qt as QtFlag, Q_ARG
+                    # Notify on main thread (optional - silent success)
+                    pass
+            except Exception:
+                pass
+        threading.Thread(target=_send, daemon=True).start()

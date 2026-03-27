@@ -1,10 +1,4 @@
-"""
-GuestNotifView — Trang Thông báo cho Guest.
-Tự động sinh thông báo từ dữ liệu thật:
-  - Hợp đồng: sắp hết hạn, đã duyệt, bị từ chối
-  - Hóa đơn:  mới tạo, quá hạn, đã thanh toán
-  - Sửa chữa: yêu cầu được tiếp nhận, hoàn thành, từ chối
-"""
+
 import json
 import os
 from datetime import datetime, timedelta
@@ -201,11 +195,14 @@ class GuestNotifView(QWidget):
     def _get_my_guest_ids(self):
         """Get all guest IDs belonging to this user."""
         user_id = int(getattr(self.user, 'id', 0) or 0)
+        user_email = getattr(self.user, 'email', '') or ''
         ids = set()
         if self.guest_service:
             try:
                 for g in self.guest_service.get_all_guests():
-                    if int(getattr(g, 'user_id', 0) or 0) == user_id:
+                    gid = int(getattr(g, 'user_id', 0) or 0)
+                    g_email = getattr(g, 'email', '') or ''
+                    if gid == user_id or (user_email and g_email and g_email.lower() == user_email.lower()):
                         ids.add(int(g.id))
             except Exception:
                 pass

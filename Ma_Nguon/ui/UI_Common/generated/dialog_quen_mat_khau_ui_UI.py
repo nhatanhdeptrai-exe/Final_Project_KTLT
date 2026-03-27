@@ -145,10 +145,6 @@ class Ui_DialogForgotPass(object):
         self.inpOTP.setMinimumSize(QtCore.QSize(500, 50))
         self.inpOTP.setObjectName("inpOTP")
         self.vboxlayout4.addWidget(self.inpOTP)
-        self.lblTimer = QtWidgets.QLabel(parent=self.pageOTP)
-        self.lblTimer.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.lblTimer.setObjectName("lblTimer")
-        self.vboxlayout4.addWidget(self.lblTimer)
         self.hboxlayout5.addLayout(self.vboxlayout4)
         spacerItem20 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.hboxlayout5.addItem(spacerItem20)
@@ -354,7 +350,7 @@ class Ui_DialogForgotPass(object):
 "    QLabel[class=\"SubText\"] { font-size: 16px; color: #2d3748; }\n"
 "    QLabel[class=\"InputLabel\"] { font-size: 14px; color: #2d3748; }\n"
 "    QLabel[class=\"ValidationText\"] { font-size: 12px; color: #0298a0; }\n"
-"    QLabel[class=\"TimerText\"] { font-size: 14px; color: #718096; }\n"
+
 "    \n"
 "    QLineEdit[class=\"FormInput\"] { background-color: white; border: none; border-radius: 6px; padding: 12px 15px; font-size: 14px; color: #2d3748; }\n"
 "    \n"
@@ -382,8 +378,7 @@ class Ui_DialogForgotPass(object):
         self.label3.setProperty("class", _translate("DialogForgotPass", "InputLabel"))
         self.label3.setText(_translate("DialogForgotPass", "Nhập mã otp để xác thực"))
         self.inpOTP.setProperty("class", _translate("DialogForgotPass", "FormInput"))
-        self.lblTimer.setProperty("class", _translate("DialogForgotPass", "TimerText"))
-        self.lblTimer.setText(_translate("DialogForgotPass", "1:56"))
+
         self.btnVerifyOTP.setProperty("class", _translate("DialogForgotPass", "BtnPrimary"))
         self.btnVerifyOTP.setText(_translate("DialogForgotPass", "Xác nhận"))
         self.btnBackToLogin2.setProperty("class", _translate("DialogForgotPass", "LinkBtn"))

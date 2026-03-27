@@ -1,4 +1,4 @@
-"""AuthWindow — File kế thừa từ auth_main_ui.py (KHÔNG SỬA file UI gốc)."""
+
 from pathlib import Path
 from PyQt6.QtWidgets import (QWidget, QMessageBox, QDialog, QVBoxLayout,
                               QLabel, QLineEdit, QPushButton, QInputDialog)
@@ -8,7 +8,7 @@ from ui.UI_Common.generated.auth_main_ui_UI import Ui_AuthWindow  # File tự si
 from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 
-# === Helper: Tạo icon từ Unicode ===
+# Tạo icon từ Unicode
 def _make_icon(char: str, color: str = '#888888', size: int = 20) -> QIcon:
     pixmap = QPixmap(size, size)
     pixmap.fill(Qt.GlobalColor.transparent)
@@ -21,7 +21,7 @@ def _make_icon(char: str, color: str = '#888888', size: int = 20) -> QIcon:
     return QIcon(pixmap)
 
 
-# === Worker Thread: Gửi OTP ngầm ===
+# Gửi OTP ngầm
 class OTPWorker(QThread):
     finished = pyqtSignal(bool, str)
 
@@ -35,7 +35,7 @@ class OTPWorker(QThread):
         self.finished.emit(ok, msg)
 
 
-# === OTP Dialog ===
+# OTP Dialog
 class OTPDialog(QDialog):
     def __init__(self, email: str, parent=None):
         super().__init__(parent)
@@ -103,10 +103,9 @@ class OTPDialog(QDialog):
         self.accept()
 
 
-# =============================================
-# AuthWindow — Kế thừa từ Ui_AuthWindow (file .ui)
-# Mọi chỉnh sửa giao diện/logic đều ở đây
-# =============================================
+
+# AuthWindow
+
 class AuthWindow(QWidget, Ui_AuthWindow):
     def __init__(self, container):
         super().__init__()

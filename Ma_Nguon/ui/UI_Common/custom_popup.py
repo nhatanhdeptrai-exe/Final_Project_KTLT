@@ -1,7 +1,4 @@
-"""
-custom_popup — Hộp thoại thông báo tùy chỉnh.
-Thay thế QMessageBox mặc định bằng popup đẹp, phù hợp với design system.
-"""
+
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QWidget
 )

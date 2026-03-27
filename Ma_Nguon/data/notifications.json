@@ -1,92 +1,32 @@
 [
   {
-    "id": "cancel_approved_8",
-    "icon": "✅",
-    "icon_bg": "#e6fffa",
-    "icon_color": "#38a169",
-    "text": "Đã duyệt đổi phòng — Guest Test 22 rời phòng qưe",
-    "time": "2026-03-27T01:57:07.528333",
-    "read": true,
-    "target": ""
-  },
-  {
-    "id": "repair_accepted_11",
-    "icon": "🔧",
-    "icon_bg": "#ebf8ff",
-    "icon_color": "#2b6cb0",
-    "text": "Đã tiếp nhận yêu cầu sửa chữa: Khác (Phòng #0)",
-    "time": "2026-03-27T01:57:02.052348",
-    "read": true,
-    "target": "repair"
-  },
-  {
-    "id": "repair_11",
-    "icon": "🔧",
-    "icon_bg": "#c6f6d5",
-    "icon_color": "#22543d",
-    "text": "Yêu cầu sửa chữa: Khác (Phòng #0 — Guest Test 22)",
-    "time": "2026-03-27T01:40:19.298667",
-    "read": true,
-    "target": "repair"
-  },
-  {
-    "id": "room_change_8",
+    "id": "room_change_1",
     "icon": "🔄",
     "icon_bg": "#fef3c7",
     "icon_color": "#92400e",
-    "text": "Khách Guest Test 22 yêu cầu đổi phòng (hiện tại: qưe)",
-    "time": "2026-03-27T01:55:58.854629",
-    "read": true,
+    "text": "Khách concakpvp yêu cầu đổi phòng (hiện tại: P101)",
+    "time": "2026-03-27T17:04:27.016443",
+    "read": false,
     "target": "room_change"
   },
   {
-    "id": "approved_13",
+    "id": "approved_2",
     "icon": "✅",
     "icon_bg": "#e6fffa",
     "icon_color": "#38a169",
-    "text": "Đã duyệt đăng ký phòng Ptest — HĐ HD202603013",
-    "time": "2026-03-24T23:37:36.704084",
-    "read": true,
+    "text": "Đã duyệt đăng ký phòng P102 — HĐ HD202603002",
+    "time": "2026-03-27T15:23:07.760695",
+    "read": false,
     "target": "guest"
   },
   {
-    "id": "approved_12",
+    "id": "approved_1",
     "icon": "✅",
     "icon_bg": "#e6fffa",
     "icon_color": "#38a169",
-    "text": "Đã duyệt đăng ký phòng P204 — HĐ HD202603012",
-    "time": "2026-03-24T22:56:06.351504",
-    "read": true,
-    "target": "guest"
-  },
-  {
-    "id": "approved_11",
-    "icon": "✅",
-    "icon_bg": "#e6fffa",
-    "icon_color": "#38a169",
-    "text": "Đã duyệt đăng ký phòng P204 — HĐ HD202603011",
-    "time": "2026-03-22T04:03:29.089132",
-    "read": true,
-    "target": "guest"
-  },
-  {
-    "id": "approved_10",
-    "icon": "✅",
-    "icon_bg": "#e6fffa",
-    "icon_color": "#38a169",
-    "text": "Đã duyệt đăng ký phòng P111 — HĐ HD202603010",
-    "time": "2026-03-21T20:22:00.989572",
-    "read": true,
-    "target": "guest"
-  },
-  {
-    "id": "approved_9",
-    "icon": "✅",
-    "icon_bg": "#e6fffa",
-    "icon_color": "#38a169",
-    "text": "Đã duyệt đăng ký phòng P202 — HĐ HD202603009",
-    "time": "2026-03-21T17:51:21.938635",
-    "read": true,
+    "text": "Đã duyệt đăng ký phòng P101 — HĐ HD202603001",
+    "time": "2026-03-27T15:04:29.776231",
+    "read": false,
     "target": "guest"
   },
   {
@@ -95,7 +35,7 @@
     "icon_bg": "#edf2f7",
     "icon_color": "#718096",
     "text": "Hệ thống hoạt động bình thường",
-    "time": "2026-03-21T15:37:22.167791",
+    "time": "2026-03-27T13:04:24.210871",
     "read": true,
     "target": ""
   }

@@ -1,7 +1,4 @@
-"""
-MyRoomView — Trang "Phòng của tôi" cho Guest.
-Hiển thị thông tin phòng, hợp đồng, và form gửi yêu cầu sửa chữa.
-"""
+
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QFrame, QScrollArea, QSizePolicy, QStackedWidget,
@@ -11,9 +8,7 @@ from PyQt6.QtCore import Qt
 import os
 
 """
-MyRoomView — Trang "Phòng của tôi" cho Guest.
-Sử dụng giao diện được thiết kế từ phong_cua_toi.ui
-Hiển thị thông tin phòng, hợp đồng, và form gửi yêu cầu sửa chữa.
+MyRoomView trang "Phòng của tôi" cho Guest.
 """
 import os
 from PyQt6.QtWidgets import QWidget, QMessageBox
@@ -86,6 +81,9 @@ class MyRoomView(QWidget):
         # Register new room (from this view)
         if hasattr(self.ui, 'btnRegNewRoom'):
             self.ui.btnRegNewRoom.clicked.connect(self._register_new_room)
+
+        # Terminate contract button (will be added dynamically in _load_data)
+        self._btn_terminate = None
 
     # ── Data Loading ──
     def _load_data(self):
@@ -202,6 +200,25 @@ class MyRoomView(QWidget):
             if hasattr(self.ui, 'btnRegNewRoom'):
                 self.ui.btnRegNewRoom.setEnabled(False)
                 self.ui.btnRegNewRoom.setText("⏳ Đang chờ duyệt đổi phòng...")
+
+        # Add terminate contract button
+        if not self._btn_terminate:
+            self._btn_terminate = QPushButton("⛔ Chấm dứt hợp đồng")
+            self._btn_terminate.setMinimumHeight(45)
+            self._btn_terminate.setStyleSheet(
+                "QPushButton { background-color: #fed7d7; color: #c53030; border: 1px solid #fc8181; "
+                "border-radius: 8px; padding: 10px; font-weight: bold; font-size: 13px; }"
+                "QPushButton:hover { background-color: #feb2b2; }")
+            self._btn_terminate.setCursor(Qt.CursorShape.PointingHandCursor)
+            self._btn_terminate.clicked.connect(self._terminate_contract)
+            # Insert after btnRegNewRoom
+            reg_idx = self.ui.vboxlayout1.indexOf(self.ui.btnRegNewRoom)
+            self.ui.vboxlayout1.insertWidget(reg_idx + 1, self._btn_terminate)
+
+        # Store for termination
+        self._active_contract = active_contract
+        self._active_guest = guest
+        self._active_room = room
 
         # Load ảnh phòng nếu có
         images = getattr(room, 'images', [])
@@ -626,4 +643,109 @@ class MyRoomView(QWidget):
             room = self.room_service.get_room_by_id(getattr(active_contract, 'room_id', 0))
 
         return guest, active_contract, room
+
+    def _terminate_contract(self):
+        """Guest đơn phương chấm dứt hợp đồng — mất tiền cọc."""
+        if not hasattr(self, '_active_contract') or not self._active_contract:
+            show_warning(self, "Lỗi", "Không tìm thấy hợp đồng.")
+            return
+
+        contract = self._active_contract
+        room = self._active_room
+        deposit = int(getattr(contract, 'deposit', 0) or 0)
+        room_name = room.room_number if room else "—"
+
+        # Warning dialog
+        from PyQt6.QtWidgets import QDialog, QVBoxLayout, QHBoxLayout
+        from PyQt6.QtGui import QFont
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("⚠️ Cảnh báo chấm dứt hợp đồng")
+        dlg.setFixedSize(450, 320)
+        dlg.setStyleSheet("QDialog { background-color: white; }")
+        lay = QVBoxLayout(dlg)
+        lay.setSpacing(12)
+        lay.setContentsMargins(30, 25, 30, 25)
+
+        icon = QLabel("⚠️")
+        icon.setStyleSheet("font-size: 48px;")
+        icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(icon)
+
+        title = QLabel("Đơn phương chấm dứt hợp đồng")
+        title.setFont(QFont("Segoe UI", 15, QFont.Weight.Bold))
+        title.setStyleSheet("color: #c53030;")
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        lay.addWidget(title)
+
+        warning_text = QLabel(
+            f"Bạn đang yêu cầu chấm dứt hợp đồng phòng <b>{room_name}</b>.<br><br>"
+            f"⚠️ <b style='color: #c53030;'>Lưu ý quan trọng:</b><br>"
+            f"Theo điều khoản hợp đồng, việc đơn phương chấm dứt "
+            f"sẽ <b>mất toàn bộ tiền cọc</b>:<br>"
+            f"<b style='color: #e53e3e; font-size: 16px;'>{deposit:,} VNĐ</b>"
+        )
+        warning_text.setStyleSheet("color: #4a5568; font-size: 13px;")
+        warning_text.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        warning_text.setWordWrap(True)
+        lay.addWidget(warning_text)
+
+        lay.addStretch()
+
+        btn_row = QHBoxLayout()
+        btn_row.setSpacing(12)
+
+        btn_cancel = QPushButton("Hủy bỏ")
+        btn_cancel.setMinimumHeight(42)
+        btn_cancel.setStyleSheet(
+            "QPushButton { background-color: #f7fafc; color: #4a5568; border: 1px solid #cbd5e0; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #edf2f7; }")
+        btn_cancel.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_cancel.clicked.connect(dlg.reject)
+
+        btn_confirm = QPushButton("⛔ Đồng ý chấm dứt")
+        btn_confirm.setMinimumHeight(42)
+        btn_confirm.setStyleSheet(
+            "QPushButton { background-color: #e53e3e; color: white; border: none; "
+            "border-radius: 8px; padding: 8px 20px; font-weight: bold; font-size: 13px; }"
+            "QPushButton:hover { background-color: #c53030; }")
+        btn_confirm.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_confirm.clicked.connect(dlg.accept)
+
+        btn_row.addWidget(btn_cancel)
+        btn_row.addWidget(btn_confirm)
+        lay.addLayout(btn_row)
+
+        if dlg.exec() != QDialog.DialogCode.Accepted:
+            return
+
+        # Execute termination
+        try:
+            contract.status = 'terminated'
+            self.contract_service.contract_repo.update(contract)
+
+            # Free the room
+            if room and self.room_service:
+                room.status = 'available'
+                self.room_service.update_room(room)
+
+            show_success(self, "Đã chấm dứt hợp đồng",
+                         f"Hợp đồng phòng {room_name} đã được chấm dứt.\n"
+                         f"Tiền cọc {deposit:,} VNĐ sẽ không được hoàn trả.\n\n"
+                         f"Bạn sẽ được chuyển về trang đăng ký phòng.")
+
+            # Switch to GuestRegisterWindow
+            top = self.window()
+            if top:
+                container = getattr(top, 'container', None)
+                user = getattr(top, 'user', self.user)
+                if container:
+                    from ui.UI_Guest.Ext.guest_register_window_Ext import GuestRegisterWindow
+                    reg_win = GuestRegisterWindow(user=user, container=container)
+                    reg_win.show()
+                    top.close()
+
+        except Exception as e:
+            show_error(self, "Lỗi", f"Không thể chấm dứt hợp đồng:\n{e}")
 

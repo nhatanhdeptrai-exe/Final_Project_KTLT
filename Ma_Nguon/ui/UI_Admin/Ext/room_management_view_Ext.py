@@ -1,7 +1,4 @@
-"""
-RoomManagementView — Quản lý phòng (trang Admin).
-Hiển thị danh sách phòng dạng card, hỗ trợ CRUD qua dialog.
-"""
+
 import os
 import shutil
 from pathlib import Path

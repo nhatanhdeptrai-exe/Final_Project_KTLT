@@ -1,7 +1,4 @@
-"""
-GuestManagementView — Quản lý khách thuê (trang Admin).
-Hiển thị danh sách khách thuê dạng bảng, hỗ trợ CRUD qua dialog.
-"""
+
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QFrame, QLineEdit, QComboBox, QMessageBox, QDialog,
@@ -16,7 +13,7 @@ from ui.UI_Common.custom_popup import show_success, show_error, show_warning, sh
 from ui.UI_Admin.generated.ui_dialog_them_khach_thue_UI import Ui_DialogFormKhachThue
 
 
-# ── Stat Card ──────────────────────────────────────────────
+
 _stat_card_counter = 0
 
 class StatCard(QFrame):
@@ -162,8 +159,7 @@ class GuestFormDialog(QDialog):
 # ── Guest Detail Dialog ───────────────────────────────────
 class GuestDetailDialog(QDialog):
     """Dialog xem chi tiết khách thuê — dạng hồ sơ."""
-    delete_requested = pyqtSignal(int)
-    edit_requested = pyqtSignal(object)
+    terminate_requested = pyqtSignal(int)
 
     def __init__(self, guest: Guest, contract_info: dict = None, parent=None):
         super().__init__(parent)
@@ -287,34 +283,26 @@ class GuestDetailDialog(QDialog):
         btn_contract.setCursor(Qt.CursorShape.PointingHandCursor)
         btn_contract.clicked.connect(self._on_view_contract)
         br.addWidget(btn_contract)
-
-        btn_edit = QPushButton("✏️ Chỉnh sửa")
-        btn_edit.setStyleSheet(
-            "QPushButton{background:#e6fffa;color:#0b8480;border:1px solid #b2f5ea;"
-            "border-radius:8px;padding:10px 16px;font-weight:bold;font-size:12px;}"
-            "QPushButton:hover{background:#b2f5ea;}")
-        btn_edit.setCursor(Qt.CursorShape.PointingHandCursor)
-        btn_edit.clicked.connect(lambda: (self.edit_requested.emit(self.guest), self.accept()))
-        br.addWidget(btn_edit)
         layout.addLayout(br)
 
-        btn_del = QPushButton("🗑️ Xóa khách thuê")
-        btn_del.setStyleSheet(
+        btn_terminate = QPushButton("⛔ Chấm dứt hợp đồng")
+        btn_terminate.setStyleSheet(
             "QPushButton{background:white;color:#e53e3e;border:1px solid #fed7d7;"
             "border-radius:8px;padding:10px 16px;font-weight:bold;font-size:12px;}"
             "QPushButton:hover{background:#fff5f5;}")
-        btn_del.setCursor(Qt.CursorShape.PointingHandCursor)
-        btn_del.clicked.connect(self._on_delete)
-        layout.addWidget(btn_del)
+        btn_terminate.setCursor(Qt.CursorShape.PointingHandCursor)
+        btn_terminate.clicked.connect(self._on_terminate)
+        layout.addWidget(btn_terminate)
 
         scroll.setWidget(container)
         outer.addWidget(scroll)
 
-    def _on_delete(self):
-        if ask_danger(self, "Xác nhận xóa",
-            f"Bạn có chắc muốn xóa khách {self.guest.full_name}?",
-            yes_text="Xóa", no_text="Hủy bỏ"):
-            self.delete_requested.emit(self.guest.id)
+    def _on_terminate(self):
+        if ask_danger(self, "Xác nhận chấm dứt hợp đồng",
+            f"Bạn có chắc muốn chấm dứt hợp đồng của khách {self.guest.full_name}?\n"
+            f"Phòng sẽ được giải phóng, tài khoản khách thuê vẫn được giữ lại.",
+            yes_text="Chấm dứt", no_text="Hủy bỏ"):
+            self.terminate_requested.emit(self.guest.id)
             self.accept()
 
     def _on_view_contract(self):
@@ -671,23 +659,23 @@ class GuestManagementView(QWidget):
             'deposit': contract.deposit if contract else None,
         }
         dlg = GuestDetailDialog(guest, contract_info=contract_info, parent=self)
-        dlg.delete_requested.connect(self._on_delete_confirmed)
-        dlg.edit_requested.connect(self._on_edit)
+        dlg.terminate_requested.connect(lambda gid: self._on_terminate_confirmed(gid, row_data))
         dlg.exec()
 
-    def _on_delete(self, guest: Guest):
-        if ask_danger(self, "Xác nhận xóa",
-            f"Bạn có chắc muốn xóa khách {guest.full_name}?",
-            yes_text="Xóa", no_text="Hủy bỏ"):
-            self._on_delete_confirmed(guest.id)
-
-    def _on_delete_confirmed(self, guest_id: int):
-        ok = self.guest_service.delete_guest(guest_id)
+    def _on_terminate_confirmed(self, guest_id: int, row_data: dict):
+        contract = row_data.get('contract')
+        if not contract:
+            show_warning(self, "Lỗi", "Khách này hiện không có hợp đồng để chấm dứt.")
+            return
+        if contract.status == 'terminated':
+            show_warning(self, "Lỗi", "Hợp đồng này đã được chấm dứt trước đó.")
+            return
+        ok, msg = self.contract_service.terminate_contract(contract.id)
         if ok:
-            show_success(self, "Thành công", "Xóa khách thành công")
+            show_success(self, "Thành công", msg)
             self.refresh_data()
         else:
-            show_warning(self, "Lỗi", "Không thể xóa khách")
+            show_warning(self, "Lỗi", msg)
 
     def _on_export_contract(self, guest: Guest, row_data: dict):
         """Xuất hợp đồng PDF cho khách thuê."""

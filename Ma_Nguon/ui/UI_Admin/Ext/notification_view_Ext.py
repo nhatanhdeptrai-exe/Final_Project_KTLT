@@ -1,9 +1,4 @@
-"""
-NotificationView — Quản lý thông báo (trang Admin).
-Hiển thị thông báo hệ thống + yêu cầu đăng ký phòng (pending contracts)
-+ yêu cầu sửa chữa (pending repairs).
-Thông báo được lưu vào file JSON để giữ lại khi tắt app.
-"""
+
 import json
 import os
 from PyQt6.QtWidgets import (

@@ -1,7 +1,4 @@
-"""
-InvoiceManagementView — Quản lý hóa đơn / thanh toán (trang Admin).
-Hiển thị danh sách hóa đơn dạng bảng, hỗ trợ CRUD + thanh toán.
-"""
+
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QFrame, QLineEdit, QComboBox, QMessageBox, QDialog,
@@ -16,7 +13,7 @@ from ui.UI_Admin.generated.ui_dialog_them_hoa_don_UI import Ui_DialogFormInvoice
 from ui.UI_Common.custom_popup import show_success, show_error, show_warning, show_info, ask_question, ask_danger
 
 
-# ── Stat Card ────────────────────────────────────────────
+
 _inv_stat_counter = 0
 
 class InvoiceStatCard(QFrame):

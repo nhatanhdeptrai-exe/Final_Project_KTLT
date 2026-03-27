@@ -1,8 +1,4 @@
-"""
-DashboardView — Trang chủ Admin với dữ liệu thật từ backend services.
-Hiển thị: 4 stat cards, biểu đồ doanh thu 6 tháng, phòng chưa đóng tiền,
-hoạt động gần đây.
-"""
+
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QPushButton,
     QScrollArea, QSizePolicy, QGraphicsDropShadowEffect

@@ -1,7 +1,4 @@
-"""
-AccountManagementView — Quản lý tài khoản Admin.
-Profile card + tabbed settings (personal info / security).
-"""
+
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QFrame, QLineEdit, QMessageBox, QScrollArea, QStackedWidget,

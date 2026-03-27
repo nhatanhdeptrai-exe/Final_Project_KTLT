@@ -1,9 +1,4 @@
-"""
-IoT Simulator — Giả lập ESP32 gửi chỉ số điện/nước qua MQTT.
 
-Chạy riêng: py iot_simulator.py
-Sẽ publish dữ liệu mỗi 5 giây cho tất cả phòng (đọc từ rooms.json).
-"""
 import json
 import time
 import random
@@ -12,7 +7,7 @@ from pathlib import Path
 
 import paho.mqtt.client as mqtt
 
-# ── Config ──
+
 BROKER = 'broker.hivemq.com'
 PORT = 1883
 TOPIC_PREFIX = 'phongtro_ktlt'
@@ -48,7 +43,6 @@ def main():
 
     try:
         while True:
-            # Đọc lại rooms.json mỗi vòng → tự cập nhật phòng mới
             rooms = load_rooms()
 
             for room in rooms:

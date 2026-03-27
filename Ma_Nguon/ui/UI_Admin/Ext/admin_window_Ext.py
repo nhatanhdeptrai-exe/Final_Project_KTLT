@@ -1,7 +1,4 @@
-"""
-AdminWindow — Cửa sổ chính cho Admin.
-Load giao diện từ UI đã sinh, gắn sidebar navigation + sub-pages.
-"""
+
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QButtonGroup, QLabel, QVBoxLayout,
     QFrame, QHBoxLayout, QPushButton, QMenu, QWidgetAction, QDialog

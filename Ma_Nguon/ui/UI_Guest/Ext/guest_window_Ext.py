@@ -1,7 +1,4 @@
-"""
-GuestWindow — Cửa sổ chính cho Khách thuê (Guest).
-Load giao diện từ UI đã sinh, gắn sidebar navigation + sub-pages.
-"""
+
 import json
 import os
 from PyQt6.QtWidgets import (
@@ -90,6 +87,7 @@ class GuestWindow(QMainWindow):
                 contract_service=self.container.contract_service if self.container else None,
                 room_service=self.container.room_service if self.container else None,
                 guest_service=self.container.guest_service if self.container else None,
+                email_service=self.container.email_service if self.container else None,
             )
         if builder == "guest_notif":
             from ui.UI_Guest.Ext.guest_notif_view_Ext import GuestNotifView

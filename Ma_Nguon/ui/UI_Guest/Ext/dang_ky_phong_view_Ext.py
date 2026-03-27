@@ -1,12 +1,4 @@
-"""
-DangKyPhongView — Trang "Đăng ký phòng" cho Guest.
-Hiển thị danh sách phòng giống giao diện Admin nhưng thay nút Cập nhật
-bằng nút Đặt phòng. Chỉ cho đặt phòng trống.
-Luồng đặt phòng 3 bước:
-  1. Nhập thông tin cá nhân (Họ tên, năm sinh, giới tính, CCCD)
-  2. Xem hợp đồng (tạm để trống) + Xác nhận thanh toán tiền cọc
-  3. Hiện QR thanh toán + Xác nhận thanh toán → tạo contract pending
-"""
+
 import os
 from datetime import datetime
 from pathlib import Path
@@ -806,6 +798,12 @@ class DangKyPhongView(QWidget):
         self._search_text = ""
         self._build_ui()
         self.refresh_rooms()
+
+        # Auto-refresh every 10 seconds to detect room status changes
+        from PyQt6.QtCore import QTimer
+        self._refresh_timer = QTimer(self)
+        self._refresh_timer.timeout.connect(self.refresh_rooms)
+        self._refresh_timer.start(10000)
 
     def _build_ui(self):
         main_layout = QVBoxLayout(self)

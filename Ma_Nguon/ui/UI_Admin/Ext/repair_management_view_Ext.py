@@ -1,7 +1,4 @@
-"""
-RepairManagementView — Quản lý yêu cầu sửa chữa (trang Admin).
-Hiển thị danh sách yêu cầu dạng bảng, hỗ trợ tiếp nhận / xử lý / hoàn thành.
-"""
+
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QFrame, QLineEdit, QComboBox, QMessageBox, QDialog,

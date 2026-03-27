@@ -1,8 +1,4 @@
-"""
-GuestAccountView — Quản lý tài khoản Guest.
-Profile card (avatar + tên + email + badge KHÁCH THUÊ + đăng xuất)
-+ Settings card (2 tabs: Thông tin cá nhân / Bảo mật).
-"""
+
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QFrame, QLineEdit, QMessageBox, QScrollArea, QStackedWidget,
@@ -342,6 +338,15 @@ class GuestAccountView(QWidget):
             try:
                 self._guest = self.guest_service.get_guest_by_user_id(
                     getattr(self.user, 'id', 0))
+                # Fallback: match by email if user_id lookup failed
+                if not self._guest:
+                    user_email = getattr(self.user, 'email', '') or ''
+                    if user_email:
+                        for g in self.guest_service.get_all_guests():
+                            g_email = getattr(g, 'email', '') or ''
+                            if g_email and g_email.lower() == user_email.lower():
+                                self._guest = g
+                                break
             except Exception:
                 self._guest = None
             if self._guest:
