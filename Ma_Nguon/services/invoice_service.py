@@ -1,16 +1,41 @@
 """InvoiceService — Quản lý hóa đơn (tạo hàng tháng, thanh toán)."""
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict
 from datetime import date, datetime, timedelta
 from models.invoice import Invoice
 from repositories.invoice_repository import InvoiceRepository
 from repositories.contract_repository import ContractRepository
-from config.constants import DEFAULT_INVOICE_DUE_DAYS
+from config.constants import DEFAULT_INVOICE_DUE_DAYS, SETTINGS_FILE
+from handlers.json_handler import JSONHandler
 
 
 class InvoiceService:
     def __init__(self, invoice_repo: InvoiceRepository, contract_repo: ContractRepository):
         self.invoice_repo = invoice_repo
         self.contract_repo = contract_repo
+
+    def get_rates(self) -> Dict[str, int]:
+        """Đọc đơn giá điện/nước từ file cấu hình (gọi 1 lần khi mở dialog)."""
+        settings = JSONHandler.load(SETTINGS_FILE)
+        return {
+            'electricity_rate': settings.get('electricity_rate', 3500),
+            'water_rate': settings.get('water_rate', 25000),
+        }
+
+    def calculate_costs(self, elec_old: int, elec_new: int,
+                        water_old: int, water_new: int,
+                        rent: int, other: int,
+                        rates: Dict[str, int] = None) -> Dict[str, int]:
+        """Tính tiền điện, nước, tổng cộng (logic nghiệp vụ thuần túy)."""
+        if rates is None:
+            rates = self.get_rates()
+        elec_cost = max(0, elec_new - elec_old) * rates['electricity_rate']
+        water_cost = max(0, water_new - water_old) * rates['water_rate']
+        total = rent + elec_cost + water_cost + other
+        return {
+            'electricity_cost': elec_cost,
+            'water_cost': water_cost,
+            'total': total,
+        }
 
     def get_all(self) -> List[Invoice]:
         return self.invoice_repo.get_all()

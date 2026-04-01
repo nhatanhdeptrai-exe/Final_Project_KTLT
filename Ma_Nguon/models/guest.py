@@ -34,6 +34,13 @@ class Guest:
             """Convert to str, treating None/NaN as empty."""
             if val is None:
                 return ''
+            # Float that is really an integer (e.g. 123456789012.0 from Excel)
+            if isinstance(val, float):
+                import math
+                if math.isnan(val):
+                    return ''
+                if val == int(val):
+                    return str(int(val))
             s = str(val)
             return '' if s in ('nan', 'None', 'NaN') else s
         return cls(

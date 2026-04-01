@@ -12,11 +12,17 @@ class ExcelHandler:
             df = pd.DataFrame()
             df.to_excel(file_path, index=False, engine='openpyxl')
 
+    # Columns that must stay as strings (not auto-converted to float)
+    _STR_COLUMNS = {'id_card', 'phone'}
+
     @staticmethod
     def load(file_path: str) -> pd.DataFrame:
         ExcelHandler._ensure_file(file_path)
         try:
-            df = pd.read_excel(file_path, engine='openpyxl')
+            # Peek at headers to build dtype map for string columns
+            peek = pd.read_excel(file_path, engine='openpyxl', nrows=0)
+            str_dtype = {c: str for c in peek.columns if c in ExcelHandler._STR_COLUMNS}
+            df = pd.read_excel(file_path, engine='openpyxl', dtype=str_dtype)
             # Convert all columns to object to avoid dtype conflicts
             for col in df.columns:
                 df[col] = df[col].astype(object)

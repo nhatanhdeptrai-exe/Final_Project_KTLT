@@ -1,12 +1,32 @@
 [
   {
+    "id": "cancel_rejected_1",
+    "icon": "❌",
+    "icon_bg": "#fff5f5",
+    "icon_color": "#e53e3e",
+    "text": "Đã từ chối yêu cầu đổi phòng — concakpvp (phòng P101)",
+    "time": "2026-03-30T18:26:20.948761",
+    "read": true,
+    "target": ""
+  },
+  {
+    "id": "approved_3",
+    "icon": "✅",
+    "icon_bg": "#e6fffa",
+    "icon_color": "#38a169",
+    "text": "Đã duyệt đăng ký phòng P102 — HĐ HD202603003",
+    "time": "2026-03-30T18:26:16.855254",
+    "read": true,
+    "target": "guest"
+  },
+  {
     "id": "room_change_1",
     "icon": "🔄",
     "icon_bg": "#fef3c7",
     "icon_color": "#92400e",
     "text": "Khách concakpvp yêu cầu đổi phòng (hiện tại: P101)",
     "time": "2026-03-27T17:04:27.016443",
-    "read": false,
+    "read": true,
     "target": "room_change"
   },
   {
@@ -16,7 +36,7 @@
     "icon_color": "#38a169",
     "text": "Đã duyệt đăng ký phòng P102 — HĐ HD202603002",
     "time": "2026-03-27T15:23:07.760695",
-    "read": false,
+    "read": true,
     "target": "guest"
   },
   {
@@ -26,7 +46,7 @@
     "icon_color": "#38a169",
     "text": "Đã duyệt đăng ký phòng P101 — HĐ HD202603001",
     "time": "2026-03-27T15:04:29.776231",
-    "read": false,
+    "read": true,
     "target": "guest"
   },
   {

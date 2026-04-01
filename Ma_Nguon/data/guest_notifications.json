@@ -1,5 +1,35 @@
 [
   {
+    "id": "g_inv_overdue_13",
+    "icon": "⚠️",
+    "icon_bg": "#fed7d7",
+    "icon_color": "#c53030",
+    "text": "Hóa đơn tháng 3/2026 phòng P102 đã quá hạn!",
+    "time": "2026-04-01T02:52:54.196795",
+    "read": false,
+    "user_id": 10
+  },
+  {
+    "id": "g_inv_unpaid_13",
+    "icon": "💰",
+    "icon_bg": "#fefcbf",
+    "icon_color": "#d69e2e",
+    "text": "Hóa đơn tháng 3/2026 phòng P102 chưa thanh toán",
+    "time": "2026-04-01T02:52:54.196795",
+    "read": false,
+    "user_id": 10
+  },
+  {
+    "id": "g_approved_3",
+    "icon": "✅",
+    "icon_bg": "#e6fffa",
+    "icon_color": "#38a169",
+    "text": "Hợp đồng phòng P102 đã được duyệt",
+    "time": "2026-03-30T18:26:06.001394",
+    "read": false,
+    "user_id": 10
+  },
+  {
     "id": "g_inv_overdue_12",
     "icon": "⚠️",
     "icon_bg": "#fed7d7",
@@ -50,13 +80,23 @@
     "user_id": 10
   },
   {
+    "id": "g_cancel_rejected_1",
+    "icon": "❌",
+    "icon_bg": "#fff5f5",
+    "icon_color": "#e53e3e",
+    "text": "Yêu cầu đổi phòng đã bị từ chối. Hợp đồng phòng P101 vẫn được giữ nguyên.",
+    "time": "2026-03-30T18:26:20.949625",
+    "read": true,
+    "user_id": 9
+  },
+  {
     "id": "g_approved_1",
     "icon": "✅",
     "icon_bg": "#e6fffa",
     "icon_color": "#38a169",
     "text": "Hợp đồng phòng P101 đã được duyệt",
     "time": "2026-03-27T15:04:06.466388",
-    "read": false,
+    "read": true,
     "user_id": 9
   }
 ]

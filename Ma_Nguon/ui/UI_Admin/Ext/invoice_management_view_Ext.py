@@ -50,13 +50,21 @@ class InvoiceStatCard(QFrame):
 class InvoiceFormDialog(QDialog):
     """Dialog tạo/cập nhật hóa đơn."""
 
-    def __init__(self, guests_rooms=None, contracts=None, invoice: Invoice = None, parent=None):
+    def __init__(self, guests_rooms=None, contracts=None, invoice: Invoice = None,
+                 invoice_service=None, parent=None):
         super().__init__(parent)
         self.invoice = invoice
+        self.invoice_service = invoice_service
         self.ui = Ui_DialogFormInvoice()
         self.ui.setupUi(self)
         self.contracts = contracts or []
         self.guests_rooms = guests_rooms or {}  # {contract_id: (guest_name, room_number)}
+
+        # Cache đơn giá 1 lần khi mở dialog 
+        if self.invoice_service:
+            self._cached_rates = self.invoice_service.get_rates()
+        else:
+            self._cached_rates = {'electricity_rate': 3500, 'water_rate': 25000}
 
         # Replace due date with QDateEdit
         self._replace_date_edit('inpDueDate')
@@ -122,26 +130,52 @@ class InvoiceFormDialog(QDialog):
         for c in self.contracts:
             if c.id == contract_id:
                 self.ui.inpRoomPrice.setText(str(c.monthly_rent))
+
+                # Tự động đọc chỉ số IoT mới nhất cho phòng này
+                room_info = self.guests_rooms.get(c.id, (None, None))
+                room_number = room_info[1] if room_info else None
+                if room_number:
+                    try:
+                        from handlers.json_handler import JSONHandler
+                        from config.constants import IOT_DATA_FILE
+                        iot_data = JSONHandler.load(IOT_DATA_FILE)
+                        room_readings = iot_data.get(room_number, {})
+
+                        elec_val = room_readings.get('electric', {}).get('value', 0)
+                        water_val = room_readings.get('water', {}).get('value', 0)
+
+                        self.ui.inpElecNew.setText(str(int(elec_val)))
+                        self.ui.inpWaterNew.setText(str(int(water_val)))
+                    except Exception:
+                        pass
                 break
 
     def _calc_total(self):
         try:
-            # Electricity: (new - old) * rate
-            ELEC_RATE = 3500  # VND/kWh
-            WATER_RATE = 25000  # VND/m³
             elec_old = int(self.ui.inpElecOld.text() or '0')
             elec_new = int(self.ui.inpElecNew.text() or '0')
-            elec_cost = max(0, elec_new - elec_old) * ELEC_RATE
-            self.ui.inpElecCost.setText(f"{elec_cost:,}".replace(',', '.'))
-
             water_old = int(self.ui.inpWaterOld.text() or '0')
             water_new = int(self.ui.inpWaterNew.text() or '0')
-            water_cost = max(0, water_new - water_old) * WATER_RATE
-            self.ui.inpWaterCost.setText(f"{water_cost:,}".replace(',', '.'))
-
             rent = int(self.ui.inpRoomPrice.text().replace('.', '').replace(',', '') or '0')
             other = int(self.ui.inpOtherCost.text().replace('.', '').replace(',', '') or '0')
-            total = rent + elec_cost + water_cost + other
+
+            # Gọi Service để tính (logic nghiệp vụ nằm ở Service layer)
+            if self.invoice_service:
+                result = self.invoice_service.calculate_costs(
+                    elec_old, elec_new, water_old, water_new,
+                    rent, other, rates=self._cached_rates
+                )
+                elec_cost = result['electricity_cost']
+                water_cost = result['water_cost']
+                total = result['total']
+            else:
+                # Fallback nếu không có service
+                elec_cost = max(0, elec_new - elec_old) * self._cached_rates['electricity_rate']
+                water_cost = max(0, water_new - water_old) * self._cached_rates['water_rate']
+                total = rent + elec_cost + water_cost + other
+
+            self.ui.inpElecCost.setText(f"{elec_cost:,}".replace(',', '.'))
+            self.ui.inpWaterCost.setText(f"{water_cost:,}".replace(',', '.'))
             self.ui.inpTotalCost.setText(f"{total:,}".replace(',', '.'))
         except ValueError:
             pass
@@ -586,7 +620,8 @@ class InvoiceManagementView(QWidget):
         self._build_lookup()
         active = [c for c in self._contracts if c.is_active()]
         dlg = InvoiceFormDialog(
-            guests_rooms=self._guests_rooms, contracts=active, parent=self)
+            guests_rooms=self._guests_rooms, contracts=active,
+            invoice_service=self.invoice_service, parent=self)
         if dlg.exec() == QDialog.DialogCode.Accepted:
             data = dlg.result_data
             inv = Invoice(

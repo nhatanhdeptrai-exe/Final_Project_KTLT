@@ -914,21 +914,8 @@ class DangKyPhongView(QWidget):
 
         info = wizard.personal_info
 
-        # Tìm hoặc tạo Guest
+        # Tìm Guest (đã được wizard tạo/cập nhật ở step 1)
         guest = self._find_guest()
-        if not guest and self.guest_service:
-            from models.guest import Guest
-            guest = Guest(
-                user_id=getattr(self.user, 'id', 0),
-                full_name=info.get('full_name', ''),
-                phone=getattr(self.user, 'phone', ''),
-                email=getattr(self.user, 'email', ''),
-                id_card=info.get('id_card', ''),
-            )
-            ok, msg = self.guest_service.create_guest(guest)
-            if ok:
-                # Re-fetch to get the ID
-                guest = self._find_guest()
 
         if not guest:
             show_warning(self, "Lỗi",

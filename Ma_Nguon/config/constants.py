@@ -9,6 +9,7 @@ JSON_DIR = DATA_DIR / 'json'
 USERS_FILE = str(JSON_DIR / 'users.json')
 ROOMS_FILE = str(JSON_DIR / 'rooms.json')
 SETTINGS_FILE = str(JSON_DIR / 'system_settings.json')
+IOT_DATA_FILE = str(JSON_DIR / 'iot_readings.json')
 
 XML_DIR = DATA_DIR / 'xml'
 CONTRACTS_FILE = str(XML_DIR / 'contracts.xml')
